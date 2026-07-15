@@ -1,0 +1,54 @@
+# macOS and editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets and local environment configuration
+.env
+.env.*
+!.env.example
+
+# Python caches, tooling, and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# JavaScript build and dependency output for a future UI
+node_modules/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+.turbo/
+coverage/
+dist/
+build/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+.cache/
+
+# Downloaded or generated GIS data
+# Raw snapshots are reproducible from scripts and may be large.
+data/raw/
+data/processed/
+data/canonical/
+*.gpkg
+*.sqlite
+*.sqlite3
+*.db
+
+# Unrelated local experiment
+blender-mcp-test/
