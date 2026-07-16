@@ -4,7 +4,7 @@
 
 **Current position:** Block 4 in progress
 
-**Next block:** Approve and structure the initial R1 rules
+**Next block:** Create the first machine-readable R1 ruleset
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -16,7 +16,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 1. Verify authoritative sources | Complete | Zoning-code and live ArcGIS findings recorded in the prototype plan. |
 | 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
-| 4. Approve and structure initial R1 rules | In progress | Baseline and amendment audit complete; rule-level verification and machine-readable rules remain. |
+| 4. Approve and structure initial R1 rules | In progress | Baseline, amendment audit, and rule-level verification complete; machine-readable rules remain. |
 | 5. Implement address-to-parcel-to-zone lookup | Not started | Requires tested local address and spatial resolution. |
 | 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
@@ -110,15 +110,24 @@ Completed evidence:
 
 Human-readable audit: `docs/title18-amendment-audit.md`.
 
-Block 4 is not complete: the selected values still require rule-level verification and a versioned machine-readable ruleset.
+Rule-level verification is recorded in `docs/r1-rule-verification.md`. It traces use permission, approval requirements, definitions, measurement methods, exceptions, cross-references, nonconformity effects, and deferrals for the selected R1 standards.
+
+Important findings:
+
+- The 25-foot height, two-story limit, 40-percent structure coverage, and most setback cells are verified as base-zone values.
+- Base setbacks cannot yet be converted into a parcel-specific building envelope because averaging, encroachments, official plan lines, alley credit, narrow historical parcels, and nonconformities may apply.
+- Table 2-3 gives a 10-foot first-story corner-side setback for R1-8L, while Section 18.10.040(B)(1) requires at least 15 feet. The first ruleset must preserve this as `requires_staff_confirmation`.
+- `Permitted by right` does not mean approval-free: Zoning Clearance and Architectural Review paths remain applicable.
+
+Block 4 is not complete: a versioned machine-readable ruleset still needs to be created and validated.
 
 ## Next block: initial R1 rules
 
-Proposed exit conditions:
+Remaining exit conditions:
 
-1. Verify the small selected R1 standards, definitions, table notes, exceptions, and cross-references.
-2. Record source section, effective date, applicability, units, notes, and validation status for each rule.
-3. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
+1. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
+2. Record source section, source version, applicability, units, notes, exception families, and validation status for each rule.
+3. Validate the ruleset against `docs/r1-rule-verification.md`, including the review-required R1-8L corner-side conflict.
 
 ## Blockers
 
@@ -139,3 +148,5 @@ None currently recorded.
 | 2026-07-16 | Share ArcGIS snapshot primitives between downloaders. | Keeps retry, parsing, serialization, batching, and checksum behavior consistent without duplicating code. |
 | 2026-07-16 | Treat the July 2025 code as a versioned baseline plus an amendment ledger. | The City still labels July 2025 as the latest consolidation, while later adopted ordinances remain unincorporated. |
 | 2026-07-16 | Do not resolve the competing Chapter 18.27 enactments in application logic. | Ordinances 2085 and 2086 assign different text to the same chapter number; City or codifier clarification is required. |
+| 2026-07-16 | Treat verified dimensional numbers as base-zone standards rather than final parcel requirements. | Setback averaging, encroachments, official plan lines, alleys, historical parcels, and legal nonconformities can change site-specific application. |
+| 2026-07-16 | Preserve the R1-8L corner-side setback conflict as review-required. | Table 2-3 states 10 feet for the first story while Section 18.10.040(B)(1) states at least 15 feet. |

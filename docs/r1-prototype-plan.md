@@ -202,9 +202,9 @@ data/raw/2026-07-16/santa_clara_address_points/
 
 All 67,243 source object IDs produced 67,243 unique point features. Core address fields have no missing values, while 45 full-address values appear more than once; lookup logic must preserve multiple exact matches instead of silently choosing a record. The citywide source is retained because address resolution precedes parcel and zoning classification.
 
-## 5. Candidate R1 Ruleset
+## 5. Verified R1 Rule Inputs
 
-The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. The post-publication amendment audit found no adopted change to these values. They remain **candidate values** pending rule-level verification of definitions, applicability, notes, exceptions, and cross-references before implementation.
+The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. The post-publication amendment audit found no adopted change to these values. Rule-level verification is complete, but no machine-readable ruleset exists yet.
 
 | Standard | R1-6L | R1-8L | Notes |
 |---|---:|---:|---|
@@ -215,7 +215,7 @@ The following values were transcribed from Chapter 18.10, Section 18.10.030, Tab
 | Front setback, second story | 25 ft | 25 ft | Primary structure stepback. |
 | Interior side setback, first story | 5 ft | 6 ft and 9 ft | R1-8L uses unequal paired side-yard requirements. |
 | Interior side setback, second story | 10 ft | 11 ft and 14 ft | R1-8L uses unequal paired side-yard requirements. |
-| Corner-side setback, first story | 10 ft | 10 ft | Applies to corner lots. |
+| Corner-side setback, first story | 10 ft | Conflict: Table 2-3 says 10 ft; Section 18.10.040(B)(1) says at least 15 ft | Requires staff confirmation before unconditional encoding. |
 | Corner-side setback, second story | 15 ft | 15 ft | Applies to corner lots. |
 | Rear setback | 20 ft | 20 ft | Listed for single- and multi-story primary structures. |
 | Driveway approach setback | 20 ft | 20 ft | Candidate for deferral from the first displayed result. |
@@ -227,7 +227,15 @@ City planning FAQs independently state a 25-foot maximum height, two-story maxim
 
 - [City of Santa Clara — Planning FAQs](https://www.santaclaraca.gov/our-city/departments-a-f/community-development/planning-division/faqs)
 
-Table notes, definitions, exceptions, and other applicable sections must be retained. A numeric cell must not be implemented without its applicability conditions.
+The detailed source trace, applicability findings, exceptions, cross-references, deferrals, and ruleset gate are in [R1 Rule-Level Verification](r1-rule-verification.md).
+
+Key conclusions:
+
+- Height, stories, coverage, and most setback numbers are verified **base-zone values**, not final parcel-specific requirements.
+- A permitted-by-right single-family dwelling still requires Zoning Clearance and may require Architectural Review and a public hearing.
+- Setback averaging, projections, official plan lines, alley credit, narrow historical parcels, and legal nonconformities can change parcel-specific application.
+- The R1-8L first-story corner-side setback contains an unresolved 10-foot/15-foot source conflict and must return `review required` until confirmed.
+- Parcel-creation standards, density, driveway approach, daylight plane, and proposal-level envelope calculations remain deferred from the first ruleset.
 
 ## 6. Proposed Lookup Pipeline
 

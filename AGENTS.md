@@ -16,6 +16,8 @@ Each project document has one job:
 - `AGENTS.md` contains durable Codex operating instructions. Do not put changing milestone status or duplicate run commands here.
 - `docs/progress.md` is the sole status ledger. Put the current stage, completed blocks, validation evidence, canonical artifacts, next block, blockers, and implementation decision log there.
 - `docs/r1-prototype-plan.md` is the design reference. Put scope, architecture, authoritative-source research, schemas, rules, and completion criteria there.
+- `docs/title18-amendment-audit.md` records the consolidated-code baseline and later-legislation audit.
+- `docs/r1-rule-verification.md` is the source trace and approval gate for machine-readable R1 rules. Update it when definitions, applicability, exceptions, conflicts, or rule dispositions change.
 - Each raw snapshot's `manifest.json` is the authoritative record of that download's sources, filters, counts, files, and checksums.
 
 When something changes, update only its owning document unless the change genuinely affects another document's role. In particular, a milestone change normally updates `docs/progress.md` only.
