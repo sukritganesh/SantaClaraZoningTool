@@ -245,6 +245,10 @@ A resolution record should preserve the selected value, all source values, citat
 
 ## 6. Proposed Lookup Pipeline
 
+The first local implementation is in `santa_clara_zoning/` with a command at `scripts/lookup_r1_zone.py`. It uses exact controlled address matching, checksum-verified immutable GeoJSON snapshots, bounding-box-prefiltered point-in-polygon checks, and explicit ambiguity or review outcomes. It does not use fuzzy matching, a database, the live City API, or the regulatory ruleset yet.
+
+Because the current parcel and zoning snapshots are filtered to R1-6L and R1-8L, an address with no polygon match is labeled outside the supported R1 snapshot. The implementation does not infer that address's exact non-R1 designation. The current spatial check uses the address point and does not calculate split-zone parcel areas.
+
 ### Step 1: Normalize the address
 
 Convert user input into controlled fields such as:

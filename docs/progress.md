@@ -2,9 +2,9 @@
 
 **Last updated:** July 16, 2026
 
-**Current position:** Block 4 complete
+**Current position:** Block 5 complete
 
-**Next block:** Implement address-to-parcel-to-zone lookup
+**Next block:** Implement deterministic standards retrieval
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -17,7 +17,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
-| 5. Implement address-to-parcel-to-zone lookup | Not started | Requires tested local address and spatial resolution. |
+| 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
@@ -89,7 +89,7 @@ Initial lookup fixtures identified from the local snapshots:
 | Duplicate full address | 324 Los Padres Boulevard | Two source records; lookup must not silently select one. |
 | Unmatched | 99999 No Such Street | No local address-point match. |
 
-No normalization, parcel join implementation, database, rules engine, API, or UI exists yet.
+Block 3 itself created no normalization, parcel join, database, rules engine, API, or UI; address and spatial lookup were added later in Block 5.
 
 ### Block 4 source baseline and amendment audit
 
@@ -135,15 +135,38 @@ Validation evidence:
 - Twelve regression tests confirm the selected values, R1-8L paired side yards, approval-path separation, deferred subjects, required fields, enums, malformed-input handling, and conflict integrity.
 - The conflict mutation test rejects drift between the selected R1-8L 15-foot rule and its resolution record.
 
-## Next block: address-to-parcel-to-zone lookup
+### Block 5: local address-to-parcel-to-zone lookup
 
-Block 5 exit conditions:
+Canonical implementation:
 
-1. Implement deterministic normalization and controlled matching against the local address-point snapshot.
-2. Preserve no-match and multiple-match outcomes instead of selecting a candidate silently.
-3. Resolve an unambiguous address point to the containing local parcel and current-zoning feature.
-4. Cross-check parcel and current-zoning designations and return controlled mismatch, unsupported-zone, or review-required outcomes.
-5. Validate the lookup against the fixtures already recorded in this ledger before connecting it to the ruleset.
+```text
+santa_clara_zoning/addressing.py
+santa_clara_zoning/geometry.py
+santa_clara_zoning/lookup.py
+scripts/lookup_r1_zone.py
+```
+
+Completed evidence:
+
+- Address normalization handles suffix variants, locality text, ZIP codes, punctuation, and unit markers without fuzzy or AI matching.
+- Exact duplicate source records remain ambiguous rather than being silently deduplicated.
+- Snapshot loading verifies manifests, feature counts, EPSG:4326, SHA-256 checksums, and R1 designation scope.
+- Bounding-box-prefiltered point-in-polygon checks support Polygon, MultiPolygon, holes, and boundaries.
+- Parcel and current-zoning designations must agree before a supported result is returned.
+- Barto and Brookside resolve to their expected APNs and R1 zones; Warburton, Pomeroy unit 202, Los Padres, and the unmatched fixture return their expected controlled outcomes.
+- The full suite passes 29 tests, including synthetic designation-mismatch and incomplete-spatial-match cases.
+
+The local polygon snapshot contains only R1-6L and R1-8L. An address with no R1 polygon match is therefore labeled `outside_supported_r1_snapshot`; its exact non-R1 zone is not inferred. Split-zone parcel-area analysis remains deferred.
+
+## Next block: deterministic standards retrieval
+
+Block 6 exit conditions:
+
+1. Load and validate the approved R1 ruleset as the runtime regulatory source.
+2. Select only approved rules whose applicability includes the resolved R1 zone.
+3. Combine parcel, zoning, and base-standard records in a versioned structured result contract.
+4. Preserve citations, conditions, exception-family warnings, conflict status, and `not evaluated` topics.
+5. Verify deterministic output for the R1-6L and R1-8L fixtures without adding proposal-level calculations or a UI.
 
 ## Blockers
 
@@ -168,3 +191,7 @@ None currently recorded.
 | 2026-07-16 | Resolve the R1-8L first-story corner-side setback to 15 feet while preserving the conflict. | The zone-specific written provision states at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement; the 10-foot table assertion remains provenance, not discarded data. |
 | 2026-07-16 | Store the first regulatory implementation as versioned normalized JSON. | The small prototype ruleset remains directly inspectable and testable without committing to an application database before lookup access patterns are known. |
 | 2026-07-16 | Validate rules with executable Draft 2020-12 schema validation, domain invariants, and regression tests. | The schema must actually reject malformed records, while custom checks separately enforce cross-record provenance and selected-value consistency. |
+| 2026-07-16 | Start address resolution with normalized exact matching rather than fuzzy matching. | Exact matching is reproducible and makes unmatched and duplicate outcomes explicit while the prototype remains narrow. |
+| 2026-07-16 | Query immutable GeoJSON snapshots directly before choosing a database. | The current data volume supports a simple validated vertical slice and preserves the option to select storage after access patterns are proven. |
+| 2026-07-16 | Verify snapshot checksums and source invariants when loading lookup data. | Runtime lookup must not silently use incomplete, modified, misprojected, or out-of-scope polygon data. |
+| 2026-07-16 | Label no-polygon results outside the supported R1 snapshot rather than naming a non-R1 zone. | The local polygon snapshot is intentionally R1-filtered and cannot establish the exact designation of an unsupported parcel. |

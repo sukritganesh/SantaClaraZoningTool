@@ -85,6 +85,18 @@ python3 scripts/download_address_points.py --help
 python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis.py').read_text()); print('syntax ok')"
 ```
 
+## Resolve an address to an R1 parcel and zone
+
+After the canonical address and R1 snapshots are present, run the offline lookup:
+
+```bash
+python3 scripts/lookup_r1_zone.py "636 Barto Street, Santa Clara, CA"
+```
+
+The command verifies snapshot checksums, normalizes the address, preserves duplicate matches, intersects the address point with the local parcel and current-zoning polygons, and cross-checks both zoning attributes. It returns controlled statuses for supported R1 matches, ambiguous or unmatched addresses, GIS conflicts, and addresses outside the filtered R1 snapshot.
+
+This step identifies the parcel and zone only. It does not yet attach the regulatory ruleset or produce a buildability determination.
+
 ## Validate the R1 regulatory ruleset
 
 The first approved prototype ruleset is:
@@ -131,13 +143,18 @@ The ruleset reports selected base-zone standards only. It preserves citations, d
 ├── rulesets/
 │   ├── schema/r1-ruleset.schema.json Machine-readable ruleset contract
 │   └── santa_clara/r1/2026-07-16/    Versioned approved R1 rules
+├── santa_clara_zoning/
+│   ├── addressing.py                  Controlled address normalization and matching
+│   ├── geometry.py                    GeoJSON point-in-polygon operations
+│   └── lookup.py                      Snapshot loading and lookup outcomes
 ├── scripts/
-    ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
-    ├── download_address_points.py     Citywide address-point downloader
-    ├── download_r1_gis.py             R1 parcel and zoning downloader
-    └── validate_r1_rules.py           Dependency-free ruleset validator
+│   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
+│   ├── download_address_points.py     Citywide address-point downloader
+│   ├── download_r1_gis.py             R1 parcel and zoning downloader
+│   ├── lookup_r1_zone.py              Offline address-to-zone command
+│   └── validate_r1_rules.py           Schema and domain ruleset validator
 └── tests/
-    └── test_r1_rules.py               Ruleset regression tests
+    └── test_*.py                       Rule, address, geometry, and lookup tests
 ```
 
 The existing `blender-mcp-test/` directory is unrelated experimental work and is not part of the zoning prototype.
