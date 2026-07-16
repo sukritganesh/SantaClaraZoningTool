@@ -8,17 +8,21 @@ normalize fields, perform spatial joins, or evaluate zoning regulations.
 from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 import sys
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from arcgis_snapshot import (
+    chunks,
+    encode_url,
+    fetch_bytes,
+    parse_json,
+    sha256_file,
+    write_bytes,
+    write_json,
+)
 
 
 WHERE = "ZONGDSGN IN ('R1-6L','R1-8L')"
@@ -50,69 +54,6 @@ LAYERS = (
         output_name="current_zoning_r1.geojson",
     ),
 )
-
-
-def encode_url(url: str, params: dict[str, str]) -> str:
-    return f"{url}?{urllib.parse.urlencode(params)}"
-
-
-def fetch_bytes(url: str, *, attempts: int = 5) -> bytes:
-    request = urllib.request.Request(
-        url,
-        headers={
-            "Accept": "application/json, application/geo+json",
-            "User-Agent": "SantaClaraZoningPortal-R1-Snapshot/0.1",
-        },
-    )
-
-    for attempt in range(1, attempts + 1):
-        try:
-            with urllib.request.urlopen(request, timeout=90) as response:
-                return response.read()
-        except (urllib.error.URLError, TimeoutError) as exc:
-            if attempt == attempts:
-                raise RuntimeError(f"Failed after {attempts} attempts: {url}") from exc
-            time.sleep(min(2**attempt, 20))
-
-    raise AssertionError("unreachable")
-
-
-def parse_json(payload: bytes, *, source_url: str) -> dict[str, Any]:
-    try:
-        parsed = json.loads(payload)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Non-JSON response from {source_url}") from exc
-
-    if not isinstance(parsed, dict):
-        raise RuntimeError(f"Unexpected JSON response from {source_url}")
-    if "error" in parsed:
-        raise RuntimeError(f"ArcGIS error from {source_url}: {parsed['error']}")
-    return parsed
-
-
-def write_bytes(path: Path, payload: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(payload)
-
-
-def write_json(path: Path, value: Any, *, indent: int | None = 2) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(value, indent=indent, sort_keys=indent is not None) + "\n",
-        encoding="utf-8",
-    )
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as source:
-        for block in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def chunks(values: list[int], size: int) -> list[list[int]]:
-    return [values[index : index + size] for index in range(0, len(values), size)]
 
 
 def download_layer(layer: Layer, root: Path, batch_size: int) -> dict[str, Any]:
