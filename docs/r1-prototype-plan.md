@@ -193,6 +193,16 @@ The snapshot contains:
 
 For both layers, the number of downloaded features and unique downloaded object IDs exactly matched the source object-ID response. The consolidated files use EPSG:4326. No database, spatial join, or zoning-rule evaluation was created during this download step.
 
+### 4.4 Downloaded address-point snapshot
+
+A complete citywide address-point snapshot was downloaded on July 16, 2026 to:
+
+```text
+data/raw/2026-07-16/santa_clara_address_points/
+```
+
+All 67,243 source object IDs produced 67,243 unique point features. Core address fields have no missing values, while 45 full-address values appear more than once; lookup logic must preserve multiple exact matches instead of silently choosing a record. The citywide source is retained because address resolution precedes parcel and zoning classification.
+
 ## 5. Candidate R1 Ruleset
 
 The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. They are **candidate approved values** pending a final amendment audit and source review before implementation.
@@ -438,11 +448,14 @@ At minimum, test:
 - a corner lot to confirm side-yard presentation; and
 - repeat runs using the same snapshot and ruleset.
 
-Candidate public examples for later live confirmation:
+Initial local-snapshot fixtures:
 
-- 1279 Las Palmas Drive — described in public City materials as R1-6L.
-- 108 Brookside Avenue — described in public City materials as R1-8L.
+- 636 Barto Street — APN 293-16-045 and R1-6L.
+- 108 Brookside Avenue — APN 303-22-022 and R1-8L.
 - 1500 Warburton Avenue — verified non-R1 negative control (PQP).
+- 1577 Pomeroy Avenue 202 — unit-bearing record for parsing and matching.
+- 324 Los Padres Boulevard — duplicated full-address value for ambiguity handling.
+- 99999 No Such Street — unmatched-input fixture.
 
 City staff reports are useful for test-case comparison but are not substitutes for the current GIS and zoning code.
 
@@ -472,7 +485,7 @@ The first prototype is complete when it can:
 - Exact rule schema and result JSON contract.
 - Which setback notes and exceptions are necessary for the first approved ruleset.
 - Process for auditing post-July-2025 amendments.
-- Initial test-address set and manually verified expected results.
+- Additional corner-lot and parcel/zoning-mismatch fixtures.
 - UI layout for the first retrieval view.
 - Repository structure for raw data, canonical data, manifests, code, and tests.
 

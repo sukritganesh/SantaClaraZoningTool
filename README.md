@@ -15,11 +15,11 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Requirements
 
-The current GIS downloader uses only the Python standard library.
+The current GIS downloaders use only the Python standard library.
 
 - Python 3.9 or newer
 - Internet access to `map.santaclaraca.gov`
-- Approximately 60 MB of free disk space per equivalent R1 snapshot
+- Approximately 60 MB for an R1 snapshot and 80 MB for a citywide address snapshot
 
 No database, package installation, API key, or runtime AI service is currently required to run the downloader.
 
@@ -50,6 +50,14 @@ Snapshots are immutable. The command fails if its dated destination already exis
 
 Downloaded GIS snapshots are intentionally excluded from Git because they are generated, potentially large artifacts. Recreate them locally with the downloader; each snapshot retains its own manifest and validation evidence.
 
+## Download a citywide address-point snapshot
+
+```bash
+python3 scripts/download_address_points.py
+```
+
+Use `--snapshot-date YYYY-MM-DD` to choose the dated destination. This downloader preserves the source metadata, object IDs, and raw POST batches, then writes a consolidated EPSG:4326 GeoJSON file, a schema report, and a validated manifest. It downloads the complete citywide layer because zoning classification happens after address-to-parcel resolution.
+
 ## Inspect a snapshot
 
 Find the canonical snapshot path in [docs/progress.md](docs/progress.md). To inspect the newest dated R1 manifest currently on disk:
@@ -63,6 +71,7 @@ Check the downloader without contacting the City server:
 
 ```bash
 python3 scripts/download_r1_gis.py --help
+python3 scripts/download_address_points.py --help
 python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis.py').read_text()); print('syntax ok')"
 ```
 
@@ -79,7 +88,9 @@ python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis
 │   ├── progress.md                   Current status and milestone ledger
 │   └── r1-prototype-plan.md          Detailed prototype specification
 └── scripts/
-    └── download_r1_gis.py            Validated ArcGIS REST downloader
+    ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
+    ├── download_address_points.py     Citywide address-point downloader
+    └── download_r1_gis.py             R1 parcel and zoning downloader
 ```
 
 The existing `blender-mcp-test/` directory is unrelated experimental work and is not part of the zoning prototype.

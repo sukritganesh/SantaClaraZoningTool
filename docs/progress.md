@@ -1,10 +1,10 @@
 # R1 Prototype Progress
 
-**Last updated:** July 15, 2026
+**Last updated:** July 16, 2026
 
-**Current position:** Block 2 complete; Block 3 not started
+**Current position:** Block 3 complete
 
-**Next block:** Download and inspect the City's address-point data
+**Next block:** Approve and structure the initial R1 rules
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -15,7 +15,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 0. Define the R1 vertical slice | Complete | Scope and completion criteria recorded in the prototype plan. |
 | 1. Verify authoritative sources | Complete | Zoning-code and live ArcGIS findings recorded in the prototype plan. |
 | 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
-| 3. Download and inspect address-point data | Not started | Requires a validated raw snapshot and schema notes. |
+| 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
 | 4. Approve and structure initial R1 rules | Not started | Requires amendment audit, source verification, and machine-readable candidate rules. |
 | 5. Implement address-to-parcel-to-zone lookup | Not started | Requires tested local address and spatial resolution. |
 | 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
@@ -51,19 +51,54 @@ Key artifacts:
 - `current_zoning_r1.geojson` — current parcel-level zoning polygons and attributes.
 - `scripts/download_r1_gis.py` — reproducible downloader.
 
-No database, address snapshot, normalization, spatial join, rules engine, API, or UI exists yet.
+Block 2 created no database, address snapshot, normalization, spatial join, rules engine, API, or UI.
 
-## Next block: address-point acquisition
+### Block 3: address-point acquisition
+
+Canonical snapshot:
+
+```text
+data/raw/2026-07-16/santa_clara_address_points/
+```
+
+Validation summary:
+
+- All 67,243 source object IDs produced 67,243 features and unique downloaded object IDs.
+- Every feature is a point in EPSG:4326; the consolidated GeoJSON and schema-report checksums match the manifest.
+- `CSCADDR`, `ADDRNUM`, `STRNAME`, `ADDRCITY`, and `ADDRZIP5` have no missing values.
+- The layer contains 36,793 records with unit values and 45 duplicated full-address values. Exact-address lookup must therefore preserve multiple matches.
+
+Key artifacts:
+
+- `manifest.json` — source, query method, counts, checksums, and validation status.
+- `address_points.geojson` — complete citywide address-point layer.
+- `schema_report.json` — field inventory, completeness counts, value distributions, duplicate summary, and coordinate bounds.
+- `scripts/download_address_points.py` — reproducible downloader.
+- `scripts/arcgis_snapshot.py` — shared ArcGIS request, serialization, batching, and checksum utilities.
+
+The canonical raw input is citywide rather than R1-only. Address resolution precedes parcel and zoning classification, and the complete source supports controlled unsupported-zone outcomes.
+
+Initial lookup fixtures identified from the local snapshots:
+
+| Case | Address | Expected acquisition/spatial result |
+|---|---|---|
+| R1-6L | 636 Barto Street | One address point; APN `293-16-045`; R1-6L. |
+| R1-8L | 108 Brookside Avenue | One address point; APN `303-22-022`; R1-8L. |
+| Unsupported zone | 1500 Warburton Avenue | One address point; outside the downloaded R1 polygons; previously verified as PQP. |
+| Unit address | 1577 Pomeroy Avenue 202 | One unit-bearing address record with a sub-address identifier. |
+| Duplicate full address | 324 Los Padres Boulevard | Two source records; lookup must not silently select one. |
+| Unmatched | 99999 No Such Street | No local address-point match. |
+
+No normalization, parcel join implementation, database, rules engine, API, or UI exists yet.
+
+## Next block: initial R1 rules
 
 Proposed exit conditions:
 
-1. Download the public city address-point layer into a separate immutable dated snapshot.
-2. Preserve metadata, object IDs, raw batches, consolidated output, checksums, and validation counts.
-3. Record the actual field schema and inspect representative unit, street-suffix, and missing-value cases.
-4. Determine whether all city address points or only R1-intersecting points should become the first canonical lookup input.
-5. Identify a small R1-6L, R1-8L, unsupported-zone, ambiguous, and unmatched test-address set.
-
-Storage and lookup-engine choices remain undecided; downloading this raw source does not require choosing a database.
+1. Audit Title 18 amendments adopted after the July 2025 consolidated PDF.
+2. Verify the small selected R1 standards against the current authoritative text.
+3. Record source section, effective date, applicability, units, notes, and validation status for each rule.
+4. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
 
 ## Blockers
 
@@ -79,3 +114,6 @@ None currently recorded.
 | 2026-07-14 | Limit GET batches to 100 features. | A 500-ID URL was rejected by the City/proxy. |
 | 2026-07-15 | Assign one owner to each kind of project information. | Avoids synchronizing milestone state and commands across multiple documents. |
 | 2026-07-15 | Exclude downloaded GIS snapshots from Git. | Raw data is reproducible, potentially large, and retains its own local manifest and checksums. |
+| 2026-07-16 | Use the complete citywide address layer as the canonical raw address input. | Address resolution occurs before zoning classification and must also support unsupported-zone results. |
+| 2026-07-16 | Use POST requests with 1,000-ID batches for address acquisition. | Avoids GET URL-length limits while preserving complete object-ID validation with fewer requests. |
+| 2026-07-16 | Share ArcGIS snapshot primitives between downloaders. | Keeps retry, parsing, serialization, batching, and checksum behavior consistent without duplicating code. |
