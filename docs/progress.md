@@ -2,7 +2,7 @@
 
 **Last updated:** July 16, 2026
 
-**Current position:** Block 3 complete
+**Current position:** Block 4 in progress
 
 **Next block:** Approve and structure the initial R1 rules
 
@@ -16,7 +16,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 1. Verify authoritative sources | Complete | Zoning-code and live ArcGIS findings recorded in the prototype plan. |
 | 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
-| 4. Approve and structure initial R1 rules | Not started | Requires amendment audit, source verification, and machine-readable candidate rules. |
+| 4. Approve and structure initial R1 rules | In progress | Baseline and amendment audit complete; rule-level verification and machine-readable rules remain. |
 | 5. Implement address-to-parcel-to-zone lookup | Not started | Requires tested local address and spatial resolution. |
 | 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
@@ -91,14 +91,34 @@ Initial lookup fixtures identified from the local snapshots:
 
 No normalization, parcel join implementation, database, rules engine, API, or UI exists yet.
 
+### Block 4 source baseline and amendment audit
+
+Canonical local source snapshot:
+
+```text
+data/raw/2026-07-16/santa_clara_zoning_code/
+```
+
+Completed evidence:
+
+- Preserved the 497-page July 2025 zoning-code PDF with SHA-256 `d6461e366cd214beb5c96ee8abe7498d80464879ac63f216119db7c3af6c9c35`.
+- Verified the R1 source location as Chapter 18.10, Section 18.10.030, Table 2-3.
+- Preserved adopted Ordinances 2085 and 2086 and the proposed Cleanup #3 tables with checksums in the snapshot manifest.
+- Audited post-July-2025 adoption and pending-amendment records through July 16, 2026.
+- Found no adopted later amendment changing the selected R1-6L or R1-8L Table 2-3 numeric values.
+- Recorded the unresolved Chapter 18.27 collision between Ordinances 2085 and 2086.
+
+Human-readable audit: `docs/title18-amendment-audit.md`.
+
+Block 4 is not complete: the selected values still require rule-level verification and a versioned machine-readable ruleset.
+
 ## Next block: initial R1 rules
 
 Proposed exit conditions:
 
-1. Audit Title 18 amendments adopted after the July 2025 consolidated PDF.
-2. Verify the small selected R1 standards against the current authoritative text.
-3. Record source section, effective date, applicability, units, notes, and validation status for each rule.
-4. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
+1. Verify the small selected R1 standards, definitions, table notes, exceptions, and cross-references.
+2. Record source section, effective date, applicability, units, notes, and validation status for each rule.
+3. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
 
 ## Blockers
 
@@ -117,3 +137,5 @@ None currently recorded.
 | 2026-07-16 | Use the complete citywide address layer as the canonical raw address input. | Address resolution occurs before zoning classification and must also support unsupported-zone results. |
 | 2026-07-16 | Use POST requests with 1,000-ID batches for address acquisition. | Avoids GET URL-length limits while preserving complete object-ID validation with fewer requests. |
 | 2026-07-16 | Share ArcGIS snapshot primitives between downloaders. | Keeps retry, parsing, serialization, batching, and checksum behavior consistent without duplicating code. |
+| 2026-07-16 | Treat the July 2025 code as a versioned baseline plus an amendment ledger. | The City still labels July 2025 as the latest consolidation, while later adopted ordinances remain unincorporated. |
+| 2026-07-16 | Do not resolve the competing Chapter 18.27 enactments in application logic. | Ordinances 2085 and 2086 assign different text to the same chapter number; City or codifier clarification is required. |

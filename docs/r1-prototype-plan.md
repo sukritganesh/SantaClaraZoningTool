@@ -2,7 +2,7 @@
 
 **Status:** Initial research and planning
 
-**Last updated:** July 14, 2026
+**Last updated:** July 16, 2026
 
 **Prototype scope:** Santa Clara R1-6L and R1-8L single-family residential zones
 
@@ -98,21 +98,20 @@ Research on July 14, 2026 found that its version, date, table of contents, and R
 
 The match has not been verified byte-for-byte because the City server rejected automated downloading of the official PDF.
 
-The July 2025 PDF must not be treated as a complete current-law snapshot by itself. Later Title 18 amendment activity exists, including 2026 Objective Design Standards and Zoning Code Cleanup #3 materials:
+The July 2025 PDF must not be treated as a complete current-law snapshot by itself. A post-publication audit completed on July 16, 2026 identified two adopted amendments not yet incorporated into the City's consolidated code:
 
-- [Ordinance No. 2085 materials](https://santaclara.legistar.com/View.ashx?GUID=7E3FCE92-F615-4895-A3EE-D0B7FA2F2FC9&ID=15351662&M=F)
-- [Zoning Code Cleanup #3 public notice](https://www.santaclaraca.gov/home/showpublisheddocument/89371)
+- Ordinance 2085 adds citywide objective design standards for multifamily and residential mixed-use projects.
+- Ordinance 2086 adds El Camino Real Corridor regulations.
 
-The known Objective Design Standards addition concerns multifamily and residential mixed-use development and appears outside this R1 prototype. Cleanup #3 principally concerns other subjects, but its final adopted text must be checked before the R1 ruleset is declared authoritative.
+Neither ordinance changes the selected numeric R1 standards in Table 2-3. Both ordinances purport to add different material as Chapter 18.27, and eCode360 lists both as adopted but not yet incorporated; the prototype must not guess how that chapter-number collision will be reconciled.
 
-The prototype should eventually maintain an amendment ledger containing:
+Zoning Code Cleanup #3 was also reviewed. As of the audit cutoff, the official matter remained `Agenda Ready` with no passed or enactment date, and its July 14 Council event item had no recorded action or result. Its proposed tables preserve the selected R1 numeric values, but the final text must be rechecked if adopted.
 
-- ordinance or resolution identifier;
-- adoption and effective dates;
-- affected Title 18 sections;
-- whether the consolidated PDF includes the amendment;
-- effect on the prototype ruleset; and
-- verification status.
+The detailed evidence, source links, status treatment, and recheck triggers are in [Title 18 Amendment Audit](title18-amendment-audit.md). The immutable local source snapshot and machine-readable manifest are stored at:
+
+```text
+data/raw/2026-07-16/santa_clara_zoning_code/
+```
 
 ### 4.2 GIS
 
@@ -205,7 +204,7 @@ All 67,243 source object IDs produced 67,243 unique point features. Core address
 
 ## 5. Candidate R1 Ruleset
 
-The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. They are **candidate approved values** pending a final amendment audit and source review before implementation.
+The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. The post-publication amendment audit found no adopted change to these values. They remain **candidate values** pending rule-level verification of definitions, applicability, notes, exceptions, and cross-references before implementation.
 
 | Standard | R1-6L | R1-8L | Notes |
 |---|---:|---:|---|

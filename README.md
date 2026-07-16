@@ -8,6 +8,7 @@ The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family 
 
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
 - [R1 prototype plan](docs/r1-prototype-plan.md) — scope, architecture, source research, proposed data model, and completion criteria.
+- [Title 18 amendment audit](docs/title18-amendment-audit.md) — the July 2025 baseline, later legislation ledger, R1 impact findings, and recheck triggers.
 - [AGENTS.md](AGENTS.md) — operating instructions for Codex tasks in this workspace.
 - [Google Drive source](GOOGLE_DRIVE_SOURCE.txt) — link to the shared planning documents and zoning-code PDF.
 
@@ -86,7 +87,8 @@ python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis
 │   └── raw/                          Immutable dated source snapshots
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
-│   └── r1-prototype-plan.md          Detailed prototype specification
+│   ├── r1-prototype-plan.md          Detailed prototype specification
+│   └── title18-amendment-audit.md    Post-July-2025 source audit
 └── scripts/
     ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
     ├── download_address_points.py     Citywide address-point downloader
