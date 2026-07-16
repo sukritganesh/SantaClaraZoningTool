@@ -16,7 +16,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 1. Verify authoritative sources | Complete | Zoning-code and live ArcGIS findings recorded in the prototype plan. |
 | 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
-| 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, schema, validator, source checksum validation, and regression tests pass. |
+| 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Not started | Requires tested local address and spatial resolution. |
 | 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
@@ -130,9 +130,9 @@ tests/test_r1_rules.py
 
 Validation evidence:
 
-- The dependency-free validator accepts all 16 approved rules and the documented conflict record.
+- The validator applies the Draft 2020-12 schema and then accepts all 16 approved rules and the documented conflict record under additional domain invariants.
 - Source-file verification confirms the recorded SHA-256 digests for the July 2025 zoning-code PDF and amendment audit.
-- Nine regression tests confirm the selected values, R1-8L paired side yards, approval-path separation, deferred subjects, and conflict integrity.
+- Twelve regression tests confirm the selected values, R1-8L paired side yards, approval-path separation, deferred subjects, required fields, enums, malformed-input handling, and conflict integrity.
 - The conflict mutation test rejects drift between the selected R1-8L 15-foot rule and its resolution record.
 
 ## Next block: address-to-parcel-to-zone lookup
@@ -167,4 +167,4 @@ None currently recorded.
 | 2026-07-16 | Treat verified dimensional numbers as base-zone standards rather than final parcel requirements. | Setback averaging, encroachments, official plan lines, alleys, historical parcels, and legal nonconformities can change site-specific application. |
 | 2026-07-16 | Resolve the R1-8L first-story corner-side setback to 15 feet while preserving the conflict. | The zone-specific written provision states at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement; the 10-foot table assertion remains provenance, not discarded data. |
 | 2026-07-16 | Store the first regulatory implementation as versioned normalized JSON. | The small prototype ruleset remains directly inspectable and testable without committing to an application database before lookup access patterns are known. |
-| 2026-07-16 | Validate rules with a JSON Schema, dependency-free invariant checker, and regression tests. | Structural contracts, cross-record provenance, and selected values need separate safeguards while preserving the repository's standard-library-only setup. |
+| 2026-07-16 | Validate rules with executable Draft 2020-12 schema validation, domain invariants, and regression tests. | The schema must actually reject malformed records, while custom checks separately enforce cross-record provenance and selected-value consistency. |

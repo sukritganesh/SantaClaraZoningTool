@@ -9,7 +9,7 @@ The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family 
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
 - [R1 prototype plan](docs/r1-prototype-plan.md) — scope, architecture, source research, proposed data model, and completion criteria.
 - [Title 18 amendment audit](docs/title18-amendment-audit.md) — the July 2025 baseline, later legislation ledger, R1 impact findings, and recheck triggers.
-- [R1 rule-level verification](docs/r1-rule-verification.md) — definitions, measurement rules, exceptions, conflicts, and the gate for machine-readable rules.
+- [R1 rule-level verification](docs/r1-rule-verification.md) — definitions, measurement rules, exceptions, conflicts, and the machine-readable rule contract.
 - [AGENTS.md](AGENTS.md) — operating instructions for Codex tasks in this workspace.
 - [Google Drive source](GOOGLE_DRIVE_SOURCE.txt) — link to the shared planning documents and zoning-code PDF.
 
@@ -17,13 +17,21 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Requirements
 
-The current GIS downloaders, ruleset validator, and tests use only the Python standard library.
+The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly.
 
 - Python 3.9 or newer
 - Internet access to `map.santaclaraca.gov`
 - Approximately 60 MB for an R1 snapshot and 80 MB for a citywide address snapshot
 
-No database, package installation, API key, or runtime AI service is currently required.
+Create the local environment and install the validation dependency:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+No database, API key, or runtime AI service is currently required.
 
 ## Download an R1 GIS snapshot
 
@@ -112,6 +120,7 @@ The ruleset reports selected base-zone standards only. It preserves citations, d
 ├── AGENTS.md                         Codex operating instructions
 ├── GOOGLE_DRIVE_SOURCE.txt           Shared project-source link
 ├── README.md                         Human-facing setup and runbook
+├── requirements.txt                  Pinned Python validation dependency
 ├── data/
 │   └── raw/                          Immutable dated source snapshots
 ├── docs/

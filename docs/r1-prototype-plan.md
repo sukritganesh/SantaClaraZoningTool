@@ -314,7 +314,7 @@ The first UI may be plain. It should prioritize correctness and traceability ove
 
 The exact database technology remains undecided. The logical model should include these concepts even if the first prototype stores some of them in GeoPackage, SQLite, JSON, or another lightweight format.
 
-The initial regulatory implementation is a normalized, versioned JSON ruleset with a JSON Schema and dependency-free validator. A database remains deferred until the lookup pipeline establishes concrete access patterns.
+The initial regulatory implementation is a normalized, versioned JSON ruleset with an executable Draft 2020-12 JSON Schema validator and additional domain-invariant checks. A database remains deferred until the lookup pipeline establishes concrete access patterns.
 
 ### `addresses`
 

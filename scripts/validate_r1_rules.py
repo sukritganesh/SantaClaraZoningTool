@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Validate the versioned Santa Clara R1 prototype ruleset.
 
-The repository remains dependency-free. This validator enforces the ruleset's
-cross-record and zoning-specific invariants; the accompanying JSON Schema is
-available for tools that support JSON Schema Draft 2020-12.
+JSON Schema enforces the record contract. Additional checks enforce source,
+cross-record, and zoning-specific invariants that JSON Schema cannot express.
 """
 
 from __future__ import annotations
@@ -13,7 +12,10 @@ import hashlib
 import json
 from datetime import date
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
+
+from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema.exceptions import SchemaError
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -81,6 +83,23 @@ def valid_date(value: Any) -> bool:
     return True
 
 
+def validate_schema_contract(
+    ruleset: dict[str, Any], schema: dict[str, Any]
+) -> list[str]:
+    """Return Draft 2020-12 contract errors with JSON paths."""
+
+    try:
+        Draft202012Validator.check_schema(schema)
+    except SchemaError as exc:
+        return [f"Schema is invalid: {exc.message}"]
+
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    return [
+        f"{error.json_path}: {error.message}"
+        for error in sorted(validator.iter_errors(ruleset), key=lambda item: item.json_path)
+    ]
+
+
 def validate_rule_value(value: Any, location: str, errors: list[str]) -> None:
     if not isinstance(value, dict):
         errors.append(f"{location} must be an object")
@@ -131,12 +150,18 @@ def validate_rule_value(value: Any, location: str, errors: list[str]) -> None:
 def validate_ruleset(
     ruleset: dict[str, Any],
     *,
+    schema: Optional[dict[str, Any]] = None,
     repo_root: Path = REPO_ROOT,
     verify_source_files: bool = False,
 ) -> list[str]:
     """Return all structural, reference, and domain validation errors."""
 
-    errors: list[str] = []
+    if schema is None:
+        schema = load_json(DEFAULT_SCHEMA)
+    errors = validate_schema_contract(ruleset, schema)
+    if errors:
+        return errors
+
     missing_keys = ROOT_KEYS - set(ruleset)
     extra_keys = set(ruleset) - ROOT_KEYS
     if missing_keys:
@@ -160,7 +185,11 @@ def validate_ruleset(
     if not isinstance(source_documents, list):
         errors.append("source_documents must be an array")
         source_documents = []
-    source_ids = [item.get("source_document_id") for item in source_documents if isinstance(item, dict)]
+    source_ids = [
+        item.get("source_document_id")
+        for item in source_documents
+        if isinstance(item, dict)
+    ]
     duplicates = duplicate_values(source_ids)
     if duplicates:
         errors.append(f"Duplicate source_document_id values: {sorted(duplicates)}")
@@ -326,6 +355,16 @@ def validate_ruleset(
             errors.append(f"{location}.resolution must be an object")
             continue
         selected_id = resolution.get("selected_assertion_id")
+        selected_by_disposition = [
+            assertion
+            for assertion in assertions
+            if isinstance(assertion, dict)
+            and assertion.get("disposition") == "selected_for_prototype"
+        ]
+        if len(selected_by_disposition) != 1:
+            errors.append(
+                f"{location} must contain exactly one selected_for_prototype assertion"
+            )
         selected = [
             assertion
             for assertion in assertions
@@ -368,12 +407,10 @@ def main() -> int:
     args = parse_args()
     ruleset = load_json(args.ruleset)
     schema = load_json(args.schema)
-    if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
-        print("Schema must declare JSON Schema Draft 2020-12")
-        return 1
 
     errors = validate_ruleset(
         ruleset,
+        schema=schema,
         repo_root=REPO_ROOT,
         verify_source_files=args.verify_source_files,
     )

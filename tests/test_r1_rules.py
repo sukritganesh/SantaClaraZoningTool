@@ -113,6 +113,40 @@ class R1RulesetTest(unittest.TestCase):
         errors = validate_ruleset(changed)
         self.assertTrue(any("selected value differs" in error for error in errors))
 
+    def test_validator_enforces_required_fields_and_enums(self) -> None:
+        mutations = {
+            "missing rule label": lambda data: data["rules"][0].pop("label"),
+            "invalid rule category": lambda data: data["rules"][0].__setitem__(
+                "category", "invented_category"
+            ),
+            "invalid applicability story": lambda data: data["rules"][0][
+                "applicability"
+            ].__setitem__("story", "third"),
+            "missing citation locator": lambda data: data["citations"][0].pop(
+                "locator"
+            ),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                changed = copy.deepcopy(self.ruleset)
+                mutate(changed)
+                self.assertTrue(validate_ruleset(changed))
+
+    def test_validator_reports_malformed_array_elements(self) -> None:
+        changed = copy.deepcopy(self.ruleset)
+        changed["supported_zones"] = [{"bad": "type"}]
+        errors = validate_ruleset(changed)
+        self.assertTrue(errors)
+        self.assertTrue(any("supported_zones" in error for error in errors))
+
+    def test_validator_rejects_multiple_selected_assertions(self) -> None:
+        changed = copy.deepcopy(self.ruleset)
+        changed["conflicts"][0]["assertions"][0][
+            "disposition"
+        ] = "selected_for_prototype"
+        errors = validate_ruleset(changed)
+        self.assertTrue(any("exactly one" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
