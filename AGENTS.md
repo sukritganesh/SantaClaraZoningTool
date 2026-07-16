@@ -47,6 +47,13 @@ When something changes, update only its owning document unless the change genuin
 - Preserve source citations, effective dates, ruleset versions, assumptions, and validation status.
 - The same versioned inputs and engine version should produce the same result.
 
+## Preserve and resolve regulatory conflicts
+
+- Never erase or silently normalize conflicting source values. Record each assertion, its location, and its source version.
+- Apply a deterministic resolution only when an explicit authority, precedence rule, effective date, or approved project policy supports it.
+- Record the selected value separately from the conflicting source values, together with the resolution rationale, reviewer or decision source, date, and status.
+- Return `review required` when the conflict cannot be resolved by an approved rule. A local project resolution is not an official correction by the issuing government.
+
 ## Code quality and documentation
 
 - Prefer clear names, cohesive functions, explicit types or schemas, and straightforward control flow so the code explains itself.

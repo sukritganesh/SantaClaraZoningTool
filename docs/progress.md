@@ -116,7 +116,7 @@ Important findings:
 
 - The 25-foot height, two-story limit, 40-percent structure coverage, and most setback cells are verified as base-zone values.
 - Base setbacks cannot yet be converted into a parcel-specific building envelope because averaging, encroachments, official plan lines, alley credit, narrow historical parcels, and nonconformities may apply.
-- Table 2-3 gives a 10-foot first-story corner-side setback for R1-8L, while Section 18.10.040(B)(1) requires at least 15 feet. The first ruleset must preserve this as `requires_staff_confirmation`.
+- Table 2-3 gives a 10-foot first-story corner-side setback for R1-8L, while Section 18.10.040(B)(1) requires at least 15 feet. The prototype now uses 15 feet under the specific written provision and Section 18.04.020(G), while preserving both source assertions and marking the resolution as pending official clarification.
 - `Permitted by right` does not mean approval-free: Zoning Clearance and Architectural Review paths remain applicable.
 
 Block 4 is not complete: a versioned machine-readable ruleset still needs to be created and validated.
@@ -127,7 +127,7 @@ Remaining exit conditions:
 
 1. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
 2. Record source section, source version, applicability, units, notes, exception families, and validation status for each rule.
-3. Validate the ruleset against `docs/r1-rule-verification.md`, including the review-required R1-8L corner-side conflict.
+3. Validate the ruleset against `docs/r1-rule-verification.md`, including the project-resolved 15-foot R1-8L corner-side value and its retained 10-foot conflict provenance.
 
 ## Blockers
 
@@ -149,4 +149,4 @@ None currently recorded.
 | 2026-07-16 | Treat the July 2025 code as a versioned baseline plus an amendment ledger. | The City still labels July 2025 as the latest consolidation, while later adopted ordinances remain unincorporated. |
 | 2026-07-16 | Do not resolve the competing Chapter 18.27 enactments in application logic. | Ordinances 2085 and 2086 assign different text to the same chapter number; City or codifier clarification is required. |
 | 2026-07-16 | Treat verified dimensional numbers as base-zone standards rather than final parcel requirements. | Setback averaging, encroachments, official plan lines, alleys, historical parcels, and legal nonconformities can change site-specific application. |
-| 2026-07-16 | Preserve the R1-8L corner-side setback conflict as review-required. | Table 2-3 states 10 feet for the first story while Section 18.10.040(B)(1) states at least 15 feet. |
+| 2026-07-16 | Resolve the R1-8L first-story corner-side setback to 15 feet while preserving the conflict. | The zone-specific written provision states at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement; the 10-foot table assertion remains provenance, not discarded data. |

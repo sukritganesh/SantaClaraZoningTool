@@ -109,10 +109,12 @@ For R1-8L, the paired values cannot be reduced to one symmetric number. The narr
 
 | Standard | R1-6L | R1-8L | Verification |
 |---|---:|---:|---|
-| First story | 10 ft | Conflict: Table 2-3 says 10 ft; Section 18.10.040(B)(1) says at least 15 ft | R1-6L conditional; R1-8L review required |
+| First story | 10 ft | 15 ft, with documented source conflict | R1-6L conditional; R1-8L project-resolved with conditions |
 | Second story | 15 ft | 15 ft | Verified with conditions |
 
-Section 18.04.020(G) says the more restrictive provision applies when requirements conflict, which supports 15 feet for the R1-8L first-story street side. Because the same consolidated code still presents an explicit 10-foot table cell, the first machine-readable ruleset must not silently overwrite the conflict. It should mark the R1-8L first-story corner-side standard `requires_staff_confirmation` until the City confirms the intended codification.
+The consolidated PDF contains both values: Table 2-3 states 10 feet, while the specific written R1-8L provision in Section 18.10.040(B)(1) states that the street side of a corner parcel shall be at least 15 feet. Section 18.04.020(G) also directs that the more restrictive provision applies when requirements conflict.
+
+**Project resolution:** Use 15 feet for the R1-8L first-story corner-side setback. This decision was approved for the prototype on July 16, 2026. It follows the zone-specific written provision and the code's own more-restrictive conflict rule. The 10-foot table value must remain in provenance as the rejected conflicting assertion. This is a project interpretation, not an official City correction; later City clarification or codification should supersede it.
 
 Section 18.10.040(B)(1) also requires at least 35 percent of the R1-8L street-side setback to remain landscaped. Landscaping is outside the first ruleset but should remain attached as a future cross-reference.
 
@@ -149,11 +151,24 @@ It must not yet:
 - calculate a buildable envelope from GIS parcel geometry;
 - calculate remaining structure-coverage capacity;
 - evaluate setback averaging, legal nonconformity, projections, official plan lines, or alley credit;
-- treat the R1-8L first-story corner-side conflict as resolved;
+- discard the conflicting 10-foot Table 2-3 assertion when storing the project-resolved 15-foot R1-8L value;
 - evaluate accessory structures, ADUs, two-unit projects, or density; or
 - imply that permitted-by-right construction requires no City review.
 
 Every displayed number should be labeled a **base-zone standard**. The result must list unevaluated exception families and preserve `review required` outcomes where the source is conflicting or incomplete.
+
+## Regulatory conflict workflow
+
+The R1-8L corner-side issue is a prototype case for a reusable multi-jurisdiction workflow:
+
+1. Detect conflicting assertions across tables, narrative provisions, amendments, maps, and incorporated documents.
+2. Preserve each assertion exactly, with source location, source version, and extraction or verification status.
+3. Check authority, specificity, effective date, amendment history, and any explicit conflict rule.
+4. Resolve deterministically only when an approved rule supports the choice. Store the selected value separately from the source assertions.
+5. Record the rationale, decision source or reviewer, decision date, confidence/status, and conditions that would trigger re-review.
+6. Return `review required` when the conflict cannot be resolved. Never invent a clean value merely to keep the workflow moving.
+
+For this prototype, the resolution record should ultimately identify `15 ft` as the selected value, retain both `10 ft` and `15 ft` source assertions, cite Sections 18.10.030, 18.10.040(B)(1), and 18.04.020(G), and mark the decision as `project_resolved_pending_official_clarification`.
 
 ## Source trace
 

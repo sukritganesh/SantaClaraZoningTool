@@ -215,7 +215,7 @@ The following values were transcribed from Chapter 18.10, Section 18.10.030, Tab
 | Front setback, second story | 25 ft | 25 ft | Primary structure stepback. |
 | Interior side setback, first story | 5 ft | 6 ft and 9 ft | R1-8L uses unequal paired side-yard requirements. |
 | Interior side setback, second story | 10 ft | 11 ft and 14 ft | R1-8L uses unequal paired side-yard requirements. |
-| Corner-side setback, first story | 10 ft | Conflict: Table 2-3 says 10 ft; Section 18.10.040(B)(1) says at least 15 ft | Requires staff confirmation before unconditional encoding. |
+| Corner-side setback, first story | 10 ft | 15 ft | Table 2-3 says 10 ft, but the prototype uses the specific written 15-foot provision in Section 18.10.040(B)(1), supported by the more-restrictive rule in Section 18.04.020(G). Preserve both source assertions. |
 | Corner-side setback, second story | 15 ft | 15 ft | Applies to corner lots. |
 | Rear setback | 20 ft | 20 ft | Listed for single- and multi-story primary structures. |
 | Driveway approach setback | 20 ft | 20 ft | Candidate for deferral from the first displayed result. |
@@ -234,8 +234,14 @@ Key conclusions:
 - Height, stories, coverage, and most setback numbers are verified **base-zone values**, not final parcel-specific requirements.
 - A permitted-by-right single-family dwelling still requires Zoning Clearance and may require Architectural Review and a public hearing.
 - Setback averaging, projections, official plan lines, alley credit, narrow historical parcels, and legal nonconformities can change parcel-specific application.
-- The R1-8L first-story corner-side setback contains an unresolved 10-foot/15-foot source conflict and must return `review required` until confirmed.
+- The R1-8L first-story corner-side setback contains a 10-foot/15-foot source conflict. The prototype resolves it to 15 feet while retaining the rejected 10-foot assertion and marking the decision as pending official clarification.
 - Parcel-creation standards, density, driveway approach, daylight plane, and proposal-level envelope calculations remain deferred from the first ruleset.
+
+### Regulatory conflict handling
+
+Future multi-jurisdiction automation must treat regulatory conflicts as structured data rather than extraction noise. The workflow should retain every conflicting assertion, evaluate authority, specificity, effective date, amendment history, and explicit conflict rules, and then either record a deterministic resolution or return `review required`.
+
+A resolution record should preserve the selected value, all source values, citations, rationale, reviewer or decision source, date, status, and re-review trigger. A project resolution must never be represented as an official correction by the source government.
 
 ## 6. Proposed Lookup Pipeline
 
