@@ -1,0 +1,728 @@
+{
+  "$schema": "../../../schema/r1-ruleset.schema.json",
+  "schema_version": "1.0.0",
+  "ruleset_id": "santa-clara-r1-base-zone",
+  "version": "2026-07-16.1",
+  "jurisdiction": {
+    "name": "City of Santa Clara",
+    "state": "CA",
+    "country": "US"
+  },
+  "status": "approved_for_prototype",
+  "approved_on": "2026-07-16",
+  "verified_through": "2026-07-16",
+  "scope": {
+    "description": "Selected base-zone rules for single-family primary structures in R1-6L and R1-8L.",
+    "structure_type": "single_family_primary_structure",
+    "result_kind": "base_zone_standards_retrieval"
+  },
+  "supported_zones": [
+    "R1-6L",
+    "R1-8L"
+  ],
+  "source_documents": [
+    {
+      "source_document_id": "sc-title18-2025-07",
+      "title": "Santa Clara Zoning Code, Title 18",
+      "version": "July 2025",
+      "effective_date": null,
+      "local_path": "data/raw/2026-07-16/santa_clara_zoning_code/SantaClaraZoningCode-July-2025.pdf",
+      "sha256": "d6461e366cd214beb5c96ee8abe7498d80464879ac63f216119db7c3af6c9c35",
+      "verification_status": "verified_baseline"
+    },
+    {
+      "source_document_id": "sc-title18-amendment-audit-2026-07-16",
+      "title": "Santa Clara Title 18 post-baseline amendment audit",
+      "version": "Cutoff July 16, 2026",
+      "effective_date": null,
+      "local_path": "docs/title18-amendment-audit.md",
+      "sha256": "e145d100ee1f5581ef3c516a0383cd9e4a61bf5fb01b265223c7661b4b43e0f2",
+      "verification_status": "verified_audit_artifact"
+    }
+  ],
+  "citations": [
+    {
+      "citation_id": "use-table",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.10.020, Table 2-1",
+      "topic": "R1 use permissions"
+    },
+    {
+      "citation_id": "zoning-clearance",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.10.020(D) and Chapter 18.126",
+      "topic": "Zoning Clearance for permitted construction"
+    },
+    {
+      "citation_id": "architectural-review",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.120.020",
+      "topic": "Architectural Review and Development Review Hearing triggers"
+    },
+    {
+      "citation_id": "r1-standards-table",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.10.030, Table 2-3",
+      "topic": "R1 base development standards"
+    },
+    {
+      "citation_id": "r1-additional-standards",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.10.040",
+      "topic": "Additional R1 development standards and exceptions"
+    },
+    {
+      "citation_id": "r1-8l-corner-side",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.10.040(B)(1)",
+      "topic": "R1-8L street-side corner setback"
+    },
+    {
+      "citation_id": "conflict-rule",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.04.020(G)",
+      "topic": "More restrictive requirement controls when provisions conflict"
+    },
+    {
+      "citation_id": "residential-encroachments",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.10.030, Table 2-6",
+      "topic": "Residential setback encroachments"
+    },
+    {
+      "citation_id": "general-projections",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Sections 18.30.010 and 18.30.020",
+      "topic": "General development standards and projections"
+    },
+    {
+      "citation_id": "height-method",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.30.040 and Article 8 definition of Grade",
+      "topic": "Height measurement and appurtenance exceptions"
+    },
+    {
+      "citation_id": "setback-method",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Section 18.30.050",
+      "topic": "Setback measurement, averaging, and lot orientation"
+    },
+    {
+      "citation_id": "coverage-definition",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Article 8 definitions of Structure and Structure Coverage",
+      "topic": "Included and excluded structure coverage"
+    },
+    {
+      "citation_id": "nonconformities",
+      "source_document_id": "sc-title18-2025-07",
+      "locator": "Chapters 18.90 and 18.92",
+      "topic": "Legal nonconforming uses and structures"
+    },
+    {
+      "citation_id": "amendment-audit",
+      "source_document_id": "sc-title18-amendment-audit-2026-07-16",
+      "locator": "R1 conclusion",
+      "topic": "No adopted post-baseline change identified for selected R1 standards"
+    }
+  ],
+  "exception_families": [
+    {
+      "exception_family_id": "coverage-definition-and-projections",
+      "label": "Coverage inclusions, exclusions, and permitted projections",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "coverage-definition",
+        "general-projections"
+      ]
+    },
+    {
+      "exception_family_id": "height-measurement-and-appurtenances",
+      "label": "Grade measurement, roof form, and nonhabitable appurtenances",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "height-method",
+        "r1-additional-standards"
+      ]
+    },
+    {
+      "exception_family_id": "setback-measurement-and-plan-lines",
+      "label": "Parcel lines, curb face, right-of-way, and official plan lines",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "r1-standards-table",
+        "setback-method"
+      ]
+    },
+    {
+      "exception_family_id": "front-setback-block-average",
+      "label": "Front setback averaging on legally improved block faces",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "setback-method"
+      ]
+    },
+    {
+      "exception_family_id": "narrow-pre-1955-parcel-side-setback",
+      "label": "Reduced interior side setback for qualifying narrow pre-1955 parcels",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "r1-additional-standards"
+      ]
+    },
+    {
+      "exception_family_id": "alley-rear-setback-credit",
+      "label": "One-half alley width may count toward rear setback",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "setback-method"
+      ]
+    },
+    {
+      "exception_family_id": "setback-encroachments",
+      "label": "Residential and general permitted setback projections",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "residential-encroachments",
+        "general-projections"
+      ]
+    },
+    {
+      "exception_family_id": "legal-nonconformities",
+      "label": "Legal nonconforming structures and retained conditions",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "nonconformities"
+      ]
+    },
+    {
+      "exception_family_id": "disaster-reconstruction",
+      "label": "Qualifying reconstruction using prior footprint and setbacks",
+      "treatment": "not_evaluated",
+      "source_refs": [
+        "r1-additional-standards"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "use-single-family-dwelling",
+      "category": "use_permission",
+      "standard_code": "single_family_dwelling",
+      "label": "Single-family dwelling",
+      "value": {
+        "kind": "status",
+        "code": "permitted_by_right"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "not_applicable",
+        "lot_context": "not_applicable"
+      },
+      "conditions": [
+        "Permitted by right does not mean approval-free construction."
+      ],
+      "exception_family_ids": [],
+      "source_refs": ["use-table"],
+      "validation_status": "verified_base_value",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "approval-zoning-clearance",
+      "category": "approval_requirement",
+      "standard_code": "zoning_clearance",
+      "label": "Zoning Clearance",
+      "value": {
+        "kind": "status",
+        "code": "required"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "not_applicable",
+        "lot_context": "not_applicable"
+      },
+      "conditions": [
+        "Applies to a permitted-by-right use involving construction."
+      ],
+      "exception_family_ids": [],
+      "source_refs": ["zoning-clearance"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "approval-architectural-review",
+      "category": "approval_requirement",
+      "standard_code": "architectural_review",
+      "label": "Architectural Review",
+      "value": {
+        "kind": "status",
+        "code": "required"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "not_applicable",
+        "lot_context": "not_applicable"
+      },
+      "conditions": [
+        "A Development Review Hearing is required for listed single-family project types."
+      ],
+      "exception_family_ids": [],
+      "source_refs": ["architectural-review"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-max-structure-coverage",
+      "category": "development_standard",
+      "standard_code": "max_structure_coverage",
+      "label": "Maximum structure coverage",
+      "value": {
+        "kind": "number",
+        "number": 40,
+        "unit": "percent"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "all",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Base-zone value only; do not calculate remaining capacity without existing-structure facts."
+      ],
+      "exception_family_ids": ["coverage-definition-and-projections"],
+      "source_refs": ["r1-standards-table", "coverage-definition", "amendment-audit"],
+      "validation_status": "verified_base_value",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-max-primary-height",
+      "category": "development_standard",
+      "standard_code": "max_primary_structure_height",
+      "label": "Maximum primary-structure height",
+      "value": {
+        "kind": "number",
+        "number": 25,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "all",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Base maximum; it is not an absolute cap for every listed nonhabitable appurtenance."
+      ],
+      "exception_family_ids": ["height-measurement-and-appurtenances"],
+      "source_refs": ["r1-standards-table", "height-method", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-max-stories",
+      "category": "development_standard",
+      "standard_code": "max_stories",
+      "label": "Maximum stories",
+      "value": {
+        "kind": "number",
+        "number": 2,
+        "unit": "stories"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "all",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Automated proposal-level story counting is not included."
+      ],
+      "exception_family_ids": [],
+      "source_refs": ["r1-standards-table", "amendment-audit"],
+      "validation_status": "verified_base_value",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-front-setback-first",
+      "category": "development_standard",
+      "standard_code": "front_setback",
+      "label": "Front setback, first story",
+      "value": {
+        "kind": "number",
+        "number": 20,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "first",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Base setback; block-face averaging and measurement controls are not evaluated."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "front-setback-block-average",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "setback-method", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-front-setback-second",
+      "category": "development_standard",
+      "standard_code": "front_setback",
+      "label": "Front setback, second story",
+      "value": {
+        "kind": "number",
+        "number": 25,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "second",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "The code does not clearly state whether block-face averaging changes this second-story line."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "front-setback-block-average",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "setback-method", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-interior-side-first-r1-6l",
+      "category": "development_standard",
+      "standard_code": "interior_side_setback",
+      "label": "Interior side setback, first story",
+      "value": {
+        "kind": "number",
+        "number": 5,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "first",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Base setback; narrow-parcel and nonconformity exceptions are not evaluated."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "narrow-pre-1955-parcel-side-setback",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "r1-additional-standards", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-interior-side-second-r1-6l",
+      "category": "development_standard",
+      "standard_code": "interior_side_setback",
+      "label": "Interior side setback, second story",
+      "value": {
+        "kind": "number",
+        "number": 10,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "second",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Base setback; narrow-parcel and nonconformity exceptions are not evaluated."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "narrow-pre-1955-parcel-side-setback",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "r1-additional-standards", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-interior-side-first-r1-8l",
+      "category": "development_standard",
+      "standard_code": "interior_side_setback",
+      "label": "Interior side setbacks, first story",
+      "value": {
+        "kind": "paired_numbers",
+        "numbers": [6, 9],
+        "unit": "ft",
+        "relationship": "required_paired_yards"
+      },
+      "applicability": {
+        "zones": ["R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "first",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "The paired yards must not be reduced to one symmetric value."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "narrow-pre-1955-parcel-side-setback",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "r1-additional-standards", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-interior-side-second-r1-8l",
+      "category": "development_standard",
+      "standard_code": "interior_side_setback",
+      "label": "Interior side setbacks, second story",
+      "value": {
+        "kind": "paired_numbers",
+        "numbers": [11, 14],
+        "unit": "ft",
+        "relationship": "required_paired_yards"
+      },
+      "applicability": {
+        "zones": ["R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "second",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "The paired yards must not be reduced to one symmetric value."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "narrow-pre-1955-parcel-side-setback",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "r1-additional-standards", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-corner-side-first-r1-6l",
+      "category": "development_standard",
+      "standard_code": "corner_side_setback",
+      "label": "Corner-side setback, first story",
+      "value": {
+        "kind": "number",
+        "number": 10,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "first",
+        "lot_context": "corner"
+      },
+      "conditions": [
+        "Corner orientation and street-adjacent measurement require additional parcel facts."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "setback-method", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-corner-side-first-r1-8l",
+      "category": "development_standard",
+      "standard_code": "corner_side_setback",
+      "label": "Corner-side setback, first story",
+      "value": {
+        "kind": "number",
+        "number": 15,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "first",
+        "lot_context": "corner"
+      },
+      "conditions": [
+        "Project-selected value pending official City clarification of the conflicting table cell."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": [
+        "r1-standards-table",
+        "r1-8l-corner-side",
+        "conflict-rule",
+        "amendment-audit"
+      ],
+      "validation_status": "project_resolved_with_conditions",
+      "conflict_id": "conflict-r1-8l-corner-side-first",
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-corner-side-second",
+      "category": "development_standard",
+      "standard_code": "corner_side_setback",
+      "label": "Corner-side setback, second story",
+      "value": {
+        "kind": "number",
+        "number": 15,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "second",
+        "lot_context": "corner"
+      },
+      "conditions": [
+        "Corner orientation and street-adjacent measurement require additional parcel facts."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "setback-method", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    },
+    {
+      "rule_id": "standard-rear-setback",
+      "category": "development_standard",
+      "standard_code": "rear_setback",
+      "label": "Rear setback",
+      "value": {
+        "kind": "number",
+        "number": 20,
+        "unit": "ft"
+      },
+      "applicability": {
+        "zones": ["R1-6L", "R1-8L"],
+        "structure_type": "single_family_primary_structure",
+        "story": "all",
+        "lot_context": "all"
+      },
+      "conditions": [
+        "Base setback; alley credit and feature-specific encroachments are not evaluated."
+      ],
+      "exception_family_ids": [
+        "setback-measurement-and-plan-lines",
+        "alley-rear-setback-credit",
+        "setback-encroachments",
+        "legal-nonconformities",
+        "disaster-reconstruction"
+      ],
+      "source_refs": ["r1-standards-table", "setback-method", "amendment-audit"],
+      "validation_status": "verified_with_conditions",
+      "conflict_id": null,
+      "approved_for_ruleset": true
+    }
+  ],
+  "conflicts": [
+    {
+      "conflict_id": "conflict-r1-8l-corner-side-first",
+      "affected_rule_ids": ["standard-corner-side-first-r1-8l"],
+      "assertions": [
+        {
+          "assertion_id": "table-2-3-10-ft",
+          "value": {
+            "kind": "number",
+            "number": 10,
+            "unit": "ft"
+          },
+          "source_refs": ["r1-standards-table"],
+          "disposition": "not_selected_for_prototype"
+        },
+        {
+          "assertion_id": "section-18-10-040-b-1-15-ft",
+          "value": {
+            "kind": "number",
+            "number": 15,
+            "unit": "ft"
+          },
+          "source_refs": ["r1-8l-corner-side"],
+          "disposition": "selected_for_prototype"
+        }
+      ],
+      "resolution": {
+        "selected_assertion_id": "section-18-10-040-b-1-15-ft",
+        "selected_value": {
+          "kind": "number",
+          "number": 15,
+          "unit": "ft"
+        },
+        "rationale": "The zone-specific written provision requires at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement when provisions conflict.",
+        "decision_source": "Project owner direction for the prototype",
+        "decision_date": "2026-07-16",
+        "status": "project_resolved_pending_official_clarification",
+        "re_review_triggers": [
+          "Official City or codifier clarification",
+          "A newly consolidated Title 18 edition",
+          "An adopted amendment affecting either cited provision"
+        ]
+      }
+    }
+  ],
+  "not_evaluated": [
+    "Accessory structures",
+    "ADUs and JADUs",
+    "SB 9 and two-unit projects",
+    "Density and state-law overrides",
+    "Parcel-creation standards",
+    "Driveway approach length",
+    "Daylight plane",
+    "Proposal-specific compliance",
+    "Buildable-envelope geometry",
+    "Historic, specific-plan, and other overlay review"
+  ],
+  "disclaimer": "This prototype reports selected base-zone standards and is not a complete entitlement analysis or legal or planning determination."
+}

@@ -204,7 +204,7 @@ All 67,243 source object IDs produced 67,243 unique point features. Core address
 
 ## 5. Verified R1 Rule Inputs
 
-The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. The post-publication amendment audit found no adopted change to these values. Rule-level verification is complete, but no machine-readable ruleset exists yet.
+The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. The post-publication amendment audit found no adopted change to these values. Rule-level verification is complete, and the first approved machine-readable version is stored at `rulesets/santa_clara/r1/2026-07-16/ruleset.json`.
 
 | Standard | R1-6L | R1-8L | Notes |
 |---|---:|---:|---|
@@ -313,6 +313,8 @@ The first UI may be plain. It should prioritize correctness and traceability ove
 ## 7. Preliminary Data Model
 
 The exact database technology remains undecided. The logical model should include these concepts even if the first prototype stores some of them in GeoPackage, SQLite, JSON, or another lightweight format.
+
+The initial regulatory implementation is a normalized, versioned JSON ruleset with a JSON Schema and dependency-free validator. A database remains deferred until the lookup pipeline establishes concrete access patterns.
 
 ### `addresses`
 

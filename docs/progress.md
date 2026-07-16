@@ -2,9 +2,9 @@
 
 **Last updated:** July 16, 2026
 
-**Current position:** Block 4 in progress
+**Current position:** Block 4 complete
 
-**Next block:** Create the first machine-readable R1 ruleset
+**Next block:** Implement address-to-parcel-to-zone lookup
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -16,7 +16,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 1. Verify authoritative sources | Complete | Zoning-code and live ArcGIS findings recorded in the prototype plan. |
 | 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
-| 4. Approve and structure initial R1 rules | In progress | Baseline, amendment audit, and rule-level verification complete; machine-readable rules remain. |
+| 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, schema, validator, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Not started | Requires tested local address and spatial resolution. |
 | 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
@@ -119,15 +119,31 @@ Important findings:
 - Table 2-3 gives a 10-foot first-story corner-side setback for R1-8L, while Section 18.10.040(B)(1) requires at least 15 feet. The prototype now uses 15 feet under the specific written provision and Section 18.04.020(G), while preserving both source assertions and marking the resolution as pending official clarification.
 - `Permitted by right` does not mean approval-free: Zoning Clearance and Architectural Review paths remain applicable.
 
-Block 4 is not complete: a versioned machine-readable ruleset still needs to be created and validated.
+Canonical ruleset artifacts:
 
-## Next block: initial R1 rules
+```text
+rulesets/santa_clara/r1/2026-07-16/ruleset.json
+rulesets/schema/r1-ruleset.schema.json
+scripts/validate_r1_rules.py
+tests/test_r1_rules.py
+```
 
-Remaining exit conditions:
+Validation evidence:
 
-1. Create a minimal machine-readable ruleset for R1-6L and R1-8L without implementing runtime evaluation yet.
-2. Record source section, source version, applicability, units, notes, exception families, and validation status for each rule.
-3. Validate the ruleset against `docs/r1-rule-verification.md`, including the project-resolved 15-foot R1-8L corner-side value and its retained 10-foot conflict provenance.
+- The dependency-free validator accepts all 16 approved rules and the documented conflict record.
+- Source-file verification confirms the recorded SHA-256 digests for the July 2025 zoning-code PDF and amendment audit.
+- Nine regression tests confirm the selected values, R1-8L paired side yards, approval-path separation, deferred subjects, and conflict integrity.
+- The conflict mutation test rejects drift between the selected R1-8L 15-foot rule and its resolution record.
+
+## Next block: address-to-parcel-to-zone lookup
+
+Block 5 exit conditions:
+
+1. Implement deterministic normalization and controlled matching against the local address-point snapshot.
+2. Preserve no-match and multiple-match outcomes instead of selecting a candidate silently.
+3. Resolve an unambiguous address point to the containing local parcel and current-zoning feature.
+4. Cross-check parcel and current-zoning designations and return controlled mismatch, unsupported-zone, or review-required outcomes.
+5. Validate the lookup against the fixtures already recorded in this ledger before connecting it to the ruleset.
 
 ## Blockers
 
@@ -150,3 +166,5 @@ None currently recorded.
 | 2026-07-16 | Do not resolve the competing Chapter 18.27 enactments in application logic. | Ordinances 2085 and 2086 assign different text to the same chapter number; City or codifier clarification is required. |
 | 2026-07-16 | Treat verified dimensional numbers as base-zone standards rather than final parcel requirements. | Setback averaging, encroachments, official plan lines, alleys, historical parcels, and legal nonconformities can change site-specific application. |
 | 2026-07-16 | Resolve the R1-8L first-story corner-side setback to 15 feet while preserving the conflict. | The zone-specific written provision states at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement; the 10-foot table assertion remains provenance, not discarded data. |
+| 2026-07-16 | Store the first regulatory implementation as versioned normalized JSON. | The small prototype ruleset remains directly inspectable and testable without committing to an application database before lookup access patterns are known. |
+| 2026-07-16 | Validate rules with a JSON Schema, dependency-free invariant checker, and regression tests. | Structural contracts, cross-record provenance, and selected values need separate safeguards while preserving the repository's standard-library-only setup. |

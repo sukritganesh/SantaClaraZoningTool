@@ -4,7 +4,7 @@
 
 **Source baseline:** Santa Clara Zoning Code, Title 18 - July 2025
 
-**Scope:** Single-family primary structures in the R1-6L and R1-8L zones. This document verifies source meaning before machine-readable rules are created. It is not a ruleset, entitlement analysis, or legal opinion.
+**Scope:** Single-family primary structures in the R1-6L and R1-8L zones. This document records the source meaning supporting the machine-readable rules. It is not itself a ruleset, entitlement analysis, or legal opinion.
 
 ## Verification states
 
@@ -135,9 +135,9 @@ Section 18.10.040(B)(1) also requires at least 35 percent of the R1-8L street-si
 | Daylight plane | 45-degree statement in Table 2-3 | The text is broadly phrased for structures adjacent to R1/R2 and is not needed for the first base-value retrieval. It requires separate interpretation and geometry. |
 | Setback encroachments | Table 2-6 and Section 18.30.020 | Proposal-feature evaluation is deferred; the first result should report base setbacks and disclose that allowed encroachments are not evaluated. |
 
-## Gate for the first machine-readable ruleset
+## Contract for the first machine-readable ruleset
 
-The next ruleset may include:
+The first ruleset may include:
 
 - single-family dwelling use status, with approval-path cross-references;
 - maximum structure coverage percentage;

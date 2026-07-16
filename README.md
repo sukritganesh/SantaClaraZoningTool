@@ -17,13 +17,13 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Requirements
 
-The current GIS downloaders use only the Python standard library.
+The current GIS downloaders, ruleset validator, and tests use only the Python standard library.
 
 - Python 3.9 or newer
 - Internet access to `map.santaclaraca.gov`
 - Approximately 60 MB for an R1 snapshot and 80 MB for a citywide address snapshot
 
-No database, package installation, API key, or runtime AI service is currently required to run the downloader.
+No database, package installation, API key, or runtime AI service is currently required.
 
 ## Download an R1 GIS snapshot
 
@@ -77,6 +77,34 @@ python3 scripts/download_address_points.py --help
 python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis.py').read_text()); print('syntax ok')"
 ```
 
+## Validate the R1 regulatory ruleset
+
+The first approved prototype ruleset is:
+
+```text
+rulesets/santa_clara/r1/2026-07-16/ruleset.json
+```
+
+Validate its structure, references, and regulatory invariants:
+
+```bash
+python3 scripts/validate_r1_rules.py
+```
+
+When the local raw zoning-code snapshot is available, also verify recorded source-file checksums:
+
+```bash
+python3 scripts/validate_r1_rules.py --verify-source-files
+```
+
+Run the regression tests:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+The ruleset reports selected base-zone standards only. It preserves citations, deferred exception families, validation states, and the documented R1-8L corner-side conflict separately from the selected 15-foot value.
+
 ## Repository map
 
 ```text
@@ -89,12 +117,18 @@ python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── r1-prototype-plan.md          Detailed prototype specification
-│   ├── r1-rule-verification.md       Verified source trace and ruleset gate
+│   ├── r1-rule-verification.md       Verified source trace and rule contract
 │   └── title18-amendment-audit.md    Post-July-2025 source audit
-└── scripts/
+├── rulesets/
+│   ├── schema/r1-ruleset.schema.json Machine-readable ruleset contract
+│   └── santa_clara/r1/2026-07-16/    Versioned approved R1 rules
+├── scripts/
     ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
     ├── download_address_points.py     Citywide address-point downloader
-    └── download_r1_gis.py             R1 parcel and zoning downloader
+    ├── download_r1_gis.py             R1 parcel and zoning downloader
+    └── validate_r1_rules.py           Dependency-free ruleset validator
+└── tests/
+    └── test_r1_rules.py               Ruleset regression tests
 ```
 
 The existing `blender-mcp-test/` directory is unrelated experimental work and is not part of the zoning prototype.

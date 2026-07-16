@@ -1,0 +1,359 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:santa-clara-zoning-portal:schema:r1-ruleset:1.0.0",
+  "title": "Santa Clara R1 prototype ruleset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ruleset_id",
+    "version",
+    "jurisdiction",
+    "status",
+    "approved_on",
+    "verified_through",
+    "scope",
+    "supported_zones",
+    "source_documents",
+    "citations",
+    "exception_families",
+    "rules",
+    "conflicts",
+    "not_evaluated",
+    "disclaimer"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "ruleset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"
+    },
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "state", "country"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "state": {"const": "CA"},
+        "country": {"const": "US"}
+      }
+    },
+    "status": {
+      "const": "approved_for_prototype"
+    },
+    "approved_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "verified_through": {
+      "type": "string",
+      "format": "date"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "structure_type", "result_kind"],
+      "properties": {
+        "description": {"type": "string", "minLength": 1},
+        "structure_type": {"const": "single_family_primary_structure"},
+        "result_kind": {"const": "base_zone_standards_retrieval"}
+      }
+    },
+    "supported_zones": {
+      "type": "array",
+      "items": {"enum": ["R1-6L", "R1-8L"]},
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "source_documents": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/sourceDocument"},
+      "minItems": 1
+    },
+    "citations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/citation"},
+      "minItems": 1
+    },
+    "exception_families": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/exceptionFamily"}
+    },
+    "rules": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/rule"},
+      "minItems": 1
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/conflict"}
+    },
+    "not_evaluated": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "sourceDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_document_id",
+        "title",
+        "version",
+        "effective_date",
+        "local_path",
+        "sha256",
+        "verification_status"
+      ],
+      "properties": {
+        "source_document_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "effective_date": {
+          "oneOf": [
+            {"type": "string", "format": "date"},
+            {"type": "null"}
+          ]
+        },
+        "local_path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "verification_status": {
+          "enum": ["verified_baseline", "verified_audit_artifact"]
+        }
+      }
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citation_id", "source_document_id", "locator", "topic"],
+      "properties": {
+        "citation_id": {"type": "string", "minLength": 1},
+        "source_document_id": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "topic": {"type": "string", "minLength": 1}
+      }
+    },
+    "exceptionFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exception_family_id", "label", "treatment", "source_refs"],
+      "properties": {
+        "exception_family_id": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "treatment": {"const": "not_evaluated"},
+        "source_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "ruleValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "number", "unit"],
+          "properties": {
+            "kind": {"const": "number"},
+            "number": {"type": "number", "minimum": 0},
+            "unit": {"enum": ["ft", "percent", "stories"]}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "numbers", "unit", "relationship"],
+          "properties": {
+            "kind": {"const": "paired_numbers"},
+            "numbers": {
+              "type": "array",
+              "items": {"type": "number", "minimum": 0},
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "unit": {"const": "ft"},
+            "relationship": {"const": "required_paired_yards"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "code"],
+          "properties": {
+            "kind": {"const": "status"},
+            "code": {
+              "enum": [
+                "permitted_by_right",
+                "required",
+                "may_be_required"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["zones", "structure_type", "story", "lot_context"],
+      "properties": {
+        "zones": {
+          "type": "array",
+          "items": {"enum": ["R1-6L", "R1-8L"]},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "structure_type": {"const": "single_family_primary_structure"},
+        "story": {
+          "enum": ["all", "first", "second", "not_applicable"]
+        },
+        "lot_context": {
+          "enum": ["all", "corner", "not_applicable"]
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "category",
+        "standard_code",
+        "label",
+        "value",
+        "applicability",
+        "conditions",
+        "exception_family_ids",
+        "source_refs",
+        "validation_status",
+        "conflict_id",
+        "approved_for_ruleset"
+      ],
+      "properties": {
+        "rule_id": {"type": "string", "minLength": 1},
+        "category": {
+          "enum": ["use_permission", "approval_requirement", "development_standard"]
+        },
+        "standard_code": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "value": {"$ref": "#/$defs/ruleValue"},
+        "applicability": {"$ref": "#/$defs/applicability"},
+        "conditions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "exception_family_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "validation_status": {
+          "enum": [
+            "verified_base_value",
+            "verified_with_conditions",
+            "project_resolved_with_conditions"
+          ]
+        },
+        "conflict_id": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "approved_for_ruleset": {"const": true}
+      }
+    },
+    "conflictAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertion_id", "value", "source_refs", "disposition"],
+      "properties": {
+        "assertion_id": {"type": "string", "minLength": 1},
+        "value": {"$ref": "#/$defs/ruleValue"},
+        "source_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "disposition": {
+          "enum": ["selected_for_prototype", "not_selected_for_prototype"]
+        }
+      }
+    },
+    "conflictResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_assertion_id",
+        "selected_value",
+        "rationale",
+        "decision_source",
+        "decision_date",
+        "status",
+        "re_review_triggers"
+      ],
+      "properties": {
+        "selected_assertion_id": {"type": "string", "minLength": 1},
+        "selected_value": {"$ref": "#/$defs/ruleValue"},
+        "rationale": {"type": "string", "minLength": 1},
+        "decision_source": {"type": "string", "minLength": 1},
+        "decision_date": {"type": "string", "format": "date"},
+        "status": {"const": "project_resolved_pending_official_clarification"},
+        "re_review_triggers": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflict_id", "affected_rule_ids", "assertions", "resolution"],
+      "properties": {
+        "conflict_id": {"type": "string", "minLength": 1},
+        "affected_rule_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "assertions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/conflictAssertion"},
+          "minItems": 2
+        },
+        "resolution": {"$ref": "#/$defs/conflictResolution"}
+      }
+    }
+  }
+}
