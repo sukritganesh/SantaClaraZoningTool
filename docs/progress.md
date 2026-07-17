@@ -2,9 +2,9 @@
 
 **Last updated:** July 16, 2026
 
-**Current position:** Pre-Block 6 ruleset v2 redesign — steps 2–5 design draft ready for review
+**Current position:** Pre-Block 6 ruleset v2 redesign — steps 2–5 complete
 
-**Next action:** Review and approve or revise the ruleset v2 authoring contract before implementing JSON Schema v2
+**Next action:** Step 6 — migrate the approved R1-6L and R1-8L data into the v2 representation
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -165,14 +165,14 @@ Block 6 is intentionally paused while the regulatory data model is improved befo
 | Step | Status | Evidence or next result |
 |---|---|---|
 | 1. Create the supported-regulations catalog | Complete | `docs/regulations/supported-regulations.md` defines capability stages, current regulation families, boundaries, and deferred items without prescribing schema fields. |
-| 2. Change the canonical hierarchy to zone-first | Draft ready for review | `docs/regulations/ruleset-authoring-guide.md` proposes direct `zones[zone].regulations[capability]` lookup. |
-| 3. Give each zone separate rule identities | Draft ready for review | The guide proposes independent, stable rule IDs for every zone-owned capability record. |
-| 4. Redesign setback representation | Draft ready for review | The guide proposes base requirements, typed story or height triggers, total versus additional effects, and paired distances. |
-| 5. Preserve shared reference data | Draft ready for review | The guide proposes shared ID-keyed sources, citations, definitions, and exception families plus top-level conflicts. |
+| 2. Change the canonical hierarchy to zone-first | Complete | The approved guide and v2 schema provide direct `zones[zone].regulations[capability]` lookup. |
+| 3. Give each zone separate rule identities | Complete | The v2 schema requires convention-compliant zone-owned rule records without multi-zone applicability fields. |
+| 4. Redesign setback representation | Complete | The v2 schema enforces typed base values, story or height triggers, total or additional effects, paired distances, and precedence for multiple adjustments. |
+| 5. Preserve shared reference data | Complete | The v2 schema provides ID-keyed sources, citations, definitions, and exception families plus top-level conflicts. |
 | 6. Migrate approved R1 data | Pending | Move R1-6L and R1-8L data into v2 without losing citations, conditions, conflict provenance, or approval status. |
-| 7. Expand v2 validation | Pending | Validate schema structure, zone indexing, migration completeness, setback semantics, conflicts, and deterministic fixtures. |
+| 7. Expand v2 validation | Partially prepared | Eight schema tests pass; migration completeness, cross-reference, identity, conflict, and deterministic fixture invariants remain for step 7. |
 
-The design draft includes representative R1-6L scalar and R1-8L paired-setback examples, authoring requirements for humans and AI, invalid patterns, and future validation expectations. It deliberately does not modify the v1 schema, approved ruleset, validator, tests, or runtime code.
+The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` now implements its local structural requirements, and eight schema tests cover representative zone-first data, independent rule identities, setback semantics, paired values, future trigger and effect shapes, explicit adjustment precedence, candidate approval state, and rejected v1-style patterns. The complete 37-test suite passes. The v1 schema, approved ruleset, validator, and runtime code remain unchanged pending step 6.
 
 ## Block 6 after the redesign gate
 
@@ -213,3 +213,6 @@ None currently recorded.
 | 2026-07-16 | Label no-polygon results outside the supported R1 snapshot rather than naming a non-R1 zone. | The local polygon snapshot is intentionally R1-filtered and cannot establish the exact designation of an unsupported parcel. |
 | 2026-07-16 | Maintain a dedicated supported-regulations catalog before redesigning schema v2. | Regulation meaning and product support boundaries should be explicit before deciding their machine-readable representation. |
 | 2026-07-16 | Keep jurisdiction-specific values and schema field designs out of the capability catalog. | Values belong to versioned rulesets, while representation belongs to schema design; separating them prevents duplicated sources of truth. |
+| 2026-07-16 | Adopt zone-first v2 rules with independent per-zone identities. | Direct capability lookup is deterministic, while independently amendable zone rules no longer share one legal identity merely because current values match. |
+| 2026-07-16 | Represent setbacks as base values plus typed adjustments. | Explicit triggers, total-versus-additional effects, paired values, and precedence prevent prose-dependent or ambiguous stepback interpretation. |
+| 2026-07-16 | Add schema v2 beside the operational v1 contract. | Preserves the validated v1 ruleset until migration and expanded cross-record validation are complete. |

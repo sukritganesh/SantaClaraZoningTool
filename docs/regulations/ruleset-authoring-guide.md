@@ -1,10 +1,12 @@
 # Ruleset v2 Authoring Guide
 
-**Status:** Draft for design review
+**Status:** Approved authoring contract; schema implemented, data migration pending
 
 **Last updated:** July 16, 2026
 
-This guide proposes how humans and AI-assisted extraction workflows should represent supported regulations in the deterministic ruleset. It is the authoring contract for the ruleset v2 redesign; it is not yet the production JSON Schema.
+**Approved by:** Project owner on July 16, 2026
+
+This guide defines how humans and AI-assisted extraction workflows must represent supported regulations in the deterministic ruleset. `rulesets/schema/ruleset-v2.schema.json` implements the local structural parts of this contract.
 
 The current v1 schema and approved Santa Clara ruleset remain authoritative until this design is approved, implemented, migrated, and validated.
 
@@ -12,7 +14,7 @@ The current v1 schema and approved Santa Clara ruleset remain authoritative unti
 
 - `supported-regulations.md` defines **what** the product supports and where support stops.
 - This guide defines **how** supported capabilities should be authored in ruleset v2.
-- The future JSON Schema v2 will enforce the structural parts of this guide.
+- JSON Schema v2 enforces the local structural parts of this guide.
 - Domain validation will enforce cross-record references, identities, conflict integrity, and deterministic semantics that JSON Schema cannot fully express.
 - `docs/r1-rule-verification.md` remains the legal-source trace for Santa Clara values.
 - `docs/progress.md` records whether this draft has been reviewed and implemented.
@@ -37,7 +39,7 @@ Ruleset v2 should make these operations simple and deterministic:
 
 The JSON ruleset is a versioned legal-data artifact, not a UI response and not a database-specific storage model.
 
-## Proposed top-level hierarchy
+## Approved top-level hierarchy
 
 The canonical hierarchy is zone-first:
 
@@ -88,7 +90,7 @@ The capability ID is the key inside the zone's `regulations` object. Authors MUS
 
 ### Rule IDs
 
-A rule ID identifies one zone-owned regulation record. The proposed convention is:
+A rule ID identifies one zone-owned regulation record. The convention is:
 
 ```text
 us.ca.<jurisdiction-slug>.<zone-slug>.<capability-id>
@@ -163,7 +165,7 @@ A paired value MUST preserve both requirements and MUST NOT be averaged or conve
 
 ### Adjustment triggers
 
-The proposed trigger types are:
+The schema trigger types are:
 
 | Trigger | Meaning |
 |---|---|
@@ -172,11 +174,11 @@ The proposed trigger types are:
 
 Trigger boundaries MUST be unambiguous. “At or above” and “above” are different legal tests and must not be silently interchanged.
 
-The initial Santa Clara data uses story-based triggers. A height-triggered shape may be permitted by the eventual schema for future jurisdictions, but it remains unsupported operationally until cataloged, sourced, validated, and evaluated.
+The initial Santa Clara data uses story-based triggers. The v2 schema can represent a height-triggered shape for future jurisdictions, but it remains unsupported operationally until cataloged, sourced, validated, and evaluated.
 
 ### Adjustment effects
 
-The proposed effect types are:
+The schema effect types are:
 
 | Effect | Meaning |
 |---|---|
@@ -185,7 +187,7 @@ The proposed effect types are:
 
 Authors MUST determine which meaning the controlling text states. They MUST NOT convert between the two merely because the arithmetic happens to produce the same number.
 
-An adjustment MUST include its own ID, trigger, effect, and source references. If multiple adjustments could apply simultaneously, the ruleset MUST state an explicit combination or precedence rule; otherwise validation should reject the record as ambiguous.
+An adjustment MUST include its own ID, trigger, effect, and source references. If a setback contains multiple adjustments, `adjustment_resolution` MUST list their IDs in highest-to-lowest precedence order using `highest_precedence_applicable`. The evaluator selects the first applicable adjustment. Validation must reject multiple adjustments without this resolution or with missing, duplicated, or extraneous IDs.
 
 ### Setback applicability
 
@@ -441,7 +443,7 @@ The v2 design should reject or prohibit these patterns:
 
 ## Deterministic validation expectations
 
-The eventual schema and domain validator should establish at least:
+The v2 schema and eventual domain validator must establish at least:
 
 - Exact top-level structure and allowed fields
 - Unique, convention-compliant rule IDs
@@ -450,7 +452,7 @@ The eventual schema and domain validator should establish at least:
 - No multi-zone applicability fields inside zone records
 - Valid typed values and units
 - Valid setback base, trigger, effect, and paired-member combinations
-- No ambiguous overlapping adjustments without explicit combination semantics
+- Explicit, complete precedence whenever a setback has multiple adjustments
 - Existing shared references and conflict references
 - Complete conflict assertions and consistency with the selected rule value
 - Migration completeness against every approved v1 rule
@@ -458,9 +460,9 @@ The eventual schema and domain validator should establish at least:
 
 JSON Schema should enforce local structure. A domain validator must enforce identity uniqueness, cross-reference existence, conflict consistency, migration completeness, and other cross-record invariants.
 
-## Design-review checklist
+## Approved design decisions
 
-Before implementing JSON Schema v2, confirm these proposed decisions:
+The project owner approved these decisions on July 16, 2026:
 
 1. `zones` is an object keyed by exact GIS zone designation.
 2. Each zone has a direct `regulations` map keyed by catalog capability ID.
@@ -470,7 +472,7 @@ Before implementing JSON Schema v2, confirm these proposed decisions:
 6. Story and height triggers are distinct and have explicit boundaries.
 7. Total-minimum and additional-distance effects remain distinct.
 8. Paired side yards preserve both values without unsupported physical assignment.
-9. Ambiguous overlapping adjustments are rejected until combination semantics are explicitly designed.
+9. Multiple adjustments require an explicit highest-to-lowest precedence list.
 10. The catalog, authoring guide, JSON Schema, source verification, and runtime engine retain separate responsibilities.
 
-Approval of this guide authorizes schema implementation work, not automatic migration or runtime use. The approved v1 artifacts remain unchanged until the later migration and validation steps pass.
+Approval of this guide authorized schema implementation, not automatic migration or runtime use. The approved v1 artifacts remain unchanged until the later migration and validation steps pass.

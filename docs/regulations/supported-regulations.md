@@ -13,7 +13,7 @@ As regulation coverage grows, detailed family-specific documents may be added be
 Each project artifact has a distinct role:
 
 - This catalog defines **which regulatory capabilities are supported** and what support means.
-- `ruleset-authoring-guide.md` defines the proposed ruleset v2 representation for humans and AI-assisted extraction workflows.
+- `ruleset-authoring-guide.md` defines the approved ruleset v2 representation for humans and AI-assisted extraction workflows.
 - The versioned ruleset stores approved Santa Clara values, citations, applicability, conditions, and provenance.
 - `docs/r1-rule-verification.md` records the legal-source analysis supporting those values.
 - The JSON Schema defines how supported capabilities are represented in machine-readable data.
