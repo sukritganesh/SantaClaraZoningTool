@@ -7,6 +7,7 @@ The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family 
 ## Project documents
 
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
+- [Future improvements](docs/future-improvements.md) — the cross-cutting enhancement burndown; active execution remains tracked in the progress ledger.
 - [R1 prototype plan](docs/r1-prototype-plan.md) — scope, architecture, source research, proposed data model, and completion criteria.
 - [Supported regulations catalog](docs/regulations/supported-regulations.md) — regulation families, capability stages, current boundaries, and deferred expansion queue.
 - [Ruleset v2 authoring guide](docs/regulations/ruleset-authoring-guide.md) — approved zone-first representation contract and examples for human and AI-assisted authors.
@@ -158,6 +159,7 @@ The migration verifies the approved v1 ruleset and its source-file checksums, re
 │   └── raw/                          Immutable dated source snapshots
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
+│   ├── future-improvements.md        Deferred enhancement burndown
 │   ├── regulations/
 │   │   ├── ruleset-authoring-guide.md Approved ruleset v2 authoring contract
 │   │   └── supported-regulations.md   Regulatory capability catalog

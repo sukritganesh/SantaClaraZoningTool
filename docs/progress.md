@@ -227,3 +227,4 @@ None currently recorded.
 | 2026-07-16 | Add schema v2 beside the operational v1 contract. | Preserves the validated v1 ruleset until migration and expanded cross-record validation are complete. |
 | 2026-07-16 | Map every catalog capability to a standalone rule or embedded typed structure. | Gives humans and AI one unambiguous authoring path while allowing supporting behaviors such as stepbacks and paired yards to remain inside their parent setback rule. |
 | 2026-07-17 | Migrate v1 into a separate non-overwriting v2 candidate with a complete crosswalk. | Makes the transformation reproducible and reviewable while preserving the approved operational v1 artifact until the expanded validation gate passes. |
+| 2026-07-17 | Maintain cross-cutting deferred enhancements in `docs/future-improvements.md`. | Preserves useful design observations without duplicating active status, regulatory capability scope, or detailed contracts across project documents. |

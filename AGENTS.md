@@ -15,6 +15,7 @@ Each project document has one job:
 - `README.md` is the human-facing setup and runbook. Put dependencies, runnable commands, and repository orientation there.
 - `AGENTS.md` contains durable Codex operating instructions. Do not put changing milestone status or duplicate run commands here.
 - `docs/progress.md` is the sole status ledger. Put the current stage, completed blocks, validation evidence, canonical artifacts, next block, blockers, and implementation decision log there.
+- `docs/future-improvements.md` is the cross-cutting improvement burndown. Record useful deferred enhancements there; when one becomes active, put execution status in `docs/progress.md` and detailed design in the relevant owning artifact.
 - `docs/r1-prototype-plan.md` is the design reference. Put scope, architecture, authoritative-source research, schemas, rules, and completion criteria there.
 - `docs/regulations/supported-regulations.md` is the regulatory capability catalog. Put supported regulation families, their meanings, implementation boundaries, and the deferred capability queue there; do not duplicate zone-specific values or schema field designs.
 - `docs/regulations/ruleset-authoring-guide.md` is the human- and AI-facing representation contract. Put ruleset hierarchy, identity conventions, typed regulation semantics, authoring requirements, and representative examples there.
@@ -31,8 +32,9 @@ When something changes, update only its owning document unless the change genuin
 3. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
 4. Read `docs/regulations/ruleset-authoring-guide.md` before changing ruleset schemas, authoring rule data, or building regulatory extraction workflows.
 5. Read `README.md` when running, changing, or documenting repository commands or dependencies.
-6. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
-7. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
+6. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
+7. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
+8. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
 
 ## Preserve authoritative inputs
 
@@ -83,6 +85,7 @@ When something changes, update only its owning document unless the change genuin
 - Update the prototype plan only if design, scope, source research, or completion criteria changed.
 - Update the supported-regulations catalog when a capability is added, removed, renamed, or its supported behavior changes.
 - Update the ruleset authoring guide when a capability's JSON mapping, identity convention, typed semantics, or maintenance workflow changes; every cataloged capability must have a documented standalone or embedded representation before rule data is authored.
+- Update the future-improvements backlog when a cross-cutting enhancement is discovered, promoted, completed, dropped, or superseded; do not use it as a second active-status ledger.
 
 ## Protect the workspace
 
