@@ -37,14 +37,26 @@ The current Santa Clara rules are cataloged and encoded in ruleset v1. Runtime s
 
 ## Current supported regulation families
 
+### Use and approvals
+
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
 | `use.single_family_dwelling` | Single-family dwelling use classification | Base R1 permission status; separate approvals remain visible | Encoded in v1; v2 migration pending |
 | `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Encoded in v1; v2 migration pending |
 | `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Encoded in v1; v2 migration pending |
+
+### Dimensional standards
+
+| Capability ID | Regulation or behavior | Current scope | Current stage |
+|---|---|---|---|
 | `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement and exception warnings | Encoded in v1; v2 migration pending |
 | `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Encoded in v1; v2 migration pending |
 | `standard.maximum_structure_coverage` | Maximum structure coverage | Base percentage only; remaining development capacity is not calculated | Encoded in v1; v2 migration pending |
+
+### Setbacks
+
+| Capability ID | Regulation or behavior | Current scope | Current stage |
+|---|---|---|---|
 | `setback.front` | Front setback | Base requirement and supported upper-story difference | Encoded in v1; v2 redesign pending |
 | `setback.rear` | Rear setback | Base requirement | Encoded in v1; v2 redesign pending |
 | `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Encoded in v1; v2 redesign pending |
