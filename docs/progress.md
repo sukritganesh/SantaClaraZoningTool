@@ -172,7 +172,7 @@ Block 6 is intentionally paused while the regulatory data model is improved befo
 | 6. Migrate approved R1 data | Pending | Move R1-6L and R1-8L data into v2 without losing citations, conditions, conflict provenance, or approval status. |
 | 7. Expand v2 validation | Partially prepared | Eight schema tests pass; migration completeness, cross-reference, identity, conflict, and deterministic fixture invariants remain for step 7. |
 
-The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` now implements its local structural requirements, and eight schema tests cover representative zone-first data, independent rule identities, setback semantics, paired values, future trigger and effect shapes, explicit adjustment precedence, candidate approval state, and rejected v1-style patterns. The complete 37-test suite passes. The v1 schema, approved ruleset, validator, and runtime code remain unchanged pending step 6.
+The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` now implements its local structural requirements, and eight schema tests cover representative zone-first data, independent rule identities, setback semantics, paired values, future trigger and effect shapes, explicit adjustment precedence, candidate approval state, and rejected v1-style patterns. The authoring guide maps every current catalog capability to a standalone rule or embedded JSON structure and records maintenance workflows for new capabilities, zones, jurisdictions, special rule layers, and code updates. The complete 37-test suite passes. The v1 schema, approved ruleset, validator, and runtime code remain unchanged pending step 6.
 
 ## Block 6 after the redesign gate
 
@@ -216,3 +216,4 @@ None currently recorded.
 | 2026-07-16 | Adopt zone-first v2 rules with independent per-zone identities. | Direct capability lookup is deterministic, while independently amendable zone rules no longer share one legal identity merely because current values match. |
 | 2026-07-16 | Represent setbacks as base values plus typed adjustments. | Explicit triggers, total-versus-additional effects, paired values, and precedence prevent prose-dependent or ambiguous stepback interpretation. |
 | 2026-07-16 | Add schema v2 beside the operational v1 contract. | Preserves the validated v1 ruleset until migration and expanded cross-record validation are complete. |
+| 2026-07-16 | Map every catalog capability to a standalone rule or embedded typed structure. | Gives humans and AI one unambiguous authoring path while allowing supporting behaviors such as stepbacks and paired yards to remain inside their parent setback rule. |

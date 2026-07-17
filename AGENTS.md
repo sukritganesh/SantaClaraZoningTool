@@ -82,6 +82,7 @@ When something changes, update only its owning document unless the change genuin
 - Update `README.md` only if setup, dependencies, runnable commands, or repository orientation changed.
 - Update the prototype plan only if design, scope, source research, or completion criteria changed.
 - Update the supported-regulations catalog when a capability is added, removed, renamed, or its supported behavior changes.
+- Update the ruleset authoring guide when a capability's JSON mapping, identity convention, typed semantics, or maintenance workflow changes; every cataloged capability must have a documented standalone or embedded representation before rule data is authored.
 
 ## Protect the workspace
 

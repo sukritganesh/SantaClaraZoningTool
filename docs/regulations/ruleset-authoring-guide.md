@@ -8,7 +8,7 @@
 
 This guide defines how humans and AI-assisted extraction workflows must represent supported regulations in the deterministic ruleset. `rulesets/schema/ruleset-v2.schema.json` implements the local structural parts of this contract.
 
-The current v1 schema and approved Santa Clara ruleset remain authoritative until this design is approved, implemented, migrated, and validated.
+The current v1 schema and approved Santa Clara ruleset remain authoritative until the approved data is migrated to v2 and the expanded validation gate passes.
 
 ## Relationship to other project artifacts
 
@@ -17,7 +17,7 @@ The current v1 schema and approved Santa Clara ruleset remain authoritative unti
 - JSON Schema v2 enforces the local structural parts of this guide.
 - Domain validation will enforce cross-record references, identities, conflict integrity, and deterministic semantics that JSON Schema cannot fully express.
 - `docs/r1-rule-verification.md` remains the legal-source trace for Santa Clara values.
-- `docs/progress.md` records whether this draft has been reviewed and implemented.
+- `docs/progress.md` records implementation and migration status.
 
 Examples in this guide illustrate the proposed representation. They do not replace the approved ruleset or authorize runtime use.
 
@@ -144,6 +144,79 @@ Zone applicability MUST NOT appear in this envelope because the containing zone 
 The `requirement` payload MUST use a type defined for the capability family. Numeric quantities MUST contain an explicit unit. Consequential assertions MUST retain exact source references at the narrowest practical level.
 
 Conditions are not a substitute for structured data. If a condition changes a number, trigger, applicability decision, or operation that the engine must evaluate, it MUST be represented in typed fields once that behavior is supported.
+
+## Capability-to-JSON mapping
+
+Every cataloged capability must have an explicit representation here before jurisdiction-specific v2 data is authored. This prevents humans or AI workflows from choosing different JSON shapes for the same regulatory concept.
+
+Capabilities use one of two representation classes:
+
+- **Standalone regulation:** appears as a key in `zones[zone].regulations` and owns a zone-specific `rule_id`.
+- **Embedded behavior:** appears inside a parent regulation's typed `requirement`; it is not a separate rule record.
+
+### Current capability map
+
+| Catalog capability ID | Representation class | JSON placement and type | Authoring requirements |
+|---|---|---|---|
+| `use.single_family_dwelling` | Standalone | Regulation key with `requirement.kind: status` | `code` stores the permission category; use permission must remain separate from approvals. |
+| `approval.zoning_clearance` | Standalone | Regulation key with `requirement.kind: status` | `code` stores the approval status; qualifying construction details remain in typed applicability when supported or in verified conditions. |
+| `approval.architectural_review` | Standalone | Regulation key with `requirement.kind: status` | `code` stores the base review status; unevaluated hearing triggers must remain visible in conditions or exception references. |
+| `standard.maximum_primary_structure_height` | Standalone | Regulation key with `requirement.kind: maximum_quantity` | `value.number` stores the maximum and `value.unit` is `ft`; measurement and appurtenance rules remain referenced. |
+| `standard.maximum_stories` | Standalone | Regulation key with `requirement.kind: maximum_quantity` | `value.number` stores the maximum and `value.unit` is `stories`; automated story classification is a separate capability. |
+| `standard.maximum_structure_coverage` | Standalone | Regulation key with `requirement.kind: maximum_quantity` | `value.number` stores the maximum and `value.unit` is `percent`; do not translate it into remaining buildable area without parcel and structure facts. |
+| `setback.front` | Standalone | Regulation key with `requirement.kind: setback` | Store one base value plus typed adjustments; averaging and measurement exceptions remain referenced until evaluated. |
+| `setback.rear` | Standalone | Regulation key with `requirement.kind: setback` | Store the base value and any supported adjustments; alley credit and encroachments remain explicit exceptions. |
+| `setback.interior_side` | Standalone | Regulation key with `requirement.kind: setback` | The base and adjustment values may be scalar or paired; never collapse a required pair. |
+| `setback.street_side` | Standalone | Regulation key with `requirement.kind: setback` | Use `applicability.lot_context: corner`; the catalog name remains stable even when a jurisdiction calls it a corner-side setback. |
+| `setback.adjustment.story_based` | Embedded behavior | `requirement.adjustments[]` with `trigger.kind: story_at_or_above` | Store the trigger boundary, effect semantics, value, and exact sources; do not create a separate zone regulation key. |
+| `setback.configuration.paired_side_yards` | Embedded behavior | A setback `base.value` or adjustment `effect.value` with `kind: paired_distances` | Preserve the coordinated members, relationship, and physical-assignment status; do not create a separate zone regulation key. |
+
+Standalone capability IDs MUST correspond directly to keys in a zone's `regulations` map when that capability is encoded for the zone. Embedded capability IDs MUST correspond to the documented typed substructure. Absence means the capability is not encoded for that zone; it must not be interpreted as a zero value, prohibition, or inapplicability.
+
+The schema may support a shape before the product supports the corresponding capability. Schema expressiveness alone does not change the capability stage in `supported-regulations.md`.
+
+### Status requirement shape
+
+Use permissions and approval requirements share the `status` payload shape but remain different capabilities and separate rule records:
+
+```json
+{
+  "approval.zoning_clearance": {
+    "rule_id": "us.ca.santa_clara.r1-6l.approval.zoning_clearance",
+    "label": "Zoning Clearance",
+    "requirement": {
+      "kind": "status",
+      "code": "required",
+      "source_refs": ["zoning-clearance"]
+    },
+    "applicability": {
+      "structure_type": "single_family_primary_structure",
+      "lot_context": "not_applicable"
+    },
+    "conditions": [
+      "Applies to a permitted-by-right use involving construction."
+    ],
+    "exception_family_ids": [],
+    "validation_status": "verified_with_conditions",
+    "conflict_id": null,
+    "approved_for_ruleset": true
+  }
+}
+```
+
+The status codes currently supported by schema v2 are `permitted_by_right`, `required`, and `may_be_required`. A new legal status requires a catalog decision, authoring-guide update, schema change, and validation coverage before use.
+
+### Maximum-quantity requirement shape
+
+Height, stories, and coverage share `maximum_quantity`. Their units distinguish the quantity:
+
+```text
+height    → {"number": ..., "unit": "ft"}
+stories   → {"number": ..., "unit": "stories"}
+coverage  → {"number": ..., "unit": "percent"}
+```
+
+These are separate capability records even when they share a payload type. The complete maximum-height example below demonstrates the required envelope and provenance.
 
 ## Setback representation
 
@@ -425,6 +498,67 @@ An authoring workflow MUST:
 
 AI may extract, normalize, propose IDs, and draft candidate records. It MUST NOT invent missing values, silently choose among conflicts, infer that equal values share one legal identity, or mark its own output approved.
 
+## Maintenance workflow
+
+The workflow must keep capability meaning, machine representation, legal data, and implementation status synchronized without duplicating ownership.
+
+### Artifact update matrix
+
+| Artifact | Update when |
+|---|---|
+| Raw source snapshot and manifest | GIS, zoning code, ordinance, plan, overlay, or state-law source is newly acquired or refreshed |
+| `docs/r1-rule-verification.md` or a jurisdiction-specific successor | A legal conclusion, definition, applicability rule, exception, conflict, or source disposition changes |
+| `supported-regulations.md` | A capability is added, removed, renamed, reaches a new support stage, or changes meaning or boundary |
+| This authoring guide | A capability's JSON mapping, identity rule, typed semantics, or authoring workflow changes |
+| JSON Schema | A machine-enforceable field, type, enum, or structural constraint changes |
+| Versioned jurisdiction ruleset | An approved zone value, condition, citation, conflict, or ruleset version changes |
+| Domain validator and tests | A cross-record invariant, failure state, supported capability, or deterministic behavior changes |
+| `docs/progress.md` | Work starts, completes, changes direction, or becomes blocked |
+| `README.md` | Setup, dependencies, runnable commands, or repository orientation changes |
+
+### Add a regulation capability
+
+1. Verify the controlling text, definitions, applicability, exceptions, amendments, and conflicts.
+2. Add the capability and its boundary to the catalog at the `Cataloged` stage.
+3. Add its standalone or embedded JSON mapping to this guide.
+4. Extend the schema and schema tests if the existing payload types cannot represent it exactly.
+5. Author separate candidate records for every applicable zone with shared provenance references.
+6. Run domain validation, obtain approval, and update the capability stage only after its gate passes.
+
+### Add a zone in an existing jurisdiction
+
+1. Verify the exact GIS designation and the authoritative provisions governing the zone.
+2. Add a new key under `zones`; do not add the zone to existing rule applicability lists.
+3. Create independent rule IDs and records for the zone, even where values match another zone.
+4. Reuse shared sources and citations only when they genuinely support the new zone.
+5. Add completeness, lookup, ambiguity, and regression fixtures for the new zone.
+6. Update the catalog only if capability coverage or support boundaries change.
+
+### Add another jurisdiction
+
+1. Create new immutable GIS and regulatory-source snapshots and an amendment baseline.
+2. Reuse catalog capability IDs and schema payloads only when their meanings match.
+3. Create a distinct jurisdiction ruleset, jurisdiction slug, zone keys, and rule IDs.
+4. Do not copy Santa Clara values, exceptions, precedence assumptions, or conflict resolutions as defaults.
+5. Validate the jurisdiction's own address, parcel, zone, source, and regulatory fixtures before approval.
+
+### Add an overlay, specific plan, state override, or other special rule layer
+
+1. Catalog the new capability and define whether it supplements, replaces, or overrides base-zone rules.
+2. Verify both the spatial applicability source and the controlling regulatory text.
+3. Design and document precedence and conflict behavior before extending the schema.
+4. Keep the special rule distinct from the base-zone record; do not silently rewrite the base value.
+5. Add positive, negative, boundary, precedence, conflict, and `review required` fixtures.
+
+### Process a zoning-code update
+
+1. Preserve the new source and amendment evidence without overwriting the prior snapshot.
+2. Identify affected provisions, capabilities, zones, references, definitions, exceptions, and conflicts.
+3. Create a new ruleset version; never mutate a previously approved version in place.
+4. Update only affected zone-owned records while retaining independent rule identities.
+5. Re-run source, schema, domain, migration, and deterministic regression checks.
+6. Record the new verification cutoff and implementation status in the progress ledger.
+
 ## Invalid patterns
 
 The v2 design should reject or prohibit these patterns:
@@ -447,7 +581,7 @@ The v2 schema and eventual domain validator must establish at least:
 
 - Exact top-level structure and allowed fields
 - Unique, convention-compliant rule IDs
-- Direct correspondence between catalog capability IDs and regulation keys
+- Direct correspondence between standalone catalog capabilities and regulation keys, plus documented typed placement for embedded capabilities
 - One zone-owned record per encoded capability and zone
 - No multi-zone applicability fields inside zone records
 - Valid typed values and units
@@ -474,5 +608,6 @@ The project owner approved these decisions on July 16, 2026:
 8. Paired side yards preserve both values without unsupported physical assignment.
 9. Multiple adjustments require an explicit highest-to-lowest precedence list.
 10. The catalog, authoring guide, JSON Schema, source verification, and runtime engine retain separate responsibilities.
+11. Every catalog capability has an explicit standalone-rule or embedded-behavior JSON mapping before jurisdiction data is authored.
 
 Approval of this guide authorized schema implementation, not automatic migration or runtime use. The approved v1 artifacts remain unchanged until the later migration and validation steps pass.

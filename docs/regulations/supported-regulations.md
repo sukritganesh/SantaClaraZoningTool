@@ -34,7 +34,7 @@ Numeric standards must not be copied into this catalog. Keeping values in the ve
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The current Santa Clara rules are cataloged and encoded in ruleset v1. Runtime standards retrieval has not started, and the rules are being redesigned for ruleset v2 before retrieval is implemented.
+The current Santa Clara rules are cataloged and encoded in ruleset v1. Schema v2 is implemented, but approved rule migration and runtime standards retrieval have not started.
 
 ## Current supported regulation families
 
@@ -58,12 +58,12 @@ The current Santa Clara rules are cataloged and encoded in ruleset v1. Runtime s
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `setback.front` | Front setback | Base requirement and supported upper-story difference | Encoded in v1; v2 redesign pending |
-| `setback.rear` | Rear setback | Base requirement | Encoded in v1; v2 redesign pending |
-| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Encoded in v1; v2 redesign pending |
-| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Encoded in v1; v2 redesign pending |
-| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Encoded in v1; v2 redesign pending |
-| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Encoded in v1; v2 redesign pending |
+| `setback.front` | Front setback | Base requirement and supported upper-story difference | Encoded in v1; v2 migration pending |
+| `setback.rear` | Rear setback | Base requirement | Encoded in v1; v2 migration pending |
+| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Encoded in v1; v2 migration pending |
+| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Encoded in v1; v2 migration pending |
+| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Encoded in v1; v2 migration pending |
+| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Encoded in v1; v2 migration pending |
 
 ## Use and approval capabilities
 
@@ -123,7 +123,7 @@ Determining corner orientation, street measurement lines, landscaping requiremen
 
 The supported scope recognizes that an upper story can require a greater total setback than the base building level. This is commonly described as a stepback. The current scope supports story-triggered differences that state an absolute minimum total setback.
 
-Height-triggered stepbacks and rules requiring an additional distance rather than a total minimum are not yet supported. Their representation will be addressed during the ruleset v2 design.
+Height-triggered stepbacks and rules requiring an additional distance rather than a total minimum are not yet supported operationally. Schema v2 can represent them, but no approved Santa Clara data or deterministic evaluator uses those shapes.
 
 ### Paired side-yard requirements
 
@@ -146,8 +146,8 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 
 | Capability | Status or boundary |
 |---|---|
-| Height-triggered setback stepbacks | Planned for a future setback capability expansion; not yet represented or evaluated |
-| Additional-distance setback stepbacks | Planned; current scope only recognizes an absolute total minimum |
+| Height-triggered setback stepbacks | Representable in schema v2; no approved rule data or evaluator exists |
+| Additional-distance setback stepbacks | Representable in schema v2; current approved data only recognizes absolute total minimums |
 | Front-setback averaging | Source provision identified; required neighboring-development facts and evaluator are absent |
 | Setback encroachments and projections | Source provisions identified; proposal-feature evaluation is absent |
 | Narrow historical parcel exceptions | Source provision identified; qualifying parcel facts and evaluator are absent |
