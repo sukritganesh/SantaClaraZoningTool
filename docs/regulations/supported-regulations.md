@@ -1,6 +1,6 @@
 # Supported Regulations Catalog
 
-**Last updated:** July 16, 2026
+**Last updated:** July 17, 2026
 
 **Current jurisdictional scope:** City of Santa Clara R1-6L and R1-8L prototype
 
@@ -34,7 +34,7 @@ Numeric standards must not be copied into this catalog. Keeping values in the ve
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The current Santa Clara rules are cataloged and encoded in ruleset v1. Schema v2 is implemented, but approved rule migration and runtime standards retrieval have not started.
+The current Santa Clara rules are cataloged and encoded in the approved ruleset v1. A schema-valid v2 candidate has been migrated, but expanded validation, promotion, and runtime standards retrieval have not started.
 
 ## Current supported regulation families
 
@@ -42,28 +42,28 @@ The current Santa Clara rules are cataloged and encoded in ruleset v1. Schema v2
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `use.single_family_dwelling` | Single-family dwelling use classification | Base R1 permission status; separate approvals remain visible | Encoded in v1; v2 migration pending |
-| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Encoded in v1; v2 migration pending |
-| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Encoded in v1; v2 migration pending |
+| `use.single_family_dwelling` | Single-family dwelling use classification | Base R1 permission status; separate approvals remain visible | Encoded in v1; v2 candidate migrated |
+| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Encoded in v1; v2 candidate migrated |
+| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Encoded in v1; v2 candidate migrated |
 
 ### Dimensional standards
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement and exception warnings | Encoded in v1; v2 migration pending |
-| `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Encoded in v1; v2 migration pending |
-| `standard.maximum_structure_coverage` | Maximum structure coverage | Base percentage only; remaining development capacity is not calculated | Encoded in v1; v2 migration pending |
+| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement and exception warnings | Encoded in v1; v2 candidate migrated |
+| `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Encoded in v1; v2 candidate migrated |
+| `standard.maximum_structure_coverage` | Maximum structure coverage | Base percentage only; remaining development capacity is not calculated | Encoded in v1; v2 candidate migrated |
 
 ### Setbacks
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `setback.front` | Front setback | Base requirement and supported upper-story difference | Encoded in v1; v2 migration pending |
-| `setback.rear` | Rear setback | Base requirement | Encoded in v1; v2 migration pending |
-| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Encoded in v1; v2 migration pending |
-| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Encoded in v1; v2 migration pending |
-| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Encoded in v1; v2 migration pending |
-| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Encoded in v1; v2 migration pending |
+| `setback.front` | Front setback | Base requirement and supported upper-story difference | Encoded in v1; v2 candidate migrated |
+| `setback.rear` | Rear setback | Base requirement | Encoded in v1; v2 candidate migrated |
+| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Encoded in v1; v2 candidate migrated |
+| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Encoded in v1; v2 candidate migrated |
+| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Encoded in v1; v2 candidate migrated |
+| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Encoded in v1; v2 candidate migrated |
 
 ## Use and approval capabilities
 

@@ -127,7 +127,24 @@ python3 -m unittest discover -s tests -v
 
 The ruleset reports selected base-zone standards only. It preserves citations, deferred exception families, validation states, and the documented R1-8L corner-side conflict separately from the selected 15-foot value.
 
-The approved zone-first v2 structural contract is `rulesets/schema/ruleset-v2.schema.json`. It is exercised by the test suite, but no approved rules have been migrated to v2 yet; the current v1 ruleset and validator remain operational.
+The approved zone-first v2 structural contract is `rulesets/schema/ruleset-v2.schema.json`. The separate candidate migration is:
+
+```text
+rulesets/santa_clara/r1/2026-07-17/ruleset.json
+rulesets/santa_clara/r1/2026-07-17/migration-crosswalk.json
+```
+
+The candidate contains 20 zone-owned regulations and a complete 16-rule v1 crosswalk. It is schema-valid but is not yet operational; the approved v1 ruleset and validator remain authoritative until expanded v2 domain validation and promotion pass.
+
+Create a later candidate in a new, nonexisting version directory with:
+
+```bash
+python3 scripts/migrate_r1_rules_v2.py \
+  --version YYYY-MM-DD.1 \
+  --output-dir rulesets/santa_clara/r1/YYYY-MM-DD
+```
+
+The migration verifies the approved v1 ruleset and its source-file checksums, refuses to overwrite an existing destination, validates the v2 schema before writing, and emits the migration crosswalk and checksums.
 
 ## Repository map
 
@@ -150,7 +167,9 @@ The approved zone-first v2 structural contract is `rulesets/schema/ruleset-v2.sc
 ├── rulesets/
 │   ├── schema/r1-ruleset.schema.json Current v1 ruleset contract
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
-│   └── santa_clara/r1/2026-07-16/    Versioned approved R1 rules
+│   └── santa_clara/r1/
+│       ├── 2026-07-16/                Versioned approved v1 R1 rules
+│       └── 2026-07-17/                Schema-valid candidate v2 and crosswalk
 ├── santa_clara_zoning/
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
@@ -160,6 +179,7 @@ The approved zone-first v2 structural contract is `rulesets/schema/ruleset-v2.sc
 │   ├── download_address_points.py     Citywide address-point downloader
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
 │   ├── lookup_r1_zone.py              Offline address-to-zone command
+│   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
 │   └── validate_r1_rules.py           Schema and domain ruleset validator
 └── tests/
     └── test_*.py                       Rule, address, geometry, and lookup tests

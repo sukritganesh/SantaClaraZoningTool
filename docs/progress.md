@@ -1,10 +1,10 @@
 # R1 Prototype Progress
 
-**Last updated:** July 16, 2026
+**Last updated:** July 17, 2026
 
-**Current position:** Pre-Block 6 ruleset v2 redesign — steps 2–5 complete
+**Current position:** Pre-Block 6 ruleset v2 redesign — step 6 complete
 
-**Next action:** Step 6 — migrate the approved R1-6L and R1-8L data into the v2 representation
+**Next action:** Step 7 — add the full v2 domain validator and mutation-based regression coverage
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -169,10 +169,19 @@ Block 6 is intentionally paused while the regulatory data model is improved befo
 | 3. Give each zone separate rule identities | Complete | The v2 schema requires convention-compliant zone-owned rule records without multi-zone applicability fields. |
 | 4. Redesign setback representation | Complete | The v2 schema enforces typed base values, story or height triggers, total or additional effects, paired distances, and precedence for multiple adjustments. |
 | 5. Preserve shared reference data | Complete | The v2 schema provides ID-keyed sources, citations, definitions, and exception families plus top-level conflicts. |
-| 6. Migrate approved R1 data | Pending | Move R1-6L and R1-8L data into v2 without losing citations, conditions, conflict provenance, or approval status. |
-| 7. Expand v2 validation | Partially prepared | Eight schema tests pass; migration completeness, cross-reference, identity, conflict, and deterministic fixture invariants remain for step 7. |
+| 6. Migrate approved R1 data | Complete | A separate schema-valid candidate contains 20 zone-owned regulations, all 16 v1 rules have explicit crosswalk targets, and v1 remains unchanged. |
+| 7. Expand v2 validation | Partially prepared | Eight schema tests and four migration regressions pass; full cross-reference, identity, conflict, and deterministic domain invariants remain. |
 
-The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` now implements its local structural requirements, and eight schema tests cover representative zone-first data, independent rule identities, setback semantics, paired values, future trigger and effect shapes, explicit adjustment precedence, candidate approval state, and rejected v1-style patterns. The authoring guide maps every current catalog capability to a standalone rule or embedded JSON structure and records maintenance workflows for new capabilities, zones, jurisdictions, special rule layers, and code updates. The complete 37-test suite passes. The v1 schema, approved ruleset, validator, and runtime code remain unchanged pending step 6.
+The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` implements its local structural requirements, and the July 17 candidate migrates every approved v1 rule without changing v1. R1-6L preserves a 10-foot street-side base and 15-foot second-story total; R1-8L selects a 15-foot base for all stories while retaining both the 10-foot table assertion and 15-foot written assertion in its conflict record. Four migration regression tests verify schema validity, deterministic reproduction, checksums, complete crosswalk coverage, separate zone identities, and these street-side semantics. The complete 41-test suite passes. The candidate is not operational until step 7 validation and promotion pass.
+
+Step 6 artifacts:
+
+```text
+scripts/migrate_r1_rules_v2.py
+rulesets/santa_clara/r1/2026-07-17/ruleset.json
+rulesets/santa_clara/r1/2026-07-17/migration-crosswalk.json
+tests/test_r1_rules_v2_migration.py
+```
 
 ## Block 6 after the redesign gate
 
@@ -217,3 +226,4 @@ None currently recorded.
 | 2026-07-16 | Represent setbacks as base values plus typed adjustments. | Explicit triggers, total-versus-additional effects, paired values, and precedence prevent prose-dependent or ambiguous stepback interpretation. |
 | 2026-07-16 | Add schema v2 beside the operational v1 contract. | Preserves the validated v1 ruleset until migration and expanded cross-record validation are complete. |
 | 2026-07-16 | Map every catalog capability to a standalone rule or embedded typed structure. | Gives humans and AI one unambiguous authoring path while allowing supporting behaviors such as stepbacks and paired yards to remain inside their parent setback rule. |
+| 2026-07-17 | Migrate v1 into a separate non-overwriting v2 candidate with a complete crosswalk. | Makes the transformation reproducible and reviewable while preserving the approved operational v1 artifact until the expanded validation gate passes. |

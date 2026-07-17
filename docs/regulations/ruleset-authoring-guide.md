@@ -1,8 +1,8 @@
 # Ruleset v2 Authoring Guide
 
-**Status:** Approved authoring contract; schema implemented, data migration pending
+**Status:** Approved authoring contract; candidate data migrated, expanded validation pending
 
-**Last updated:** July 16, 2026
+**Last updated:** July 17, 2026
 
 **Approved by:** Project owner on July 16, 2026
 
@@ -610,4 +610,4 @@ The project owner approved these decisions on July 16, 2026:
 10. The catalog, authoring guide, JSON Schema, source verification, and runtime engine retain separate responsibilities.
 11. Every catalog capability has an explicit standalone-rule or embedded-behavior JSON mapping before jurisdiction data is authored.
 
-Approval of this guide authorized schema implementation, not automatic migration or runtime use. The approved v1 artifacts remain unchanged until the later migration and validation steps pass.
+Approval of this guide authorized schema implementation and the separately reviewed migration step, not automatic runtime use. The approved v1 artifacts remain unchanged and operational until expanded v2 validation and promotion pass.

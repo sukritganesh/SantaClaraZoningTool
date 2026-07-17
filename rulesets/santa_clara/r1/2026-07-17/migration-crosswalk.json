@@ -1,0 +1,276 @@
+{
+  "migration_id": "santa-clara-r1-v1-to-v2",
+  "generated_on": "2026-07-17",
+  "migration_status": "candidate_schema_validated",
+  "source_ruleset": {
+    "path": "rulesets/santa_clara/r1/2026-07-16/ruleset.json",
+    "version": "2026-07-16.1",
+    "schema_version": "1.0.0",
+    "sha256": "b2ef7ec24c91fb1dcd03e1e9fc98211af02f4cb22b5358ad0c5bd78229c4f4a8"
+  },
+  "target_ruleset": {
+    "path": "rulesets/santa_clara/r1/2026-07-17/ruleset.json",
+    "version": "2026-07-17.1",
+    "schema_version": "2.0.0",
+    "status": "candidate",
+    "sha256": "228741c2391c2184054fe00fd2ea8c792d5cc5243bcc19f2cec5b1f56313dd77"
+  },
+  "target_schema": {
+    "path": "rulesets/schema/ruleset-v2.schema.json",
+    "sha256": "1677e1def18aea30736b99191ba1f685e304a91d864787fc913fa7754241edbf"
+  },
+  "counts": {
+    "v1_rules": 16,
+    "mapped_v1_rules": 16,
+    "v2_zones": 2,
+    "v2_zone_regulations": 20,
+    "v2_embedded_setback_adjustments": 5,
+    "conflicts": 1
+  },
+  "mappings": [
+    {
+      "v1_rule_id": "use-single-family-dwelling",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "use.single_family_dwelling",
+          "rule_id": "us.ca.santa_clara.r1-6l.use.single_family_dwelling",
+          "component": "requirement"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "use.single_family_dwelling",
+          "rule_id": "us.ca.santa_clara.r1-8l.use.single_family_dwelling",
+          "component": "requirement"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "approval-zoning-clearance",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "approval.zoning_clearance",
+          "rule_id": "us.ca.santa_clara.r1-6l.approval.zoning_clearance",
+          "component": "requirement"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "approval.zoning_clearance",
+          "rule_id": "us.ca.santa_clara.r1-8l.approval.zoning_clearance",
+          "component": "requirement"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "approval-architectural-review",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "approval.architectural_review",
+          "rule_id": "us.ca.santa_clara.r1-6l.approval.architectural_review",
+          "component": "requirement"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "approval.architectural_review",
+          "rule_id": "us.ca.santa_clara.r1-8l.approval.architectural_review",
+          "component": "requirement"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-max-structure-coverage",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "standard.maximum_structure_coverage",
+          "rule_id": "us.ca.santa_clara.r1-6l.standard.maximum_structure_coverage",
+          "component": "requirement"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "standard.maximum_structure_coverage",
+          "rule_id": "us.ca.santa_clara.r1-8l.standard.maximum_structure_coverage",
+          "component": "requirement"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-max-primary-height",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "standard.maximum_primary_structure_height",
+          "rule_id": "us.ca.santa_clara.r1-6l.standard.maximum_primary_structure_height",
+          "component": "requirement"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "standard.maximum_primary_structure_height",
+          "rule_id": "us.ca.santa_clara.r1-8l.standard.maximum_primary_structure_height",
+          "component": "requirement"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-max-stories",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "standard.maximum_stories",
+          "rule_id": "us.ca.santa_clara.r1-6l.standard.maximum_stories",
+          "component": "requirement"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "standard.maximum_stories",
+          "rule_id": "us.ca.santa_clara.r1-8l.standard.maximum_stories",
+          "component": "requirement"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-front-setback-first",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.front",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.front",
+          "component": "requirement.base"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.front",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.front",
+          "component": "requirement.base"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-front-setback-second",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.front",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.front",
+          "component": "requirement.adjustments[second-story-total]"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.front",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.front",
+          "component": "requirement.adjustments[second-story-total]"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-interior-side-first-r1-6l",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.interior_side",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.interior_side",
+          "component": "requirement.base"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-interior-side-second-r1-6l",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.interior_side",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.interior_side",
+          "component": "requirement.adjustments[second-story-total]"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-interior-side-first-r1-8l",
+      "v2_targets": [
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.interior_side",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.interior_side",
+          "component": "requirement.base"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-interior-side-second-r1-8l",
+      "v2_targets": [
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.interior_side",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.interior_side",
+          "component": "requirement.adjustments[second-story-total]"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-corner-side-first-r1-6l",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.street_side",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.street_side",
+          "component": "requirement.base"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-corner-side-first-r1-8l",
+      "v2_targets": [
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.street_side",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.street_side",
+          "component": "requirement.base"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-corner-side-second",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.street_side",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.street_side",
+          "component": "requirement.adjustments[second-story-total]"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.street_side",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.street_side",
+          "component": "requirement.base"
+        }
+      ]
+    },
+    {
+      "v1_rule_id": "standard-rear-setback",
+      "v2_targets": [
+        {
+          "zone": "R1-6L",
+          "capability_id": "setback.rear",
+          "rule_id": "us.ca.santa_clara.r1-6l.setback.rear",
+          "component": "requirement.base"
+        },
+        {
+          "zone": "R1-8L",
+          "capability_id": "setback.rear",
+          "rule_id": "us.ca.santa_clara.r1-8l.setback.rear",
+          "component": "requirement.base"
+        }
+      ]
+    }
+  ],
+  "migration_notes": [
+    "Every approved v1 rule has at least one explicit v2 target.",
+    "Equal values were duplicated into independent zone-owned records.",
+    "V1 contained no structured definition records; v2 definitions remain empty.",
+    "R1-6L street-side setback is 10 feet at base and 15 feet from story two.",
+    "R1-8L street-side setback selects 15 feet while preserving the 10-foot and 15-foot assertions in the conflict record.",
+    "The target remains a candidate until expanded v2 domain validation passes."
+  ]
+}

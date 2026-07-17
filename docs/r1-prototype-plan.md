@@ -330,7 +330,7 @@ Before Block 6 begins, the project must:
 6. Migrate the approved R1-6L and R1-8L data into the v2 representation without losing provenance.
 7. Expand schema, invariant, migration, and regression validation for the v2 model.
 
-The schema representation was deliberately left undecided during catalog step 1. Steps 2 through 5 are now approved and structurally implemented. The approved regulatory data remains on v1 until migration and expanded validation pass.
+The schema representation was deliberately left undecided during catalog step 1. Steps 2 through 6 are now complete: the approved contract is structurally implemented and a separate v2 candidate contains the migrated R1 data plus a complete v1 crosswalk. The approved operational data remains on v1 until expanded validation and promotion pass.
 
 ## 7. Preliminary Data Model
 
