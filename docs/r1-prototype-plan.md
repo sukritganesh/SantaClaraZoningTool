@@ -314,6 +314,22 @@ Create a machine-readable evaluation result before rendering UI. The first resul
 
 The first UI may be plain. It should prioritize correctness and traceability over elaborate design.
 
+### Pre-Block 6 ruleset v2 gate
+
+Deterministic standards retrieval is paused until the initial ruleset is redesigned for long-term growth. The supported capability scope is maintained in [Supported Regulations Catalog](regulations/supported-regulations.md). That catalog explains regulation meanings and boundaries without prescribing schema fields or duplicating jurisdiction-specific values.
+
+Before Block 6 begins, the project must:
+
+1. Establish the supported-regulations catalog.
+2. Redesign the canonical hierarchy around zones and their regulations.
+3. Give each zone its own rule identities even when current values match.
+4. Model setbacks as base requirements plus supported vertical adjustments and paired-yard configurations.
+5. Keep shared sources, citations, definitions, exceptions, and conflicts referenceable without duplicating their content in every zone.
+6. Migrate the approved R1-6L and R1-8L data into the v2 representation without losing provenance.
+7. Expand schema, invariant, migration, and regression validation for the v2 model.
+
+The schema representation remains deliberately undecided during catalog step 1.
+
 ## 7. Preliminary Data Model
 
 The exact database technology remains undecided. The logical model should include these concepts even if the first prototype stores some of them in GeoPackage, SQLite, JSON, or another lightweight format.

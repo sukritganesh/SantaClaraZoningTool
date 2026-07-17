@@ -16,6 +16,7 @@ Each project document has one job:
 - `AGENTS.md` contains durable Codex operating instructions. Do not put changing milestone status or duplicate run commands here.
 - `docs/progress.md` is the sole status ledger. Put the current stage, completed blocks, validation evidence, canonical artifacts, next block, blockers, and implementation decision log there.
 - `docs/r1-prototype-plan.md` is the design reference. Put scope, architecture, authoritative-source research, schemas, rules, and completion criteria there.
+- `docs/regulations/supported-regulations.md` is the regulatory capability catalog. Put supported regulation families, their meanings, implementation boundaries, and the deferred capability queue there; do not duplicate zone-specific values or schema field designs.
 - `docs/title18-amendment-audit.md` records the consolidated-code baseline and later-legislation audit.
 - `docs/r1-rule-verification.md` is the source trace and approval gate for machine-readable R1 rules. Update it when definitions, applicability, exceptions, conflicts, or rule dispositions change.
 - Each raw snapshot's `manifest.json` is the authoritative record of that download's sources, filters, counts, files, and checksums.
@@ -26,9 +27,10 @@ When something changes, update only its owning document unless the change genuin
 
 1. Read `docs/progress.md` to learn the current stage and next block.
 2. Read the relevant portions of `docs/r1-prototype-plan.md` before making design or scope decisions.
-3. Read `README.md` when running, changing, or documenting repository commands or dependencies.
-4. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
-5. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
+3. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
+4. Read `README.md` when running, changing, or documenting repository commands or dependencies.
+5. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
+6. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
 
 ## Preserve authoritative inputs
 
@@ -77,6 +79,7 @@ When something changes, update only its owning document unless the change genuin
 - Do not mark a block complete merely because files exist; its validation criteria must pass.
 - Update `README.md` only if setup, dependencies, runnable commands, or repository orientation changed.
 - Update the prototype plan only if design, scope, source research, or completion criteria changed.
+- Update the supported-regulations catalog when a capability is added, removed, renamed, or its supported behavior changes.
 
 ## Protect the workspace
 

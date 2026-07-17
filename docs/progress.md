@@ -2,9 +2,9 @@
 
 **Last updated:** July 16, 2026
 
-**Current position:** Block 5 complete
+**Current position:** Pre-Block 6 ruleset v2 redesign — step 1 of 7 complete
 
-**Next block:** Implement deterministic standards retrieval
+**Next action:** Redesign the canonical hierarchy around zones and their regulations
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -18,7 +18,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
-| 6. Implement deterministic standards retrieval | Not started | Requires versioned rule lookup and result contract. |
+| 6. Implement deterministic standards retrieval | Not started (gated) | Begins after the seven-step ruleset v2 redesign gate is complete. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
@@ -158,7 +158,23 @@ Completed evidence:
 
 The local polygon snapshot contains only R1-6L and R1-8L. An address with no R1 polygon match is therefore labeled `outside_supported_r1_snapshot`; its exact non-R1 zone is not inferred. Split-zone parcel-area analysis remains deferred.
 
-## Next block: deterministic standards retrieval
+## Pre-Block 6 ruleset v2 redesign
+
+Block 6 is intentionally paused while the regulatory data model is improved before it becomes a runtime dependency.
+
+| Step | Status | Evidence or next result |
+|---|---|---|
+| 1. Create the supported-regulations catalog | Complete | `docs/regulations/supported-regulations.md` defines capability stages, current regulation families, boundaries, and deferred items without prescribing schema fields. |
+| 2. Change the canonical hierarchy to zone-first | Next | Decide and document how each zone owns and indexes its regulations. |
+| 3. Give each zone separate rule identities | Pending | Shared current values must not merge independently amendable zone rules. |
+| 4. Redesign setback representation | Pending | Support base requirements, story- or height-triggered adjustments, total versus additional distance, and paired side yards. |
+| 5. Preserve shared reference data | Pending | Sources, citations, definitions, exception families, and conflicts remain reusable without conflating zone rules. |
+| 6. Migrate approved R1 data | Pending | Move R1-6L and R1-8L data into v2 without losing citations, conditions, conflict provenance, or approval status. |
+| 7. Expand v2 validation | Pending | Validate schema structure, zone indexing, migration completeness, setback semantics, conflicts, and deterministic fixtures. |
+
+Step 1 changes documentation only. The v1 schema and ruleset remain unchanged until the later redesign steps.
+
+## Block 6 after the redesign gate
 
 Block 6 exit conditions:
 
@@ -195,3 +211,5 @@ None currently recorded.
 | 2026-07-16 | Query immutable GeoJSON snapshots directly before choosing a database. | The current data volume supports a simple validated vertical slice and preserves the option to select storage after access patterns are proven. |
 | 2026-07-16 | Verify snapshot checksums and source invariants when loading lookup data. | Runtime lookup must not silently use incomplete, modified, misprojected, or out-of-scope polygon data. |
 | 2026-07-16 | Label no-polygon results outside the supported R1 snapshot rather than naming a non-R1 zone. | The local polygon snapshot is intentionally R1-filtered and cannot establish the exact designation of an unsupported parcel. |
+| 2026-07-16 | Maintain a dedicated supported-regulations catalog before redesigning schema v2. | Regulation meaning and product support boundaries should be explicit before deciding their machine-readable representation. |
+| 2026-07-16 | Keep jurisdiction-specific values and schema field designs out of the capability catalog. | Values belong to versioned rulesets, while representation belongs to schema design; separating them prevents duplicated sources of truth. |
