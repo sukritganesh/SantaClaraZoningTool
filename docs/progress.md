@@ -2,9 +2,9 @@
 
 **Last updated:** July 16, 2026
 
-**Current position:** Pre-Block 6 ruleset v2 redesign — step 1 of 7 complete
+**Current position:** Pre-Block 6 ruleset v2 redesign — steps 2–5 design draft ready for review
 
-**Next action:** Redesign the canonical hierarchy around zones and their regulations
+**Next action:** Review and approve or revise the ruleset v2 authoring contract before implementing JSON Schema v2
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -165,14 +165,14 @@ Block 6 is intentionally paused while the regulatory data model is improved befo
 | Step | Status | Evidence or next result |
 |---|---|---|
 | 1. Create the supported-regulations catalog | Complete | `docs/regulations/supported-regulations.md` defines capability stages, current regulation families, boundaries, and deferred items without prescribing schema fields. |
-| 2. Change the canonical hierarchy to zone-first | Next | Decide and document how each zone owns and indexes its regulations. |
-| 3. Give each zone separate rule identities | Pending | Shared current values must not merge independently amendable zone rules. |
-| 4. Redesign setback representation | Pending | Support base requirements, story- or height-triggered adjustments, total versus additional distance, and paired side yards. |
-| 5. Preserve shared reference data | Pending | Sources, citations, definitions, exception families, and conflicts remain reusable without conflating zone rules. |
+| 2. Change the canonical hierarchy to zone-first | Draft ready for review | `docs/regulations/ruleset-authoring-guide.md` proposes direct `zones[zone].regulations[capability]` lookup. |
+| 3. Give each zone separate rule identities | Draft ready for review | The guide proposes independent, stable rule IDs for every zone-owned capability record. |
+| 4. Redesign setback representation | Draft ready for review | The guide proposes base requirements, typed story or height triggers, total versus additional effects, and paired distances. |
+| 5. Preserve shared reference data | Draft ready for review | The guide proposes shared ID-keyed sources, citations, definitions, and exception families plus top-level conflicts. |
 | 6. Migrate approved R1 data | Pending | Move R1-6L and R1-8L data into v2 without losing citations, conditions, conflict provenance, or approval status. |
 | 7. Expand v2 validation | Pending | Validate schema structure, zone indexing, migration completeness, setback semantics, conflicts, and deterministic fixtures. |
 
-Step 1 changes documentation only. The v1 schema and ruleset remain unchanged until the later redesign steps.
+The design draft includes representative R1-6L scalar and R1-8L paired-setback examples, authoring requirements for humans and AI, invalid patterns, and future validation expectations. It deliberately does not modify the v1 schema, approved ruleset, validator, tests, or runtime code.
 
 ## Block 6 after the redesign gate
 

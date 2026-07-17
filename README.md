@@ -9,6 +9,7 @@ The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family 
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
 - [R1 prototype plan](docs/r1-prototype-plan.md) — scope, architecture, source research, proposed data model, and completion criteria.
 - [Supported regulations catalog](docs/regulations/supported-regulations.md) — regulation families, capability stages, current boundaries, and deferred expansion queue.
+- [Ruleset v2 authoring guide](docs/regulations/ruleset-authoring-guide.md) — draft zone-first representation contract and examples for human and AI-assisted authors.
 - [Title 18 amendment audit](docs/title18-amendment-audit.md) — the July 2025 baseline, later legislation ledger, R1 impact findings, and recheck triggers.
 - [R1 rule-level verification](docs/r1-rule-verification.md) — definitions, measurement rules, exceptions, conflicts, and the machine-readable rule contract.
 - [AGENTS.md](AGENTS.md) — operating instructions for Codex tasks in this workspace.
@@ -139,7 +140,8 @@ The ruleset reports selected base-zone standards only. It preserves citations, d
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── regulations/
-│   │   └── supported-regulations.md  Regulatory capability catalog
+│   │   ├── ruleset-authoring-guide.md Ruleset v2 representation draft
+│   │   └── supported-regulations.md   Regulatory capability catalog
 │   ├── r1-prototype-plan.md          Detailed prototype specification
 │   ├── r1-rule-verification.md       Verified source trace and rule contract
 │   └── title18-amendment-audit.md    Post-July-2025 source audit

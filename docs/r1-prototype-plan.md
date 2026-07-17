@@ -318,6 +318,8 @@ The first UI may be plain. It should prioritize correctness and traceability ove
 
 Deterministic standards retrieval is paused until the initial ruleset is redesigned for long-term growth. The supported capability scope is maintained in [Supported Regulations Catalog](regulations/supported-regulations.md). That catalog explains regulation meanings and boundaries without prescribing schema fields or duplicating jurisdiction-specific values.
 
+The proposed machine-readable representation and representative zone-first examples are maintained in the [Ruleset v2 Authoring Guide](regulations/ruleset-authoring-guide.md). The guide is a design draft until it is reviewed and implemented as JSON Schema v2.
+
 Before Block 6 begins, the project must:
 
 1. Establish the supported-regulations catalog.
@@ -328,7 +330,7 @@ Before Block 6 begins, the project must:
 6. Migrate the approved R1-6L and R1-8L data into the v2 representation without losing provenance.
 7. Expand schema, invariant, migration, and regression validation for the v2 model.
 
-The schema representation remains deliberately undecided during catalog step 1.
+The schema representation was deliberately left undecided during catalog step 1. Steps 2 through 5 now have a reviewable authoring draft; production artifacts remain on v1 until that draft is approved and implemented.
 
 ## 7. Preliminary Data Model
 
