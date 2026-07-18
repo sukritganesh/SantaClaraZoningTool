@@ -1,0 +1,48 @@
+<section aria-labelledby="sources-heading">
+  <h2 id="sources-heading">Sources and data versions</h2>
+  <details>
+    <summary>Inspect source receipts and versions</summary>
+    {% set gis_sources = view.sources | selectattr("kind", "equalto", "gis_layer") | list %}
+    {% set regulatory_sources = view.sources | selectattr("kind", "equalto", "regulatory_citation") | list %}
+
+    {% if regulatory_sources %}
+      <h3>Regulatory sources</h3>
+      <ol>
+        {% for source in regulatory_sources %}
+          <li id="source-{{ source.citation_id }}">
+            <strong>{{ source.document.title }}</strong>, {{ source.document.version }} — {{ source.locator }}.
+            <span>{{ source.topic }}.</span>
+            {% if source.document.official_url %}
+              <a href="{{ source.document.official_url }}">Open official source</a>
+            {% elif source.document.url %}
+              <a href="{{ source.document.url }}">Open official source</a>
+            {% endif %}
+            <a href="#main-content" aria-label="Return from source {{ source_numbers[source.citation_id] }} to the result">Return to result</a>
+          </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
+
+    {% if gis_sources %}
+      <h3>GIS layers</h3>
+      <ul>
+        {% for source in gis_sources %}
+          <li id="source-{{ source.source_id }}">
+            <a href="{{ source.url }}">{{ source.source_id | replace("_", " ") | title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if view.versions %}
+      <h3>Versions</h3>
+      <dl>
+        {% if view.versions.pipeline_contract %}<div><dt>Pipeline contract</dt><dd>{{ view.versions.pipeline_contract }}</dd></div>{% endif %}
+        {% if view.versions.address_snapshot %}<div><dt>Address snapshot</dt><dd>{{ view.versions.address_snapshot }}</dd></div>{% endif %}
+        {% if view.versions.r1_gis_snapshot %}<div><dt>R1 GIS snapshot</dt><dd>{{ view.versions.r1_gis_snapshot }}</dd></div>{% endif %}
+        {% if view.versions.ruleset %}<div><dt>Ruleset</dt><dd>{{ view.versions.ruleset }}</dd></div>{% endif %}
+        <div><dt>Presentation contract</dt><dd>{{ view.presentation_contract_version }}</dd></div>
+      </dl>
+    {% endif %}
+  </details>
+</section>

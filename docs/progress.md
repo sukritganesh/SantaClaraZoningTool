@@ -315,6 +315,20 @@ Block 7.4a validation evidence:
 index GET /; static GET /static/<path:filename>
 ```
 
+Block 7.4b is implemented in `santa_clara_zoning/templates/`. `base.html` provides the page landmarks and skip link; `index.html` retains the persistent address search and dispatches only on presentation kind; `_success.html` renders property identity, overview, use, approvals, standards, setbacks, qualifications, and limitations; `_outcome.html` renders controlled non-regulatory outcomes and available evidence; `_sources.html` renders linked regulatory receipts, GIS layers, and versions; and `_macros.html` centralizes typed quantities, paired setbacks, conditions, and citation references.
+
+The semantic layer contains no zone-specific values, regulatory calculations, CSS framework, or runtime AI. Scalar and paired setbacks remain distinct, second-story values remain total minimums, street-side applicability remains conditional, and the R1-8L conflict remains a visible project resolution with both assertions and re-review triggers. Every non-success kind uses the outcome template and renders no regulatory sections.
+
+Block 7.4b validation evidence:
+
+```text
+.venv/bin/python -B -m unittest tests.test_web -v
+14 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+137 passed, 0 failed, 0 skipped
+```
+
 Validation evidence:
 
 ```text
@@ -332,7 +346,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | In progress | Block 7.4a Flask shell complete with 9 focused and 132 full tests; review Block 7.4b semantic templates next. |
+| 7.4 Build the initial interface | In progress | Blocks 7.4a–7.4b complete: the Flask shell and semantic templates pass 14 focused and 137 full tests; review Block 7.4c visual implementation next. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:

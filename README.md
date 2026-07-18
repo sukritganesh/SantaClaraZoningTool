@@ -202,7 +202,7 @@ After installing `requirements.txt` and restoring the canonical local snapshots,
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and enter a Santa Clara address. The Block 7.4a interface is intentionally a minimal shell: it proves the single read-only route, startup-time pipeline loading, deterministic presenter connection, and controlled integrity boundary. Semantic result sections and visual styling are added in the following Block 7.4 substeps.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and enter a Santa Clara address. The current interface renders the complete semantic result structure: property identity, supported use, approvals, selected standards, setbacks, qualifications, limitations, source receipts, data versions, and controlled non-regulatory outcomes. Visual styling is intentionally deferred to the next Block 7.4 substep.
 
 The built-in server is for local development only. It binds to the local machine by default; do not expose debug mode or the development server as a production deployment.
 

@@ -1,0 +1,33 @@
+{% macro source_refs(citation_ids, source_numbers) -%}
+  {% if citation_ids %}
+    <sup aria-label="Sources">
+      {% for citation_id in citation_ids %}
+        <a href="#source-{{ citation_id }}" aria-label="Source {{ source_numbers[citation_id] }}">{{ source_numbers[citation_id] }}</a>{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    </sup>
+  {% endif %}
+{%- endmacro %}
+
+{% macro quantity(value) -%}
+  {{ value.number }} {{ value.unit }}
+{%- endmacro %}
+
+{% macro setback_value(value) -%}
+  {% if value.kind == "distance" %}
+    {{ quantity(value) }}
+  {% elif value.kind == "paired_distances" %}
+    {% for member in value.members %}
+      <span data-pair-role="{{ member.role }}">
+        {{ "Smaller" if member.role == "smaller_setback" else "Larger" }}: {{ quantity(member) }}
+      </span>{% if not loop.last %}; {% endif %}
+    {% endfor %}
+  {% endif %}
+{%- endmacro %}
+
+{% macro conditions(items) -%}
+  {% if items %}
+    <ul>
+      {% for condition in items %}<li>{{ condition }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+{%- endmacro %}

@@ -19,11 +19,32 @@ SNAPSHOTS_AVAILABLE = (
 
 def _view(kind: str = "success") -> dict:
     return {
+        "presentation_contract_version": "1.0.0",
         "kind": kind,
+        "source_reason_code": "fixture_reason",
+        "query": {
+            "entered_address": "Fixture address",
+            "normalized_address": "FIXTURE ADDRESS",
+        },
+        "property": {
+            "display_address": "Fixture address" if kind == "success" else None,
+            "apn": "fixture-apn" if kind == "success" else None,
+            "zone": "R1-fixture" if kind == "success" else None,
+            "scope_label": "R1 base-zone prototype",
+        },
         "overview": {
             "headline": "Fixture headline",
             "summary": "Fixture summary",
+            "disclaimer": "Fixture scope disclaimer" if kind == "success" else None,
         },
+        "use_permissions": [],
+        "approvals": [],
+        "key_standards": [],
+        "setbacks": [],
+        "warnings": [],
+        "not_evaluated": [],
+        "sources": [],
+        "versions": {},
     }
 
 
@@ -108,6 +129,25 @@ class WebShellTest(unittest.TestCase):
         self.assertNotIn(entered, body)
         self.assertIn("&lt;script&gt;", body)
 
+    def test_review_required_view_contains_no_regulatory_sections(self) -> None:
+        self.pipeline.analyze_address.return_value = {"fixture": True}
+
+        with patch(
+            "santa_clara_zoning.web.present_pipeline_result",
+            return_value=_view("review_required"),
+        ):
+            response = self.client.get(
+                "/",
+                query_string={"address": "Review fixture"},
+            )
+
+        body = response.get_data(as_text=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-result-kind="review_required"', body)
+        self.assertIn("Edit the address and try again", body)
+        self.assertNotIn("What base zoning permits", body)
+        self.assertNotIn("Key base-zone standards", body)
+
     def test_post_is_not_an_application_route(self) -> None:
         response = self.client.post("/", data={"address": "636 Barto St"})
 
@@ -153,6 +193,84 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('data-result-kind="success"', body)
         self.assertIn("R1-6L base-zone standards", body)
+
+    def test_barto_renders_semantic_success_sections_and_source_links(self) -> None:
+        response = self.app.test_client().get(
+            "/",
+            query_string={"address": "636 Barto Street"},
+        )
+        body = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        expected_sections = (
+            "What base zoning permits",
+            "Required approvals",
+            "Key base-zone standards",
+            "Setbacks",
+            "Important qualifications",
+            "Limitations",
+            "Sources and data versions",
+        )
+        for heading in expected_sections:
+            with self.subTest(heading=heading):
+                self.assertIn(heading, body)
+        self.assertIn("<table>", body)
+        self.assertIn('scope="col"', body)
+        self.assertIn('scope="row"', body)
+        self.assertIn("Total minimum beginning at story 2", body)
+        self.assertIn('href="#source-r1-standards-table"', body)
+        self.assertIn('id="source-r1-standards-table"', body)
+        self.assertIn("Not evaluated", body)
+
+    def test_brookside_renders_paired_values_and_full_conflict_notice(self) -> None:
+        response = self.app.test_client().get(
+            "/",
+            query_string={"address": "108 Brookside Avenue"},
+        )
+        body = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-pair-role="smaller_setback"', body)
+        self.assertIn('data-pair-role="larger_setback"', body)
+        self.assertIn('data-warning-kind="source_conflict"', body)
+        self.assertIn("Prototype-selected value", body)
+        self.assertIn("not an official City correction", body)
+        self.assertIn("Competing source assertions", body)
+        self.assertIn("Official City or codifier clarification", body)
+
+    def test_controlled_lookup_outcomes_render_no_regulatory_sections(self) -> None:
+        fixtures = {
+            "1500 Warburton Avenue": "Outside the supported R1 prototype",
+            "324 Los Padres Boulevard": "Multiple address records matched",
+            "not a real santa clara address": "Address not found",
+            "": "Enter an address",
+        }
+
+        for address, headline in fixtures.items():
+            with self.subTest(address=address):
+                response = self.app.test_client().get(
+                    "/",
+                    query_string={"address": address},
+                )
+                body = response.get_data(as_text=True)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn('data-result-kind="lookup_failure"', body)
+                self.assertIn(headline, body)
+                self.assertIn("Edit the address and try again", body)
+                self.assertNotIn("What base zoning permits", body)
+                self.assertNotIn("Key base-zone standards", body)
+
+    def test_ambiguous_address_lists_candidates_without_selecting_one(self) -> None:
+        response = self.app.test_client().get(
+            "/",
+            query_string={"address": "324 Los Padres Boulevard"},
+        )
+        body = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Matching address records", body)
+        self.assertIn("No candidate was selected automatically", body)
+        self.assertIn("unit 1", body)
 
 
 if __name__ == "__main__":

@@ -1,35 +1,42 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Santa Clara R1 Zoning Prototype</title>
-  </head>
-  <body>
-    <header>
-      <p>Santa Clara R1 zoning prototype</p>
-      <h1>Look up a property</h1>
-    </header>
-    <main>
-      <form action="{{ url_for('index') }}" method="get">
-        <label for="address">Santa Clara address</label>
-        <input
-          id="address"
-          name="address"
-          type="text"
-          value="{{ entered_address }}"
-          autocomplete="street-address"
-          required
-        >
-        <button type="submit">Analyze property</button>
-      </form>
+{% extends "base.html" %}
 
-      {% if view is not none %}
-        <section data-result-kind="{{ view.kind }}" aria-live="polite">
-          <h2>{{ view.overview.headline }}</h2>
-          <p>{{ view.overview.summary }}</p>
-        </section>
+{% block content %}
+  <section aria-labelledby="search-heading">
+    <h2 id="search-heading">Look up a property</h2>
+    <form action="{{ url_for('index') }}" method="get" role="search">
+      <label for="address">Santa Clara street address</label>
+      <input
+        id="address"
+        name="address"
+        type="text"
+        value="{{ entered_address }}"
+        autocomplete="street-address"
+        aria-describedby="address-help"
+        required
+      >
+      <p id="address-help">Enter one street address within the City of Santa Clara.</p>
+      <button type="submit">Analyze property</button>
+    </form>
+  </section>
+
+  {% if view is not none %}
+    {% set source_numbers = {} %}
+    {% set citation_counter = namespace(value=0) %}
+    {% for source in view.sources if source.kind == "regulatory_citation" %}
+      {% set citation_counter.value = citation_counter.value + 1 %}
+      {% set _ = source_numbers.update({source.citation_id: citation_counter.value}) %}
+    {% endfor %}
+
+    <div aria-live="polite">
+      {% if view.kind == "success" %}
+        {% include "_success.html" %}
+      {% else %}
+        {% include "_outcome.html" %}
       {% endif %}
-    </main>
-  </body>
-</html>
+    </div>
+
+    {% if view.sources or view.versions %}
+      {% include "_sources.html" %}
+    {% endif %}
+  {% endif %}
+{% endblock %}
