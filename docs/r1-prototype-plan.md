@@ -703,15 +703,15 @@ The successful result should present, in order:
 
 Suggested unsupported-zone message:
 
-> This parcel was located successfully, but its zoning is outside the current R1-6L/R1-8L prototype. No regulations were attached.
+> This address was located successfully, but its parcel is outside the filtered R1-6L/R1-8L snapshot. Its exact non-R1 zoning was not determined, and no regulations were attached.
 
 ### Block 7 implementation sequence
 
 | Substep | Status | Intended result |
 |---|---|---|
 | 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
-| 7.2 Implement the pure presenter | Next | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
-| 7.3 Validate presenter behavior | Pending | Test both R1 zones, all controlled failures, conflicts, conditional applicability, provenance, mutation isolation, and repeatability |
+| 7.2 Implement the pure presenter | Complete | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
+| 7.3 Validate presenter behavior | Next | Test both R1 zones, all controlled failures, conflicts, conditional applicability, provenance, mutation isolation, and repeatability |
 | 7.4 Build the initial interface | Pending | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
@@ -791,6 +791,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Implement Block 7.2's pure deterministic presenter against approved presentation contract `1.0.0`. The presenter should map every supported Block 6 success and controlled outcome into a new UI-neutral object without hard-coded zone values, runtime AI, mutation of the source result, or silent omission of unknown capabilities.
+Complete Block 7.3's validation matrix against the implemented pure presenter. Expand the focused coverage with any remaining mutation, ordering, provenance, cross-process repeatability, and real-pipeline assertions needed to prove presentation contract `1.0.0` before selecting and building the initial interface.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

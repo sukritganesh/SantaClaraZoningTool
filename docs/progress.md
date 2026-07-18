@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.1 complete — presentation contract `1.0.0` approved
+**Current position:** Block 7.2 complete — deterministic presenter implemented
 
-**Next action:** Block 7.2 — implement the pure deterministic presenter
+**Next action:** Block 7.3 — complete the presenter validation matrix
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Block 7.1 approved UI-neutral presentation contract `1.0.0`, controlled wording, outcome mapping, provenance rules, and display order. |
+| 7. Present a simple result | In progress | Block 7.1 approved contract `1.0.0`; Block 7.2 implemented the pure presenter with focused tests and 114 passing repository tests. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -288,13 +288,27 @@ The presentation contract will also establish the product's reuse boundary: shar
 
 The project owner approved Block 7.1 on July 18, 2026. Presentation contract `1.0.0` fixes the successful top-level model; controlled `success`, `lookup_failure`, `review_required`, and `system_error` outcomes; deterministic wording; display order; rule and citation linkage; source-receipt behavior; and version mapping. The normative design is in `docs/r1-prototype-plan.md`; executable types and validation will be added with Blocks 7.2 and 7.3.
 
+Block 7.2 is implemented in `santa_clara_zoning/presentation.py`. `present_pipeline_result()` maps complete Block 6 results through an explicit supported-capability registry and typed handlers for status, maximum-quantity, scalar-setback, paired-setback, and story-based total-minimum records. `present_integrity_error()` separately maps known internal integrity failures to safe `system_error` views so the pure presenter does not swallow malformed data.
+
+The presenter preserves rule identity, applicability, conditions, exception families, source conflicts, citations, GIS sources, limitations, and versions. It uses fixed ordering, constructs independent output objects, rejects unknown capabilities and requirement shapes, and attaches no regulations to controlled lookup or review outcomes. Real local checks produced successful R1-6L and R1-8L views plus controlled non-R1, ambiguous, and unmatched views.
+
+Validation evidence:
+
+```text
+.venv/bin/python -B -m unittest discover -s tests -p 'test_presentation.py' -v
+9 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+114 passed, 0 failed, 0 skipped
+```
+
 Implementation sequence:
 
 | Substep | Status | Intended result |
 |---|---|---|
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
-| 7.2 Implement the pure presenter | Next | Map every supported typed rule and controlled outcome without hard-coded zone values. |
-| 7.3 Validate presenter behavior | Pending | Prove both zone branches, conflicts, conditional applicability, failures, provenance, mutation isolation, and repeatability. |
+| 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
+| 7.3 Validate presenter behavior | Next | Complete the approved validation matrix, including additional mutation, ordering, source, and cross-process checks. |
 | 7.4 Build the initial interface | Pending | Accept an address and render the approved view model through the lightest suitable local UI surface. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
@@ -354,3 +368,5 @@ None currently recorded.
 | 2026-07-18 | Use a brief template-derived zone overview for the current prototype. | The approved ruleset has no source-backed per-zone narrative; the presenter can safely compose existing zone, use, approval, scope, and disclaimer fields without inventing suffix meanings. |
 | 2026-07-18 | Build toward a shared regulatory core with controlled jurisdiction extensions. | Common semantics and renderers should be reusable across cities, while unique local rules remain typed, source-backed, validated, and visible instead of being forced into a near-match or silently omitted. |
 | 2026-07-18 | Approve UI-neutral presentation contract `1.0.0`. | Fixes deterministic success and failure semantics, controlled wording, display order, provenance linkage, source behavior, and version mapping before presenter implementation begins. |
+| 2026-07-18 | Use explicit capability and requirement dispatch in the presenter. | Shared capability mappings remain deterministic and ordered; unknown capabilities, status codes, and setback shapes fail visibly rather than being guessed or omitted. |
+| 2026-07-18 | Keep integrity-error adaptation separate from pure result presentation. | The presenter stays stateless and fail-closed, while a deliberate application boundary can produce a safe `system_error` view without exposing internal details. |
