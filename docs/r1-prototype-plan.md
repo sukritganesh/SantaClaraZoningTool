@@ -399,7 +399,7 @@ The initial regulatory implementation is a normalized, versioned JSON ruleset wi
 
 ## 8. Block 6 Retrieval Contract
 
-The project owner approved this direction on July 17, 2026. Contract version `1.0.0` describes the shape and meaning of the combined lookup-and-regulations result; it is not an evaluation-engine version. Ruleset version `2026-07-17.2` independently identifies the approved regulatory data. A separate engine version is deferred until the prototype performs meaningful proposal evaluation or rule calculations.
+The project owner approved this direction on July 17, 2026, and Block 6 passed its acceptance gate on July 18, 2026. Contract version `1.0.0` describes the shape and meaning of the combined lookup-and-regulations result; it is not an evaluation-engine version. Ruleset version `2026-07-17.2` independently identifies the approved regulatory data. A separate engine version is deferred until the prototype performs meaningful proposal evaluation or rule calculations.
 
 Block 6 has two deterministic boundaries:
 
@@ -436,10 +436,22 @@ The successful combined result will follow this contract direction:
     "parcel_attribute_agrees": true
   },
   "regulatory_context": {
-    "jurisdiction": "City of Santa Clara",
+    "jurisdiction": {
+      "name": "City of Santa Clara",
+      "slug": "santa_clara",
+      "state": "CA",
+      "country": "US"
+    },
     "ruleset_id": "santa-clara-r1-base-zone",
     "ruleset_version": "2026-07-17.2",
-    "verified_through": "2026-07-16"
+    "schema_version": "2.0.0",
+    "approved_on": "2026-07-17",
+    "verified_through": "2026-07-16",
+    "scope": {
+      "description": "Selected base-zone rules for single-family primary structures in R1-6L and R1-8L.",
+      "structure_types": ["single_family_primary_structure"],
+      "result_kind": "base_zone_standards_retrieval"
+    }
   },
   "regulations": {
     "use.single_family_dwelling": {},
@@ -462,7 +474,7 @@ The successful combined result will follow this contract direction:
   "not_evaluated": [
     "<topics copied from the approved ruleset>"
   ],
-  "disclaimer": "Selected base-zone standards only.",
+  "disclaimer": "This prototype reports selected base-zone standards and is not a complete entitlement analysis or legal or planning determination.",
   "versions": {
     "address_snapshot": "2026-07-16",
     "r1_gis_snapshot": "2026-07-14",
@@ -520,7 +532,7 @@ At minimum, test:
 - an invalid or unmatched address;
 - an ambiguous or incomplete address;
 - a parcel/zoning mismatch if one can be identified;
-- a corner lot to confirm side-yard presentation; and
+- preservation of the street-side rule's corner-only applicability without claiming that the parcel has been classified as a corner lot; and
 - repeat runs using the same snapshot and ruleset.
 
 Initial local-snapshot fixtures:
@@ -550,21 +562,17 @@ The first prototype is complete when it can:
 - identify unsupported zones and error states cleanly; and
 - reproduce the same output from the same versioned inputs.
 
-## 12. Decisions Pending Before Implementation
+## 12. Remaining Decisions After Block 6
 
-- Prototype form: notebook, command-line script, or small web application.
-- Application language and framework.
-- Local spatial storage: GeoPackage/SQLite, DuckDB Spatial, PostGIS, or another option.
-- Whether the first run uses live GIS services, a local snapshot, or both.
-- Exact address-normalization strategy.
-- Which setback notes and exceptions are necessary for the first approved ruleset.
-- Process for auditing post-July-2025 amendments.
-- Additional corner-lot and parcel/zoning-mismatch fixtures.
-- UI layout for the first retrieval view.
-- Repository structure for raw data, canonical data, manifests, code, and tests.
+- Block 7 presentation form: command-line renderer or small local web application.
+- Application framework if a web interface is selected.
+- How the result view groups permissions, approvals, dimensional standards, setbacks, sources, conflicts, and `not evaluated` topics.
+- Whether and when to add authoritative corner-lot classification rather than displaying the street-side rule conditionally.
+- When the direct immutable-snapshot lookup should be replaced by GeoPackage, DuckDB Spatial, PostGIS, or another indexed spatial store.
+- Whether a later deployed version uses local snapshots, refreshed snapshots, live GIS services, or a controlled combination.
 
 ## 13. Likely Immediate Next Step
 
-Implement the Block 6 approved-ruleset loader. It should load immutable v2 version `2026-07-17.2`, run the existing schema, domain, source, migration, and runtime-eligibility gates, and refuse candidate, incomplete, or corrupted inputs. Pure zone retrieval and address orchestration follow only after that loader is tested.
+Plan Block 7's deterministic presentation contract, then render the existing `R1StandardsPipeline` result without changing its authoritative content. The first view should clearly separate parcel facts, zoning, use and approval status, dimensional standards, conditional setbacks, source evidence, conflicts, and topics not evaluated.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.
