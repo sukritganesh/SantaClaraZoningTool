@@ -799,6 +799,74 @@ Block 7.4 proceeds in four approved substeps:
 | 7.4 Build the initial interface | In progress | Flask shell and route complete; semantic templates, visual implementation, and final web validation remain |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
+### Block 7.5 browser validation and closeout plan
+
+Block 7.5 is a validation-and-fix block, not a feature or regulatory-expansion block. It asks whether the completed local interface faithfully, accessibly, and reproducibly presents the approved deterministic model in a real browser. Recording this plan does not start the block; execution remains pending in `docs/progress.md` until the project owner directs it to proceed.
+
+#### 7.5a Reproduce startup
+
+Follow the README from the repository root to confirm that the documented environment, dependency installation, canonical local snapshots, and Flask command are sufficient. Verify that the landing page loads without an API key, database, runtime AI service, live GIS call, frontend build step, or external asset dependency. Check the browser console and server output for startup or rendering errors. Update the README only if the reproduced instructions are wrong or incomplete.
+
+#### 7.5b Exercise the browser-state matrix
+
+Inspect the landing page and the following canonical outcomes at desktop, tablet, and mobile widths where the state has regulatory or layout complexity:
+
+| State | Fixture | Browser acceptance focus |
+|---|---|---|
+| Landing | No address | Clear search purpose, label, help text, and initial focus path |
+| R1-6L success | `636 Barto Street` | Property identity, scalar setbacks, approvals, standards, limitations, and source access |
+| R1-8L success | `108 Brookside Avenue` | Paired side setbacks and the complete 10-foot/15-foot source-conflict warning |
+| Unsupported zone | `1500 Warburton Avenue` | Controlled message, retained address, retry path, and no regulations |
+| Ambiguous address | `324 Los Padres Boulevard` | Candidate evidence without automatic selection or regulations |
+| Unmatched address | A deliberately invalid Santa Clara address | Clear correction path and no regulations |
+
+Use representative widths near 1440 pixels, 768 pixels, and 390 pixels. The page itself must not overflow horizontally. The setback table may scroll inside its labeled region on narrow screens, and no essential content may be clipped, overlapped, or made unreachable.
+
+#### 7.5c Validate interaction and accessibility behavior
+
+Test the complete primary path using both a pointer and keyboard:
+
+- use the skip link and follow a logical focus order through the address form and result;
+- submit, edit, and resubmit an address while preserving the entered value;
+- confirm visible focus treatment for links, buttons, form controls, disclosures, and source markers;
+- open source popovers through hover, focus, and click, then reach their receipt links;
+- close source popovers through Escape or browser light-dismiss behavior without trapping focus;
+- operate limitation, lookup-evidence, and source disclosures from the keyboard;
+- navigate the horizontally scrollable setback region at narrow widths; and
+- confirm reduced-motion behavior and that color is never the only status signal.
+
+The source marker may remain visually unobtrusive, but its effective pointer and touch target must be comfortably selectable. Foreground and background combinations used for body text, controls, links, supported states, qualifications, conflicts, and system errors must meet the normal WCAG AA contrast thresholds applicable to their text size.
+
+#### 7.5d Review visual hierarchy and regulatory wording
+
+Confirm that property identity and zoning are immediately understandable; use permission remains distinct from required approvals; base-zone dimensional standards are not presented as a parcel-specific design calculation; second-story setbacks are labeled as total minimums; paired side setbacks remain smaller/larger rather than left/right; street-side rules remain corner-only without classifying the parcel; and `not evaluated` topics do not appear prohibited or irrelevant.
+
+The R1-8L conflict warning must remain prominent and include the selected project value, competing assertions, project-resolution status, and re-review conditions. The approved disclaimer must remain visible. Source popovers and expanded receipts must remain legible and within the viewport without dominating the primary result.
+
+#### 7.5e Correct confirmed presentation defects and rerun validation
+
+Fix only defects established by the browser review. Expected change surfaces are templates, CSS, the source-popover script, web regression tests, and—only if reproduction fails—the README. Do not change regulatory values, add zones or capabilities, expand address matching, introduce proposal evaluation, or redesign the ruleset in this block. Add an automated regression test when a browser finding has a stable programmatic assertion.
+
+After any correction, rerun the focused web suite, the full repository suite, the JavaScript syntax check, the documented startup path, and the affected browser cases. Previously accepted deterministic, provenance, escaping, and non-regulatory-outcome guarantees must remain intact.
+
+#### 7.5f Record evidence and close Block 7
+
+Record the tested browser states, viewports, interaction results, confirmed fixes, final commands, and regression counts in `docs/progress.md`. Mark Block 7 complete only when all Block 7 exit conditions pass. Update the README only for a setup or runbook correction, and update this prototype plan only if validation changes a design boundary or completion criterion. Commit and push the final validated state.
+
+Block 7.5 does not include exhaustive screen-reader or multi-browser certification, deployment, performance or penetration testing, live-GIS validation, new regulatory research, or the broader end-to-end fixture work assigned to Block 8.
+
+Block 7.5 passes when:
+
+1. the documented local startup path works without an undeclared runtime service;
+2. each browser-state fixture renders the correct controlled presentation kind;
+3. both supported R1 results remain readable and operable at desktop and mobile widths;
+4. unsuccessful outcomes contain no regulatory conclusions;
+5. primary controls, disclosures, source markers, and source links work by keyboard and pointer;
+6. focus, contrast, overflow, popup positioning, and reduced-motion behavior meet the prototype acceptance boundary;
+7. conditional, conflicting, and unevaluated subjects retain their approved qualifications;
+8. focused and full regression validation pass after any fixes; and
+9. the progress ledger contains reproducible evidence and marks Block 7 complete.
+
 ### Block 7 validation matrix
 
 - Barto renders the exact R1-6L use, approvals, metrics, scalar setbacks, story adjustments, limitations, and citations.
