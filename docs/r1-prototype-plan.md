@@ -500,26 +500,182 @@ The orchestrator preserves existing Block 5 outcomes when address or spatial loo
 
 This contract retrieves and packages approved base-zone rules. It does not determine corner-lot facts, choose a proposed story count, calculate a building envelope or structure coverage, compare a proposal with a standard, apply state-law overrides or overlays, or produce final UI formatting.
 
-## 9. Initial UI Content
+## 9. Block 7 Deterministic Presentation Plan
 
-The first result page should show:
+### Objective
 
-1. Matched address.
-2. APN and zoning designation.
-3. A clear scope label: **R1 base-zone prototype**.
-4. Height, stories, coverage, and setback values.
-5. A citation for the standards.
-6. GIS and ruleset version dates.
-7. A prominent list of topics not evaluated.
-8. Warnings for address ambiguity, conflicting zoning data, or unsupported zones.
+Block 7 will turn the complete Block 6 result into a concise, planner-friendly presentation without changing, recomputing, or expanding the authoritative content. It will introduce a pure deterministic presenter between `R1StandardsPipeline` and the first user interface.
+
+The presenter answers the narrow question:
+
+> What does the supported base R1 zoning allow, what approvals and selected standards apply, and what has not been evaluated?
+
+It does not answer whether a particular design is compliant or whether development is ultimately feasible.
+
+### Current overview policy
+
+The approved ruleset does not contain a dedicated narrative description for R1-6L or R1-8L. For this iteration, the overview will therefore be brief and assembled deterministically from existing approved fields:
+
+- jurisdiction;
+- exact zone designation;
+- supported structure scope;
+- single-family use status;
+- approval requirements; and
+- the approved scope disclaimer.
+
+A representative overview is:
+
+> This property is zoned R1-6L. Under the supported base-zone rules, a single-family dwelling is permitted by right. Zoning Clearance and Architectural Review are required. This prototype reports selected base-zone standards only.
+
+The presenter must not infer or explain the meaning of the `6L` or `8L` suffixes. Richer descriptions are deferred until source-backed, reviewed zone profiles exist in versioned regulatory data. A later system may compose those profiles with parcel facts, overlays, state-law effects, and proposal evaluation, but runtime AI will not invent the authoritative overview.
+
+### Architecture boundary
+
+```text
+R1StandardsPipeline result contract 1.0.0
+                 ↓
+Pure deterministic presenter
+                 ↓
+Versioned UI-neutral presentation model
+                 ↓
+Initial CLI or local web interface
+```
+
+The presenter will:
+
+- accept one complete Block 6 result;
+- preserve the original result status and reason code;
+- map typed regulatory records into display components;
+- retain rule IDs and source-reference IDs behind every consequential item;
+- carry conditions, exceptions, conflicts, limitations, and versions forward; and
+- return a new object without mutating the pipeline result.
+
+It will not contain zone-specific numeric constants, legal conclusions, spatial calculations, or fallback guesses. A candidate presentation-contract version `1.0.0` will be reviewed in Block 7.1 independently of the Block 6 result-contract version.
+
+### Candidate presentation model
+
+The UI-neutral model should follow this direction:
+
+```json
+{
+  "presentation_contract_version": "1.0.0",
+  "kind": "success",
+  "source_status": "r1_standards_found",
+  "property": {
+    "display_address": "<matched address>",
+    "apn": "<APN>",
+    "zone": "<exact zone>",
+    "scope_label": "R1 base-zone prototype"
+  },
+  "overview": {
+    "headline": "<base-zoning conclusion>",
+    "summary": "<brief deterministic summary>",
+    "disclaimer": "<approved ruleset disclaimer>"
+  },
+  "use_permissions": [],
+  "approvals": [],
+  "key_standards": [],
+  "setbacks": [],
+  "warnings": [],
+  "not_evaluated": [],
+  "sources": [],
+  "versions": {}
+}
+```
+
+This is a planning direction rather than an approved schema. Block 7.1 must define required fields, controlled display statuses, ordering, source-link behavior, and failure-result shapes before implementation.
+
+### Deterministic mapping rules
+
+| Authoritative input | Presentation output |
+|---|---|
+| Address, parcel, and zoning records | Property header with matched address, APN, exact zone, and scope label |
+| `use.single_family_dwelling` status | Primary-use card with controlled permission wording |
+| Approval status rules | Separate required-approval rows; never merged into use permission |
+| `maximum_quantity` rules | Height, stories, and structure-coverage metric cards with units and base-value qualifiers |
+| Scalar setback | Base distance plus any typed story adjustment |
+| Paired setback | Coordinated smaller/larger values; never averaged or assigned to physical sides |
+| `lot_context: corner` | Conditional “applies only to a corner lot” label; never a parcel classification |
+| Rule conditions | Concise notes attached to the affected display item |
+| Exception-family references | “Additional rules may apply” warnings with inspectable detail |
+| Conflict record | Prominent conflict notice showing selected value, competing assertions, status, and rationale |
+| Citations and source documents | Human-readable source receipts using title, version, and locator |
+| `not_evaluated` and disclaimer | Dedicated limitations section and persistent scope notice |
+| Contract and data versions | Collapsible methodology or data-version details |
+
+### Result-page hierarchy
+
+The successful result should present, in order:
+
+1. **Property identity:** matched address, APN, exact zoning designation, and prototype scope.
+2. **Brief overview:** the supported base use, approval summary, and scope limitation.
+3. **What base zoning permits:** single-family dwelling permission, using the exact controlled status.
+4. **Required approvals:** Zoning Clearance and Architectural Review as distinct requirements; a Development Review Hearing remains conditional where the source condition says so.
+5. **Key standards:** maximum primary-structure height, maximum stories, and maximum structure coverage.
+6. **Setbacks:** front, interior-side, street-side, and rear requirements, including typed story adjustments and paired values.
+7. **Warnings and conflicts:** source conflicts, proposal-dependent assignments, corner-only applicability, and other consequential conditions.
+8. **Not evaluated:** deferred subjects that must not be mistaken for prohibitions or completed checks.
+9. **Sources and versions:** inspectable code locators, document versions, GIS snapshot dates, ruleset version, and result-contract version.
+
+### Wording requirements
+
+- Say **“permitted by right under the supported base zoning,”** not “approval free” or “definitely buildable.”
+- Keep use permission separate from Zoning Clearance, Architectural Review, and conditional hearing requirements.
+- Label dimensional numbers as selected **base-zone** standards rather than parcel-specific computed limits.
+- Describe 40 percent as structure coverage, not floor-area ratio, maximum floor area, or remaining capacity.
+- Describe story-triggered setback values as total minimums, not additional distances.
+- Describe paired side yards as coordinated values whose physical assignment is proposal-dependent.
+- Show the street-side rule conditionally because corner-lot status is not currently determined.
+- Preserve the R1-8L 10-foot/15-foot source conflict and project resolution without presenting it as an official City correction.
+- Use **“not evaluated”** for unsupported subjects; do not translate them into “not allowed” or “not applicable.”
+- Always retain the approved disclaimer that the result is not a complete entitlement or legal/planning determination.
+
+### Failure and integrity presentation
+
+| Pipeline outcome | Presentation behavior |
+|---|---|
+| `address_not_found` | Explain that no exact local address match was found and invite corrected input |
+| `address_ambiguous` | Show candidate records without selecting one |
+| `outside_supported_r1_snapshot` | Explain that the address was located but its exact non-R1 zoning was not determined by this prototype |
+| `review_required` | Show the pipeline reason and available parcel/zoning evidence without attaching regulations |
+| Ruleset or pipeline integrity exception | Show a system/data validation error, not a parcel-specific planning conclusion |
 
 Suggested unsupported-zone message:
 
-> This parcel was located successfully, but its zoning designation is outside the current R1-6L/R1-8L prototype.
+> This parcel was located successfully, but its zoning is outside the current R1-6L/R1-8L prototype. No regulations were attached.
 
-Suggested scope disclaimer:
+### Block 7 implementation sequence
 
-> This prototype reports selected base-zone standards and does not constitute a complete entitlement or buildability determination.
+| Substep | Intended result |
+|---|---|
+| 7.1 Approve presentation contract and wording | Fix the UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version |
+| 7.2 Implement the pure presenter | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
+| 7.3 Validate presenter behavior | Test both R1 zones, all controlled failures, conflicts, conditional applicability, provenance, mutation isolation, and repeatability |
+| 7.4 Build the initial interface | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
+| 7.5 Validate and close Block 7 | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
+
+### Block 7 validation matrix
+
+- Barto renders the exact R1-6L use, approvals, metrics, scalar setbacks, story adjustments, limitations, and citations.
+- Brookside renders paired R1-8L interior yards and the full street-side conflict warning.
+- Street-side setbacks are labeled corner-only for both zones without classifying either test parcel as a corner lot.
+- Warburton, Los Padres, unmatched, and synthetic review-required results render controlled failure views with no regulatory cards.
+- Every displayed consequential value retains rule and citation references.
+- Presenter output cannot mutate the Block 6 result and is byte-equivalent for identical inputs.
+- Tests fail if the presenter hard-codes a zone value, drops a supported regulation, hides a conflict, or converts an unevaluated subject into a conclusion.
+
+### Block 7 exit conditions
+
+Block 7 is complete when:
+
+1. a versioned presentation contract is approved;
+2. a pure deterministic presenter maps every supported rule family and controlled outcome;
+3. a successful view clearly presents property identity, overview, use, approvals, standards, setbacks, warnings, limitations, sources, and versions;
+4. conditional and conflicting rules remain visibly qualified;
+5. no displayed regulatory number is maintained separately from the Block 6 result;
+6. unsupported and integrity outcomes cannot appear as successful planning conclusions;
+7. the initial interface accepts an address and renders the approved presentation model; and
+8. focused and full-suite validation pass with reproducible setup instructions.
 
 ## 10. Validation Strategy
 
@@ -573,6 +729,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Plan Block 7's deterministic presentation contract, then render the existing `R1StandardsPipeline` result without changing its authoritative content. The first view should clearly separate parcel facts, zoning, use and approval status, dimensional standards, conditional setbacks, source evidence, conflicts, and topics not evaluated.
+Review and approve Block 7.1's candidate presentation contract and wording rules. This step should fix the required success and failure fields, controlled labels, display order, provenance linkage, and presentation version before any presenter or interface code is written.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

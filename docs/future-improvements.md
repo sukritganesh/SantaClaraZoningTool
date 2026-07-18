@@ -2,7 +2,7 @@
 
 **Status:** Active backlog
 
-**Last updated:** July 17, 2026
+**Last updated:** July 18, 2026
 
 This document records worthwhile improvements that are not all part of the current implementation block. It prevents design observations from being lost while keeping active milestone status in `docs/progress.md`.
 
@@ -38,6 +38,7 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 | `DATA-003` | Replace consequential prose conditions with typed logic | Incrementally encode conditions that affect applicability, numbers, triggers, or operations; retain prose only for explanation and unsupported behavior. | As each evaluator is implemented | Proposed |
 | `DATA-004` | Structure `not evaluated` topics | Give deferred subjects stable identifiers, reasons, source references, and the facts or capabilities required before evaluation. | Before broad product presentation | Proposed |
 | `DATA-005` | Add rule lifecycle and supersession metadata | Represent effective periods, replaced provisions, amendment lineage, and re-review triggers without mutating prior approved rulesets. | Multi-version maintenance phase | Proposed |
+| `DATA-006` | Add source-backed zone profiles | Store reviewed per-zone names, purposes, characteristic-use descriptions, and source references so richer overviews can be composed without interpreting zone codes or inventing narrative at runtime. | After the brief Block 7 overview | Proposed |
 
 ### Provenance and explanation
 

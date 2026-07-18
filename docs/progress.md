@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 6 complete — deterministic address-to-standards retrieval accepted
+**Current position:** Block 7 planning complete — presentation contract review is next
 
-**Next action:** Block 7 — design the simple deterministic result presentation
+**Next action:** Block 7.1 — approve the UI-neutral presentation contract and wording rules
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
+| 7. Present a simple result | Planning | Detailed scope, architecture boundary, content hierarchy, substeps, validation matrix, and exit conditions are recorded. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -278,6 +278,31 @@ Block 6 exit conditions:
 4. Preserve citations, conditions, exception-family warnings, conflict status, and `not evaluated` topics.
 5. Verify deterministic output for the R1-6L and R1-8L fixtures without adding proposal-level calculations or a UI.
 
+## Block 7 presentation
+
+The Block 7 plan is recorded in `docs/r1-prototype-plan.md`. It introduces a pure deterministic presenter between the accepted Block 6 result and the first interface. The presenter will build a UI-neutral, versioned view model without changing authoritative values or using runtime AI.
+
+The initial overview will remain intentionally brief. It may compose the exact zone, supported single-family use, required approvals, ruleset scope, and disclaimer, but it will not interpret the `6L` or `8L` suffix or invent a per-zone narrative. Richer source-backed zone profiles are deferred.
+
+Implementation sequence:
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 7.1 Approve presentation contract and wording | Next | Fix success/failure view-model shapes, controlled language, ordering, provenance links, and presentation version. |
+| 7.2 Implement the pure presenter | Pending | Map every supported typed rule and controlled outcome without hard-coded zone values. |
+| 7.3 Validate presenter behavior | Pending | Prove both zone branches, conflicts, conditional applicability, failures, provenance, mutation isolation, and repeatability. |
+| 7.4 Build the initial interface | Pending | Accept an address and render the approved view model through the lightest suitable local UI surface. |
+| 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
+
+Planning boundaries:
+
+- no proposal-specific compliance evaluation;
+- no building-envelope, remaining-coverage, or maximum-floor-area calculation;
+- no corner-lot classification;
+- no ADU, SB 9, parking, overlay, density-bonus, or state-law expansion;
+- no AI-generated runtime conclusions; and
+- no new database or replacement of the accepted Block 6 contract.
+
 ## Blockers
 
 None currently recorded.
@@ -321,3 +346,5 @@ None currently recorded.
 | 2026-07-18 | Require exact zone keys and retrieve every approved rule without parcel-fact filtering. | GIS already establishes the canonical zone; preserving lot-context and story applicability avoids guessing whether a parcel is a corner lot or what a proposal contains. |
 | 2026-07-18 | Keep address orchestration thin and preserve Block 5 failures without regulatory attachment. | Regulations are safe to retrieve only after one unambiguous parcel and current-zoning match; regulatory integrity failures are system errors, not parcel-specific review outcomes. |
 | 2026-07-18 | Close Block 6 with one canonical real address per supported regulatory branch instead of arbitrary parcel sampling. | After exact zoning resolution, same-zone parcels retrieve the same base-zone rules; stronger contract, provenance, failure, mutation, and cross-process determinism checks add more distinct coverage. |
+| 2026-07-18 | Put a pure UI-neutral presenter between Block 6 and the first interface. | Keeps display wording and grouping testable while preventing frontend code from interpreting raw regulations or maintaining duplicate values. |
+| 2026-07-18 | Use a brief template-derived zone overview for the current prototype. | The approved ruleset has no source-backed per-zone narrative; the presenter can safely compose existing zone, use, approval, scope, and disclaimer fields without inventing suffix meanings. |
