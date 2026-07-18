@@ -24,10 +24,12 @@
 
   {% if view is not none %}
     {% set source_numbers = {} %}
+    {% set citation_sources = {} %}
     {% set citation_counter = namespace(value=0) %}
     {% for source in view.sources if source.kind == "regulatory_citation" %}
       {% set citation_counter.value = citation_counter.value + 1 %}
       {% set _ = source_numbers.update({source.citation_id: citation_counter.value}) %}
+      {% set _ = citation_sources.update({source.citation_id: source}) %}
     {% endfor %}
 
     <div class="result-region" aria-live="polite">

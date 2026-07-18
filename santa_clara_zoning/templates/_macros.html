@@ -1,10 +1,38 @@
-{% macro source_refs(citation_ids, source_numbers) -%}
+{% macro source_refs(citation_ids, marker_id) -%}
   {% if citation_ids %}
-    <sup class="source-refs" aria-label="Sources">
-      {% for citation_id in citation_ids %}
-        <a href="#source-{{ citation_id }}" aria-label="Source {{ source_numbers[citation_id] }}">{{ source_numbers[citation_id] }}</a>{% if not loop.last %}, {% endif %}
-      {% endfor %}
+    {% set popover_id = ("source-popup-" ~ marker_id) | replace(".", "-") | replace(":", "-") | replace("/", "-") %}
+    <sup class="source-popover-trigger">
+      <button
+        class="source-marker"
+        type="button"
+        data-source-popover="{{ popover_id }}"
+        aria-controls="{{ popover_id }}"
+        aria-expanded="false"
+        aria-label="View {{ citation_ids | length }} source{% if citation_ids | length != 1 %}s{% endif %}"
+      >i</button>
     </sup>
+    <span
+      id="{{ popover_id }}"
+      class="source-popover"
+      popover="auto"
+      hidden
+      role="note"
+      aria-label="Sources"
+    >
+      <strong class="source-popover-title">Sources</strong>
+      <span class="source-popover-list">
+        {% for citation_id in citation_ids %}
+          {% set source = citation_sources[citation_id] %}
+          <a href="#source-{{ citation_id }}">
+            <span class="source-popover-number">{{ source_numbers[citation_id] }}</span>
+            <span>
+              <strong>{{ source.document.title }}</strong>
+              <span>{{ source.locator }}</span>
+            </span>
+          </a>
+        {% endfor %}
+      </span>
+    </span>
   {% endif %}
 {%- endmacro %}
 

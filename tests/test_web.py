@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import unittest
 from unittest.mock import Mock, patch
 
@@ -62,6 +63,7 @@ class WebShellTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('name="address"', body)
         self.assertIn('href="/static/app.css"', body)
+        self.assertIn('src="/static/app.js"', body)
         self.assertIn('class="lookup-panel"', body)
         self.assertNotIn("data-result-kind", body)
         self.pipeline.analyze_address.assert_not_called()
@@ -75,6 +77,18 @@ class WebShellTest(unittest.TestCase):
         self.assertEqual(response.mimetype, "text/css")
         self.assertIn("--green: #17633e", body)
         self.assertIn("@media (prefers-reduced-motion: reduce)", body)
+
+    def test_source_popover_script_is_served_as_a_local_static_asset(self) -> None:
+        response = self.client.get("/static/app.js")
+        self.addCleanup(response.close)
+        body = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(response.mimetype, {"text/javascript", "application/javascript"})
+        self.assertIn("data-source-popover", body)
+        self.assertIn('trigger.addEventListener("mouseenter"', body)
+        self.assertIn('trigger.addEventListener("focus"', body)
+        self.assertIn('trigger.addEventListener("click"', body)
 
     def test_address_runs_pipeline_and_presenter_once(self) -> None:
         pipeline_result = {"fixture": "pipeline result"}
@@ -237,6 +251,20 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertIn('href="#source-r1-standards-table"', body)
         self.assertIn('id="source-r1-standards-table"', body)
         self.assertIn("Not evaluated", body)
+
+        setback_rows = re.findall(
+            r'<tr data-capability-id="setback\.[^"]+".*?</tr>',
+            body,
+            flags=re.DOTALL,
+        )
+        self.assertEqual(len(setback_rows), 4)
+        for row in setback_rows:
+            with self.subTest(row=row[:80]):
+                self.assertEqual(row.count('class="source-marker"'), 1)
+                self.assertIn('aria-label="View ', row)
+                self.assertIn('class="source-popover-list"', row)
+        self.assertIn("Santa Clara Zoning Code, Title 18", setback_rows[0])
+        self.assertIn("Section 18.10.030, Table 2-3", setback_rows[0])
 
     def test_brookside_renders_paired_values_and_full_conflict_notice(self) -> None:
         response = self.app.test_client().get(

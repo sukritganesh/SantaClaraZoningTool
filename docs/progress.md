@@ -343,6 +343,23 @@ Block 7.4c validation evidence:
 138 passed, 0 failed, 0 skipped
 ```
 
+The post-7.4c source-display review consolidated repeated citation-number clusters into one source marker per regulation. Each marker exposes the complete rule-level source list on hover or keyboard focus, remains available on click for mouse and touch use, and links to the unchanged full receipts below. Setback base values and story adjustments no longer repeat the same citations because the presenter already supplies their verified rule-level citation union. The interaction uses a small progressive-enhancement script and retains source access when scripting is unavailable through the bottom receipts.
+
+The corner-lot qualification and its architecture were deliberately unchanged. The street-side rule remains visible with `lot_context: corner`, and the interface continues to warn that the current pipeline does not classify the selected parcel as a corner lot.
+
+Source-display validation evidence:
+
+```text
+.venv/bin/python -W error::ResourceWarning -B -m unittest tests.test_web -v
+16 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+139 passed, 0 failed, 0 skipped
+
+node --check santa_clara_zoning/static/app.js
+passed
+```
+
 Validation evidence:
 
 ```text
@@ -360,7 +377,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | In progress | Blocks 7.4a–7.4c complete: the Flask shell, semantic templates, and responsive visual system pass 15 focused and 138 full tests; review Block 7.4d web validation next. |
+| 7.4 Build the initial interface | In progress | Blocks 7.4a–7.4c and the approved source-display refinement are complete; 16 focused and 139 full tests pass. Review Block 7.4d web validation next. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:

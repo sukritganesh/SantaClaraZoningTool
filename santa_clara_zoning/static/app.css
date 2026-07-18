@@ -484,15 +484,114 @@ dd {
   color: var(--text-muted);
 }
 
-.source-refs {
-  margin-left: 0.15rem;
-  font-size: 0.72em;
-  font-weight: 700;
+.source-popover-trigger {
+  margin-left: 0.3rem;
   vertical-align: super;
 }
 
-.source-refs a {
-  padding: 0 0.08rem;
+.source-marker {
+  display: inline-grid;
+  width: 1.15rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  min-height: 1.15rem;
+  padding: 0;
+  place-items: center;
+  border: 1px solid #8aab97;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-family: Georgia, serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: none;
+  cursor: help;
+}
+
+.source-marker:hover,
+.source-marker[aria-expanded="true"] {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+.source-popover {
+  position: fixed;
+  inset: auto;
+  z-index: 30;
+  width: min(24rem, calc(100vw - 1.5rem));
+  max-height: min(24rem, calc(100vh - 1.5rem));
+  margin: 0;
+  padding: 0.85rem;
+  overflow: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.82rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  vertical-align: baseline;
+  box-shadow: 0 16px 44px rgb(21 51 35 / 18%);
+}
+
+.source-popover::backdrop {
+  background: transparent;
+}
+
+.source-popover-title {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.source-popover-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.source-popover-list > a {
+  display: grid;
+  grid-template-columns: 1.45rem minmax(0, 1fr);
+  gap: 0.45rem;
+  padding: 0.45rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.source-popover-list > a:hover,
+.source-popover-list > a:focus-visible {
+  background: var(--green-soft);
+}
+
+.source-popover-list > a > span:last-child,
+.source-popover-list > a > span:last-child > span {
+  display: block;
+}
+
+.source-popover-list > a > span:last-child > span {
+  margin-top: 0.1rem;
+  color: var(--text-muted);
+}
+
+.source-popover-number {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-size: 0.72rem;
+  font-weight: 750;
 }
 
 .warning-card {
