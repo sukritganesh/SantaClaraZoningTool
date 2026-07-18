@@ -20,7 +20,7 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Requirements
 
-The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly.
+The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local web prototype uses pinned Flask with server-rendered Jinja templates.
 
 - Python 3.9 or newer
 - Internet access to `map.santaclaraca.gov`
@@ -194,6 +194,18 @@ print(list(result["regulations"]))
 
 A supported address returns `r1_standards_found` with parcel and zoning evidence, all approved zone regulations, their referenced provenance, explicit limitations, and GIS/ruleset versions. Unmatched, ambiguous, unsupported, or spatially inconsistent lookups retain their controlled Block 5 outcome and do not receive regulations. Ruleset integrity failures stop the pipeline rather than being mislabeled as parcel-specific planning review.
 
+## Run the local web prototype
+
+After installing `requirements.txt` and restoring the canonical local snapshots, start the development server from the repository root:
+
+```bash
+python -m flask --app santa_clara_zoning.web run
+```
+
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and enter a Santa Clara address. The Block 7.4a interface is intentionally a minimal shell: it proves the single read-only route, startup-time pipeline loading, deterministic presenter connection, and controlled integrity boundary. Semantic result sections and visual styling are added in the following Block 7.4 substeps.
+
+The built-in server is for local development only. It binds to the local machine by default; do not expose debug mode or the development server as a production deployment.
+
 Create a later candidate in a new, nonexisting version directory with:
 
 ```bash
@@ -244,8 +256,11 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
 │   ├── lookup.py                      Snapshot loading and lookup outcomes
 │   ├── pipeline.py                    Versioned address-to-standards orchestration
+│   ├── presentation.py                UI-neutral deterministic presentation model
 │   ├── ruleset.py                     Approved v2 runtime ruleset loader
-│   └── standards.py                   Pure exact-zone regulation retrieval
+│   ├── standards.py                   Pure exact-zone regulation retrieval
+│   ├── templates/                     Server-rendered web templates
+│   └── web.py                         Flask application factory and route boundary
 ├── scripts/
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
 │   ├── download_address_points.py     Citywide address-point downloader

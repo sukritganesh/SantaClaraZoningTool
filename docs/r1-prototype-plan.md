@@ -784,8 +784,8 @@ Block 7.4 proceeds in four approved substeps:
 
 | Substep | Status | Intended result |
 |---|---|---|
-| 7.4a Flask shell | Next | Add the pinned dependency, application factory, one GET route, pipeline injection, and known-integrity-error boundary |
-| 7.4b Semantic templates | Pending | Render every approved presentation kind with accessible HTML before visual polish |
+| 7.4a Flask shell | Complete | Pinned dependency, application factory, one GET route, pipeline injection, minimum template, and known-integrity-error boundary validated |
+| 7.4b Semantic templates | Next | Render every approved presentation kind with accessible HTML before visual polish |
 | 7.4c Visual implementation | Pending | Implement the approved green, white, gray, and amber responsive design in custom CSS |
 | 7.4d Web validation | Pending | Add route and rendered-output tests for success, controlled outcomes, sources, safety, and isolation |
 
@@ -796,7 +796,7 @@ Block 7.4 proceeds in four approved substeps:
 | 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
 | 7.2 Implement the pure presenter | Complete | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
 | 7.3 Validate presenter behavior | Complete | Both R1 zones, controlled failures, conflicts, conditional applicability, provenance, mutation isolation, input ordering, and cross-process repeatability pass |
-| 7.4 Build the initial interface | In progress | Flask/Jinja architecture, route, templates, styling, tests, and 7.4a–7.4d sequence approved; implementation has not started |
+| 7.4 Build the initial interface | In progress | Flask shell and route complete; semantic templates, visual implementation, and final web validation remain |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
 ### Block 7 validation matrix
@@ -873,6 +873,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Begin Block 7.4a within the approved architecture: pin Flask, add the application factory and single GET route, inject or load the existing pipeline once, and establish the known-integrity-error boundary. Do not add templates beyond the minimum shell, visual styling, or the later 7.4b–7.4d work in this substep.
+Review Block 7.4b's semantic mapping before implementation. Define how `success`, `lookup_failure`, `review_required`, and `system_error` presentation objects populate `index.html`, `_success.html`, `_outcome.html`, and `_sources.html`; preserve all approved ordering, qualifications, source references, and non-regulatory failure behavior without adding visual polish yet.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

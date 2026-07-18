@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.4 architecture approved — implementation not started
+**Current position:** Block 7.4a complete — Flask shell and route boundary validated
 
-**Next action:** Implement Block 7.4a — Flask shell and route boundary
+**Next action:** Review Block 7.4b semantic-template mapping before implementation
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract, presenter, and validation matrix are complete; the lightweight web-interface architecture is approved. |
+| 7. Present a simple result | In progress | Contract, presenter, and validation matrix are complete; Block 7.4a adds the validated Flask shell and route. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -296,7 +296,24 @@ Block 7.3 hardens that boundary with real-pipeline acceptance tests for Barto an
 
 The project owner approved the initial Block 7.4 interface direction on July 18, 2026. It is a lightweight, scroll-first local web application with persistent address search; property identity and zoning; supported use; separate approvals; compact standards; a setback table; visible warnings; expandable limitations; and superscript references leading to a bottom source-and-version section. Error states preserve the entered address, provide a direct retry path, and never attach regulatory cards.
 
-The project owner also approved Flask `3.1.3`, server-rendered Jinja, custom CSS, minimal JavaScript, one `GET /?address=...` route, an application-factory boundary that loads or accepts the pipeline once, semantic template partials, and Flask test-client coverage within the existing `unittest` suite. The approved 7.4a–7.4d sequence is Flask shell, semantic templates, visual implementation, and web validation. The complete architecture and test boundary are in `docs/r1-prototype-plan.md`; no web implementation or dependency change has occurred yet.
+The project owner also approved Flask `3.1.3`, server-rendered Jinja, custom CSS, minimal JavaScript, one `GET /?address=...` route, an application-factory boundary that loads or accepts the pipeline once, semantic template partials, and Flask test-client coverage within the existing `unittest` suite. The approved 7.4a–7.4d sequence is Flask shell, semantic templates, visual implementation, and web validation. The complete architecture and test boundary are in `docs/r1-prototype-plan.md`.
+
+Block 7.4a is implemented in `santa_clara_zoning/web.py` and `santa_clara_zoning/templates/index.html`. Flask `3.1.3` is pinned in `requirements.txt`; `create_app()` loads or accepts one pipeline instance, exposes only `GET /`, skips analysis for the initial landing state, calls the pipeline and presenter once per submitted address, converts only known integrity failures to safe system views, and leaves unexpected exceptions visible as server failures. The minimum template proves Jinja autoescaping and the presentation-kind boundary without implementing the semantic result sections or approved styling early.
+
+`tests/test_web.py` adds eight isolated shell/error tests and one canonical Barto smoke test. Flask route discovery reports only the application route and Flask's static-file route. The README records the local development command and identifies the shell as intentionally incomplete pending Blocks 7.4b and 7.4c.
+
+Block 7.4a validation evidence:
+
+```text
+.venv/bin/python -B -m unittest tests.test_web -v
+9 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+132 passed, 0 failed, 0 skipped
+
+.venv/bin/python -m flask --app santa_clara_zoning.web routes
+index GET /; static GET /static/<path:filename>
+```
 
 Validation evidence:
 
@@ -315,7 +332,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | In progress | Flask/Jinja architecture and 7.4a–7.4d sequence approved; Block 7.4a implementation is next. |
+| 7.4 Build the initial interface | In progress | Block 7.4a Flask shell complete with 9 focused and 132 full tests; review Block 7.4b semantic templates next. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:
@@ -380,3 +397,4 @@ None currently recorded.
 | 2026-07-18 | Validate presenter determinism with reordered inputs, mutated authoritative values, and independent hash-seeded processes. | Proves that presentation order is deliberate, regulatory values are not hard-coded, and identical versioned inputs serialize identically across processes. |
 | 2026-07-18 | Use a scroll-first local web interface with expandable secondary detail. | Keeps the main planning answer immediately visible while making limitations, source receipts, and versions inspectable without dominating the page. |
 | 2026-07-18 | Use Flask 3.1.3, Jinja, custom CSS, and one read-only address route for the prototype interface. | Preserves the existing synchronous Python pipeline, provides precise semantic and visual control, and avoids a separate API, frontend build system, database, or duplicated client-side regulatory state. |
+| 2026-07-18 | Load or inject one pipeline at Flask application creation and catch only known integrity failures at the route boundary. | Avoids repeated snapshot and ruleset loading, keeps tests isolated, produces approved system-error views, and prevents programming defects from being mislabeled as zoning outcomes. |

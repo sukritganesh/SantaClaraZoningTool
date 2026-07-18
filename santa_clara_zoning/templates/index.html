@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Santa Clara R1 Zoning Prototype</title>
+  </head>
+  <body>
+    <header>
+      <p>Santa Clara R1 zoning prototype</p>
+      <h1>Look up a property</h1>
+    </header>
+    <main>
+      <form action="{{ url_for('index') }}" method="get">
+        <label for="address">Santa Clara address</label>
+        <input
+          id="address"
+          name="address"
+          type="text"
+          value="{{ entered_address }}"
+          autocomplete="street-address"
+          required
+        >
+        <button type="submit">Analyze property</button>
+      </form>
+
+      {% if view is not none %}
+        <section data-result-kind="{{ view.kind }}" aria-live="polite">
+          <h2>{{ view.overview.headline }}</h2>
+          <p>{{ view.overview.summary }}</p>
+        </section>
+      {% endif %}
+    </main>
+  </body>
+</html>
