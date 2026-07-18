@@ -397,58 +397,94 @@ The initial regulatory implementation is a normalized, versioned JSON ruleset wi
 - source section/table
 - validation status
 
-## 8. Preliminary Result Contract
+## 8. Block 6 Retrieval Contract
 
-Illustrative only; exact field names remain a pending implementation decision.
+The project owner approved this direction on July 17, 2026. Contract version `1.0.0` describes the shape and meaning of the combined lookup-and-regulations result; it is not an evaluation-engine version. Ruleset version `2026-07-17.2` independently identifies the approved regulatory data. A separate engine version is deferred until the prototype performs meaningful proposal evaluation or rule calculations.
+
+Block 6 has two deterministic boundaries:
+
+1. A pure zone retriever accepts an exact supported zone and an approved, runtime-eligible ruleset.
+2. An address orchestrator runs the existing Block 5 lookup and calls the pure retriever only after an unambiguous `r1_zone_found` result.
+
+Conceptually:
+
+```python
+retrieve_zone_standards(zone_code, approved_ruleset)
+analyze_address(address)
+```
+
+The successful combined result will follow this contract direction:
 
 ```json
 {
+  "contract_version": "1.0.0",
+  "status": "r1_standards_found",
+  "reason_code": "approved_r1_standards_retrieved",
   "query": {
-    "entered_address": "1279 Las Palmas Drive",
-    "normalized_address": "1279 LAS PALMAS DR, SANTA CLARA, CA"
+    "entered_address": "636 Barto Street",
+    "normalized_address": "636 BARTO ST"
+  },
+  "address": {
+    "display_address": "636 BARTO ST"
   },
   "parcel": {
-    "apn": "290-07-024",
-    "lot_area_sqft": null,
-    "source": "RegionalBaseOpenData/MapServer/7"
+    "apn": "293-16-045",
+    "designation": "R1-6L"
   },
   "zoning": {
     "designation": "R1-6L",
-    "parcel_attribute_agrees": true,
-    "source": "RegionalZoningOpenData/MapServer/0"
+    "parcel_attribute_agrees": true
   },
-  "base_zone_standards": {
-    "max_height_ft": 25,
-    "max_stories": 2,
-    "max_structure_coverage_pct": 40,
-    "front_setback_first_story_ft": 20,
-    "front_setback_second_story_ft": 25,
-    "interior_side_setback_first_story_ft": 5,
-    "interior_side_setback_second_story_ft": 10,
-    "rear_setback_ft": 20
+  "regulatory_context": {
+    "jurisdiction": "City of Santa Clara",
+    "ruleset_id": "santa-clara-r1-base-zone",
+    "ruleset_version": "2026-07-17.2",
+    "verified_through": "2026-07-16"
   },
-  "status": "base_zone_standards_found",
+  "regulations": {
+    "use.single_family_dwelling": {},
+    "approval.zoning_clearance": {},
+    "approval.architectural_review": {},
+    "standard.maximum_primary_structure_height": {},
+    "standard.maximum_stories": {},
+    "standard.maximum_structure_coverage": {},
+    "setback.front": {},
+    "setback.interior_side": {},
+    "setback.street_side": {},
+    "setback.rear": {}
+  },
+  "shared_references": {
+    "source_documents": {},
+    "citations": {},
+    "exception_families": {},
+    "conflicts": {}
+  },
   "not_evaluated": [
-    "ADU/JADU rules",
-    "SB 9 eligibility",
-    "historic review",
-    "specific plans and overlays",
-    "proposal-specific compliance"
+    "<topics copied from the approved ruleset>"
   ],
-  "sources": [
-    {
-      "document": "Santa Clara Zoning Code, Title 18",
-      "version": "July 2025",
-      "citation": "Section 18.10.030, Table 2-3"
-    }
-  ],
+  "disclaimer": "Selected base-zone standards only.",
   "versions": {
-    "gis_snapshot": null,
-    "ruleset": null,
-    "evaluation_engine": null
+    "address_snapshot": "2026-07-16",
+    "r1_gis_snapshot": "2026-07-14",
+    "ruleset": "2026-07-17.2"
+  },
+  "sources": {
+    "address_layer": "...",
+    "parcel_layer": "...",
+    "zoning_layer": "..."
   }
 }
 ```
+
+Empty rule and shared-reference objects in the example are structural placeholders; the real result contains the complete selected records. The `not_evaluated` array is copied from the approved ruleset rather than maintained independently in this contract document.
+
+The actual `regulations` object preserves each approved zone-owned rule rather than flattening it into presentation-only numbers. This retains rule IDs, applicability, paired side yards, base setbacks, story-based adjustments, conditions, validation states, source references, and exception-family references.
+
+`shared_references` contains only the source documents, citations, exception families, and conflicts referenced by the selected zone's regulations. The result is therefore self-contained without copying unrelated ruleset content.
+
+The orchestrator preserves existing Block 5 outcomes when address or spatial lookup does not produce one supported zone: `address_not_found`, `address_ambiguous`, `outside_supported_r1_snapshot`, or `review_required` with its existing reason code. Regulatory loading and retrieval must fail closed for an unapproved ruleset, unsupported zone, missing required capability, invalid reference, or other integrity error. It must never report partial success while silently omitting a required regulation.
+
+This contract retrieves and packages approved base-zone rules. It does not determine corner-lot facts, choose a proposed story count, calculate a building envelope or structure coverage, compare a proposal with a standard, apply state-law overrides or overlays, or produce final UI formatting.
 
 ## 9. Initial UI Content
 
@@ -519,7 +555,6 @@ The first prototype is complete when it can:
 - Local spatial storage: GeoPackage/SQLite, DuckDB Spatial, PostGIS, or another option.
 - Whether the first run uses live GIS services, a local snapshot, or both.
 - Exact address-normalization strategy.
-- Exact rule schema and result JSON contract.
 - Which setback notes and exceptions are necessary for the first approved ruleset.
 - Process for auditing post-July-2025 amendments.
 - Additional corner-lot and parcel/zoning-mismatch fixtures.
@@ -528,12 +563,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Before writing implementation code, decide the smallest executable shape for this vertical slice and finalize:
-
-1. storage technology;
-2. live-versus-snapshot GIS behavior;
-3. exact approved R1 rule fields;
-4. result schema; and
-5. test addresses and expected outputs.
+Implement the Block 6 approved-ruleset loader. It should load immutable v2 version `2026-07-17.2`, run the existing schema, domain, source, migration, and runtime-eligibility gates, and refuse candidate, incomplete, or corrupted inputs. Pure zone retrieval and address orchestration follow only after that loader is tested.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

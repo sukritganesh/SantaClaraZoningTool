@@ -2,9 +2,9 @@
 
 **Last updated:** July 17, 2026
 
-**Current position:** Pre-Block 6 ruleset v2 redesign complete; approved v2 ruleset is runtime-eligible
+**Current position:** Block 6 in progress — retrieval contract direction approved
 
-**Next action:** Begin Block 6 — implement deterministic standards retrieval from approved ruleset v2
+**Next action:** Block 6.2 — implement and test the approved-ruleset loader
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -18,7 +18,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
-| 6. Implement deterministic standards retrieval | Not started (ready) | The approved, runtime-eligible v2 ruleset clears the redesign gate. |
+| 6. Implement deterministic standards retrieval | In progress | Contract direction and test matrix approved; runtime loader is next. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
@@ -197,6 +197,27 @@ tests/test_r1_rules_v2_approval.py
 
 ## Block 6 after the redesign gate
 
+Block 6.1 is complete as a design step. The approved contract direction separates a pure zone retriever from address orchestration, uses result-contract version `1.0.0`, preserves the existing Block 5 controlled outcomes, returns approved regulations without flattening their typed structures, includes only referenced shared provenance, and defers proposal evaluation and UI formatting.
+
+Implementation sequence:
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 6.1 Define retrieval contract and test matrix | Complete | Contract direction, failure behavior, scope boundary, and fixtures are recorded in the prototype plan. |
+| 6.2 Load the approved ruleset | Next | A validated loader accepts only immutable, runtime-eligible v2 data and fails closed otherwise. |
+| 6.3 Retrieve rules by exact zone | Pending | A pure function returns the complete approved capability set for R1-6L or R1-8L with referenced provenance. |
+| 6.4 Connect Block 5 lookup | Pending | Successful address lookup produces the combined versioned contract; existing controlled failures remain intact. |
+| 6.5 Validate Block 6 | Pending | Real and synthetic fixtures prove completeness, rejection behavior, and deterministic repeatability. |
+
+Approved Block 6 test matrix:
+
+- Barto Street returns APN `293-16-045`, R1-6L, and the exact approved R1-6L capability set.
+- Brookside Avenue returns APN `303-22-022`, R1-8L, paired side yards, and the documented street-side conflict.
+- Warburton, duplicated Los Padres, and the unmatched address preserve their existing controlled Block 5 outcomes.
+- Candidate, incomplete, corrupted, or otherwise runtime-ineligible rulesets are rejected.
+- Missing required capabilities or broken references cannot produce partial success.
+- Repeated execution against identical snapshots and ruleset version produces identical structured output.
+
 Block 6 exit conditions:
 
 1. Load and validate the approved R1 ruleset as the runtime regulatory source.
@@ -243,3 +264,4 @@ None currently recorded.
 | 2026-07-17 | Separate candidate validity from runtime eligibility. | Allows unapproved v2 data to pass structural and semantic review while preventing runtime use until the whole version is approved, dated, and all selected rules are approved. |
 | 2026-07-17 | Limit v2 operational semantics to cataloged prototype capabilities even when the schema supports future shapes. | Height-triggered and additive setbacks remain representable for future work but cannot silently enter the current R1 runtime contract. |
 | 2026-07-17 | Promote the reviewed candidate into separate immutable ruleset v2 version `2026-07-17.2`. | Preserves the exact reviewed candidate while recording explicit project-owner approval and providing a runtime-eligible source for Block 6. |
+| 2026-07-17 | Version the Block 6 output contract separately from regulatory data. | `contract_version` describes result shape and semantics, while `ruleset_version` identifies the regulations; a separate engine version is deferred until meaningful evaluation logic exists. |
