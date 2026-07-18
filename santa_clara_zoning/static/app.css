@@ -168,7 +168,7 @@ input {
 }
 
 input::placeholder {
-  color: #78857d;
+  color: var(--text-muted);
 }
 
 input:hover {
@@ -491,10 +491,10 @@ dd {
 
 .source-marker {
   display: inline-grid;
-  width: 1.15rem;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  min-height: 1.15rem;
+  width: 1.5rem;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
   padding: 0;
   place-items: center;
   border: 1px solid #8aab97;

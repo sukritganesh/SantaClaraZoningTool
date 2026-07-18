@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.5b complete — browser-state and responsive-layout matrix passes
+**Current position:** Block 7.5c complete — accessibility interaction and keyboard-support validation passes
 
-**Next action:** Run Block 7.5c keyboard, focus, disclosure, source-interaction, contrast, and reduced-motion validation
+**Next action:** Run Block 7.5d visual hierarchy and regulatory-wording review
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract, interface, startup, and responsive browser-state matrix pass; Block 7.5c accessibility interaction validation remains. |
+| 7. Present a simple result | In progress | Contract, interface, startup, responsive-state, and accessibility interaction checks pass; Block 7.5d visual and wording review remains. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -400,6 +400,28 @@ Validation evidence:
 123 passed, 0 failed, 0 skipped
 ```
 
+Block 7.5c accessibility interaction validation was completed on July 18, 2026 against the real Barto result at the mobile viewport. Semantic inspection found a logical focus order from skip link and search controls through source markers, the setback scroll region, native disclosure summaries, source receipts, and return links. Individually focused controls showed a visible three-pixel green outline. Both limitations and source sections use focusable native `summary` controls and changed their parent disclosure state when activated; the test surface could not synthesize native Enter/Space toggling reliably, so no broader claim is made beyond verified native semantics, focusability, focus styling, and disclosure state changes.
+
+The pass found and corrected four concrete gaps. Source markers now meet the 24-by-24 CSS-pixel minimum target, the address placeholder now has a 5.60-to-1 contrast ratio on white, Escape and outside-click dismissal are explicit for source popups, and a focused setback table scrolls horizontally with Left and Right Arrow. Selecting a popup source now closes the popup, opens the source disclosure, moves focus to the exact receipt, and preserves the fragment URL. Popup links, address controls, the skip link, disclosure summaries, and the table region retain visible focus indicators. Reduced-motion styling is present, and the interface has no application animations or transitions.
+
+Measured normal-text and status-color contrast ratios ranged from 5.19-to-1 to 15.14-to-1; the white-on-green action treatment measured 7.26-to-1, qualification amber 6.58-to-1, error red 6.42-to-1, and focus outlines 4.86-to-1 or higher against adjacent surfaces. Browser diagnostics reported no warnings or errors after the interaction checks.
+
+Block 7.5c validation evidence:
+
+```text
+.venv/bin/python -B -m unittest tests.test_web -v
+20 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+143 passed, 0 failed, 0 skipped
+
+node --check santa_clara_zoning/static/app.js
+passed
+
+git diff --check
+passed
+```
+
 Implementation sequence:
 
 | Substep | Status | Intended result |
@@ -408,7 +430,7 @@ Implementation sequence:
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
-| 7.5 Validate and close Block 7 | In progress | Startup and responsive browser-state validation pass; keyboard, accessibility interaction, visual wording, and final regression validation remain. |
+| 7.5 Validate and close Block 7 | In progress | Startup, responsive browser-state, and accessibility interaction validation pass; visual wording and final regression validation remain. |
 
 Planning boundaries:
 

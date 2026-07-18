@@ -1,11 +1,21 @@
 (() => {
   "use strict";
 
+  for (const region of document.querySelectorAll(".table-scroll")) {
+    region.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      const direction = event.key === "ArrowRight" ? 1 : -1;
+      region.scrollLeft += direction * Math.max(80, region.clientWidth * 0.35);
+      event.preventDefault();
+    });
+  }
+
   const triggers = [...document.querySelectorAll("[data-source-popover]")];
   if (!triggers.length) return;
 
   const supportsPopover = typeof HTMLElement.prototype.showPopover === "function";
   const states = new WeakMap();
+  const entries = [];
 
   const panelFor = (trigger) =>
     document.getElementById(trigger.dataset.sourcePopover);
@@ -68,6 +78,7 @@
 
     const state = { pinned: false, closeTimer: null };
     states.set(trigger, state);
+    entries.push({ trigger, panel, state });
     if (supportsPopover) panel.hidden = false;
 
     trigger.addEventListener("mouseenter", () => {
@@ -95,12 +106,53 @@
     panel.addEventListener("mouseleave", () => scheduleClose(trigger, panel, state));
     panel.addEventListener("focusin", () => cancelClose(state));
     panel.addEventListener("focusout", () => scheduleClose(trigger, panel, state));
+    panel.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const link = event.target.closest("a[href^='#source-']");
+      if (!link) return;
+
+      const target = document.querySelector(link.hash);
+      if (!target) return;
+
+      event.preventDefault();
+      state.pinned = false;
+      closePanel(trigger, panel);
+      const disclosure = target.closest("details");
+      if (disclosure) disclosure.open = true;
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ block: "start" });
+      window.history.pushState(null, "", link.hash);
+      target.addEventListener("blur", () => target.removeAttribute("tabindex"), {
+        once: true,
+      });
+    });
     panel.addEventListener("toggle", () => {
       const open = isOpen(panel);
       trigger.setAttribute("aria-expanded", String(open));
       if (!open) state.pinned = false;
     });
   }
+
+  const closeAllPanels = (restoreFocus) => {
+    for (const { trigger, panel, state } of entries) {
+      if (!isOpen(panel)) continue;
+      const focusWasInside = panel.contains(document.activeElement);
+      state.pinned = false;
+      closePanel(trigger, panel);
+      if (restoreFocus && focusWasInside) trigger.focus();
+    }
+  };
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeAllPanels(true);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (event.target.closest("[data-source-popover], .source-popover")) return;
+    closeAllPanels(false);
+  });
 
   const repositionOpenPanels = () => {
     for (const trigger of triggers) {

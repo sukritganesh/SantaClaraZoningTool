@@ -157,6 +157,9 @@ class WebShellTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, "text/css")
         self.assertIn("--green: #17633e", body)
+        self.assertIn("color: var(--text-muted);", body)
+        self.assertIn("min-width: 1.5rem", body)
+        self.assertIn("min-height: 1.5rem", body)
         self.assertIn("@media (prefers-reduced-motion: reduce)", body)
 
     def test_source_popover_script_is_served_as_a_local_static_asset(self) -> None:
@@ -170,6 +173,11 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('trigger.addEventListener("mouseenter"', body)
         self.assertIn('trigger.addEventListener("focus"', body)
         self.assertIn('trigger.addEventListener("click"', body)
+        self.assertIn('region.addEventListener("keydown"', body)
+        self.assertIn('event.key === "Escape"', body)
+        self.assertIn('document.addEventListener("click"', body)
+        self.assertIn('if (disclosure) disclosure.open = true', body)
+        self.assertIn('target.focus({ preventScroll: true })', body)
 
     def test_address_runs_pipeline_and_presenter_once(self) -> None:
         pipeline_result = {"fixture": "pipeline result"}
