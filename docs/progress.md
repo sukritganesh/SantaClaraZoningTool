@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.4 complete — initial web interface and rendered-contract validation pass
+**Current position:** Block 7.5a complete — documented local startup path verified by the project owner
 
-**Next action:** Run Block 7.5 browser, keyboard, responsive-layout, and final setup validation
+**Next action:** Run Block 7.5b browser-state and responsive-layout validation
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract, presenter, and initial web interface are complete; Block 7.5 browser and final setup validation remains. |
+| 7. Present a simple result | In progress | Contract and interface are complete; documented startup passes, while the remaining Block 7.5 browser and accessibility matrix is pending. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -382,6 +382,8 @@ git diff --check
 passed
 ```
 
+Block 7.5a startup reproduction was completed by the project owner on July 18, 2026. From a local terminal, the documented environment and Flask startup path launched the application successfully against the existing canonical snapshots. Additional Python validation commands completed successfully, normal application use showed no browser-console or server errors, and no data re-download was required. The README startup instructions therefore require no correction. Browser-state, responsive-layout, keyboard, source-interaction, contrast, and visual-polish validation remain pending in Blocks 7.5b–7.5f.
+
 Validation evidence:
 
 ```text
@@ -400,7 +402,7 @@ Implementation sequence:
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
-| 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
+| 7.5 Validate and close Block 7 | In progress | Startup reproduction passes; browser-state, responsive, keyboard, source-interaction, visual, and final regression validation remain. |
 
 Planning boundaries:
 
