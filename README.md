@@ -135,7 +135,21 @@ rulesets/santa_clara/r1/2026-07-17/ruleset.json
 rulesets/santa_clara/r1/2026-07-17/migration-crosswalk.json
 ```
 
-The candidate contains 20 zone-owned regulations and a complete 16-rule v1 crosswalk. It is schema-valid but is not yet operational; the approved v1 ruleset and validator remain authoritative until expanded v2 domain validation and promotion pass.
+The candidate contains 20 zone-owned regulations and a complete 16-rule v1 crosswalk. It passes schema, domain, source, migration, and deterministic-replay validation but is not yet operational; the approved v1 ruleset remains authoritative until explicit v2 approval and promotion.
+
+Validate the candidate and its local source checksums:
+
+```bash
+python3 scripts/validate_r1_rules_v2.py --verify-source-files
+```
+
+This command exits successfully for a valid candidate and separately reports that it is not runtime-eligible. The stronger runtime gate intentionally fails until an immutable approved and dated version exists:
+
+```bash
+python3 scripts/validate_r1_rules_v2.py \
+  --verify-source-files \
+  --require-runtime-eligible
+```
 
 Create a later candidate in a new, nonexisting version directory with:
 
@@ -171,7 +185,7 @@ The migration verifies the approved v1 ruleset and its source-file checksums, re
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
 │   └── santa_clara/r1/
 │       ├── 2026-07-16/                Versioned approved v1 R1 rules
-│       └── 2026-07-17/                Schema-valid candidate v2 and crosswalk
+│       └── 2026-07-17/                Domain-valid unapproved v2 candidate
 ├── santa_clara_zoning/
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
@@ -182,7 +196,8 @@ The migration verifies the approved v1 ruleset and its source-file checksums, re
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
 │   ├── lookup_r1_zone.py              Offline address-to-zone command
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
-│   └── validate_r1_rules.py           Schema and domain ruleset validator
+│   ├── validate_r1_rules.py           Approved v1 ruleset validator
+│   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate
 └── tests/
     └── test_*.py                       Rule, address, geometry, and lookup tests
 ```

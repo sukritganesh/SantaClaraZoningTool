@@ -1,6 +1,6 @@
 # Ruleset v2 Authoring Guide
 
-**Status:** Approved authoring contract; candidate data migrated, expanded validation pending
+**Status:** Approved authoring contract; candidate domain-validated, approval and promotion pending
 
 **Last updated:** July 17, 2026
 
@@ -8,14 +8,14 @@
 
 This guide defines how humans and AI-assisted extraction workflows must represent supported regulations in the deterministic ruleset. `rulesets/schema/ruleset-v2.schema.json` implements the local structural parts of this contract.
 
-The current v1 schema and approved Santa Clara ruleset remain authoritative until the approved data is migrated to v2 and the expanded validation gate passes.
+The current v1 schema and approved Santa Clara ruleset remain authoritative until an explicitly approved and dated v2 version passes the runtime-eligibility gate.
 
 ## Relationship to other project artifacts
 
 - `supported-regulations.md` defines **what** the product supports and where support stops.
 - This guide defines **how** supported capabilities should be authored in ruleset v2.
 - JSON Schema v2 enforces the local structural parts of this guide.
-- Domain validation will enforce cross-record references, identities, conflict integrity, and deterministic semantics that JSON Schema cannot fully express.
+- `scripts/validate_r1_rules_v2.py` enforces cross-record references, identities, conflict integrity, migration replay, supported operational semantics, and runtime eligibility that JSON Schema cannot fully express.
 - `docs/r1-rule-verification.md` remains the legal-source trace for Santa Clara values.
 - `docs/progress.md` records implementation and migration status.
 
@@ -610,4 +610,4 @@ The project owner approved these decisions on July 16, 2026:
 10. The catalog, authoring guide, JSON Schema, source verification, and runtime engine retain separate responsibilities.
 11. Every catalog capability has an explicit standalone-rule or embedded-behavior JSON mapping before jurisdiction data is authored.
 
-Approval of this guide authorized schema implementation and the separately reviewed migration step, not automatic runtime use. The approved v1 artifacts remain unchanged and operational until expanded v2 validation and promotion pass.
+Approval of this guide authorized schema implementation and the separately reviewed migration and validation steps, not automatic runtime use. The approved v1 artifacts remain unchanged and operational until the project owner approves and promotes a separate immutable v2 version.

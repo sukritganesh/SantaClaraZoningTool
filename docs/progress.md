@@ -2,9 +2,9 @@
 
 **Last updated:** July 17, 2026
 
-**Current position:** Pre-Block 6 ruleset v2 redesign — step 6 complete
+**Current position:** Pre-Block 6 ruleset v2 redesign — steps 1–7 complete; candidate awaiting explicit approval
 
-**Next action:** Step 7 — add the full v2 domain validator and mutation-based regression coverage
+**Next action:** Project-owner review, then create and validate an immutable approved v2 ruleset version
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -170,17 +170,23 @@ Block 6 is intentionally paused while the regulatory data model is improved befo
 | 4. Redesign setback representation | Complete | The v2 schema enforces typed base values, story or height triggers, total or additional effects, paired distances, and precedence for multiple adjustments. |
 | 5. Preserve shared reference data | Complete | The v2 schema provides ID-keyed sources, citations, definitions, and exception families plus top-level conflicts. |
 | 6. Migrate approved R1 data | Complete | A separate schema-valid candidate contains 20 zone-owned regulations, all 16 v1 rules have explicit crosswalk targets, and v1 remains unchanged. |
-| 7. Expand v2 validation | Partially prepared | Eight schema tests and four migration regressions pass; full cross-reference, identity, conflict, and deterministic domain invariants remain. |
+| 7. Expand v2 validation | Complete | V2 domain, source, migration, replay, conflict, scope, and runtime-eligibility gates pass 29 focused tests; the complete 70-test suite passes. |
 
-The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` implements its local structural requirements, and the July 17 candidate migrates every approved v1 rule without changing v1. R1-6L preserves a 10-foot street-side base and 15-foot second-story total; R1-8L selects a 15-foot base for all stories while retaining both the 10-foot table assertion and 15-foot written assertion in its conflict record. Four migration regression tests verify schema validity, deterministic reproduction, checksums, complete crosswalk coverage, separate zone identities, and these street-side semantics. The complete 41-test suite passes. The candidate is not operational until step 7 validation and promotion pass.
+The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` implements its local structural requirements, and the July 17 candidate migrates every approved v1 rule without changing v1. R1-6L preserves a 10-foot street-side base and 15-foot second-story total; R1-8L selects a 15-foot base for all stories while retaining both the 10-foot table assertion and 15-foot written assertion in its conflict record.
 
-Step 6 artifacts:
+The v2 validator now distinguishes candidate validity from runtime eligibility. It enforces the exact supported zones and capabilities, rule identities, capability-specific status and unit semantics, source and exception references, source checksums, story-based adjustments, paired-yard integrity, conflict backlinks and selected-value consistency, complete migration targets, manifest checksums, deterministic replay, and the approved-status plus approval-date runtime gate. Twenty-nine focused v2 domain and mutation tests pass, and the complete 70-test suite passes. The valid candidate correctly remains runtime-ineligible until explicit approval and promotion.
+
+Step 7 found and corrected one migration-crosswalk defect: the R1-8L paired interior-side adjustment was stored correctly in the ruleset but its crosswalk component omitted the `-pair` suffix. No regulatory value changed.
+
+Steps 6–7 artifacts:
 
 ```text
 scripts/migrate_r1_rules_v2.py
 rulesets/santa_clara/r1/2026-07-17/ruleset.json
 rulesets/santa_clara/r1/2026-07-17/migration-crosswalk.json
 tests/test_r1_rules_v2_migration.py
+scripts/validate_r1_rules_v2.py
+tests/test_r1_rules_v2.py
 ```
 
 ## Block 6 after the redesign gate
@@ -228,3 +234,5 @@ None currently recorded.
 | 2026-07-16 | Map every catalog capability to a standalone rule or embedded typed structure. | Gives humans and AI one unambiguous authoring path while allowing supporting behaviors such as stepbacks and paired yards to remain inside their parent setback rule. |
 | 2026-07-17 | Migrate v1 into a separate non-overwriting v2 candidate with a complete crosswalk. | Makes the transformation reproducible and reviewable while preserving the approved operational v1 artifact until the expanded validation gate passes. |
 | 2026-07-17 | Maintain cross-cutting deferred enhancements in `docs/future-improvements.md`. | Preserves useful design observations without duplicating active status, regulatory capability scope, or detailed contracts across project documents. |
+| 2026-07-17 | Separate candidate validity from runtime eligibility. | Allows unapproved v2 data to pass structural and semantic review while preventing runtime use until the whole version is approved, dated, and all selected rules are approved. |
+| 2026-07-17 | Limit v2 operational semantics to cataloged prototype capabilities even when the schema supports future shapes. | Height-triggered and additive setbacks remain representable for future work but cannot silently enter the current R1 runtime contract. |

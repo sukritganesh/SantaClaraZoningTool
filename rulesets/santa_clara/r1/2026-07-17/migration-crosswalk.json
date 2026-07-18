@@ -204,7 +204,7 @@
           "zone": "R1-8L",
           "capability_id": "setback.interior_side",
           "rule_id": "us.ca.santa_clara.r1-8l.setback.interior_side",
-          "component": "requirement.adjustments[second-story-total]"
+          "component": "requirement.adjustments[second-story-total-pair]"
         }
       ]
     },

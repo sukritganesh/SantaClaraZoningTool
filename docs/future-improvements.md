@@ -25,9 +25,9 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 
 | ID | Improvement | Intended outcome | Horizon | Status |
 |---|---|---|---|---|
-| `VAL-001` | Enforce two-level runtime eligibility | A ruleset is runtime-eligible only when its top-level status is approved, `approved_on` is a valid date, validation passes, and the selected rule is individually approved. Candidate rulesets are never loaded operationally. | Pre-Block 6 redesign step 7 | Promoted |
-| `VAL-002` | Enforce conflict integrity and selected-value consistency | Every conflict reference resolves, identifies the affected rule, contains exactly one selected assertion, and matches the operational value. Unresolved conflicts return `review required` unless an approved project resolution explicitly permits a warned result. | Pre-Block 6 redesign step 7 | Promoted |
-| `VAL-003` | Add mutation-based domain regression tests | Deliberately broken approval, reference, identity, conflict, adjustment, and migration fixtures must be rejected by the v2 validator. | Pre-Block 6 redesign step 7 | Promoted |
+| `VAL-001` | Enforce two-level runtime eligibility | A ruleset is runtime-eligible only when its top-level status is approved, `approved_on` is a valid date, validation passes, and the selected rule is individually approved. Candidate rulesets are never loaded operationally. | Pre-Block 6 redesign step 7 | Complete |
+| `VAL-002` | Enforce conflict integrity and selected-value consistency | Every conflict reference resolves, identifies the affected rule, contains exactly one selected assertion, and matches the operational value. Unresolved conflicts return `review required` unless an approved project resolution explicitly permits a warned result. | Pre-Block 6 redesign step 7 | Complete |
+| `VAL-003` | Add mutation-based domain regression tests | Deliberately broken approval, reference, identity, conflict, adjustment, and migration fixtures must be rejected by the v2 validator. | Pre-Block 6 redesign step 7 | Complete |
 
 ### Regulatory data expressiveness
 

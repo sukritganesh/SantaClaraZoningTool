@@ -371,7 +371,11 @@ def migrate_ruleset(
             interior_second["rule_id"],
             zone,
             "setback.interior_side",
-            "requirement.adjustments[second-story-total]",
+            (
+                "requirement.adjustments[second-story-total-pair]"
+                if interior_second["value"].get("kind") == "paired_numbers"
+                else "requirement.adjustments[second-story-total]"
+            ),
         )
 
         street_base = source_rule(f"standard-corner-side-first-{zone.lower()}")
