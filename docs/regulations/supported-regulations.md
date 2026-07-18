@@ -34,7 +34,7 @@ Numeric standards must not be copied into this catalog. Keeping values in the ve
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The current Santa Clara rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, and retrievable by exact R1-6L or R1-8L zone key. Parcel- or proposal-level evaluation and presentation remain later stages.
+The current Santa Clara rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Parcel- or proposal-level evaluation and presentation remain later stages.
 
 ## Current supported regulation families
 

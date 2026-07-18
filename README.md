@@ -98,7 +98,7 @@ python3 scripts/lookup_r1_zone.py "636 Barto Street, Santa Clara, CA"
 
 The command verifies snapshot checksums, normalizes the address, preserves duplicate matches, intersects the address point with the local parcel and current-zoning polygons, and cross-checks both zoning attributes. It returns controlled statuses for supported R1 matches, ambiguous or unmatched addresses, GIS conflicts, and addresses outside the filtered R1 snapshot.
 
-This step identifies the parcel and zone only. It does not yet attach the regulatory ruleset or produce a buildability determination.
+This command identifies the parcel and zone only. Use the combined standards pipeline below to attach the approved regulatory ruleset. Neither path produces a complete buildability determination.
 
 ## Validate the R1 regulatory ruleset
 
@@ -162,7 +162,7 @@ Application code loads and validates the approved artifact once before serving l
 python3 -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Ruleset.load(); print(r.version, r.supported_zones, r.regulation_count)'
 ```
 
-`ApprovedR1Ruleset.load()` runs the schema, domain, source-checksum, migration-replay, and runtime-eligibility gates. It retains a recursively read-only in-memory representation and returns defensive copies through `as_dict()`. Zone selection and address orchestration are intentionally deferred to the next Block 6 substeps.
+`ApprovedR1Ruleset.load()` runs the schema, domain, source-checksum, migration-replay, and runtime-eligibility gates. It retains a recursively read-only in-memory representation and returns defensive copies through `as_dict()`. Address orchestration is handled by `R1StandardsPipeline`.
 
 Retrieve the complete approved regulations and referenced provenance for one exact zone:
 
@@ -176,6 +176,23 @@ print(list(standards["regulations"]))
 ```
 
 Retrieval is case-sensitive and does not normalize or guess zone codes. It preserves applicability, conditions, setback adjustments, paired yards, conflicts, and `not_evaluated` topics; it does not determine whether a parcel is a corner lot or evaluate a proposal.
+
+## Run the address-to-standards pipeline
+
+Load the validated local GIS snapshots and approved ruleset once, then retrieve a versioned combined result:
+
+```python
+from santa_clara_zoning import R1StandardsPipeline
+
+pipeline = R1StandardsPipeline.from_defaults()
+result = pipeline.analyze_address("636 Barto Street")
+print(result["status"])
+print(result["parcel"]["apn"])
+print(result["zoning"]["designation"])
+print(list(result["regulations"]))
+```
+
+A supported address returns `r1_standards_found` with parcel and zoning evidence, all approved zone regulations, their referenced provenance, explicit limitations, and GIS/ruleset versions. Unmatched, ambiguous, unsupported, or spatially inconsistent lookups retain their controlled Block 5 outcome and do not receive regulations. Ruleset integrity failures stop the pipeline rather than being mislabeled as parcel-specific planning review.
 
 Create a later candidate in a new, nonexisting version directory with:
 
@@ -226,6 +243,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
 │   ├── lookup.py                      Snapshot loading and lookup outcomes
+│   ├── pipeline.py                    Versioned address-to-standards orchestration
 │   ├── ruleset.py                     Approved v2 runtime ruleset loader
 │   └── standards.py                   Pure exact-zone regulation retrieval
 ├── scripts/

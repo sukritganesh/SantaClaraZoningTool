@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 6 in progress — pure exact-zone retrieval complete
+**Current position:** Block 6 in progress — address-to-standards orchestration complete
 
-**Next action:** Block 6.4 — connect successful Block 5 lookup to approved zone retrieval
+**Next action:** Block 6.5 — complete Block 6 acceptance validation
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -18,7 +18,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
-| 6. Implement deterministic standards retrieval | In progress | Contract, approved loader, and pure exact-zone retrieval complete; address orchestration is next. |
+| 6. Implement deterministic standards retrieval | In progress | Contract, approved loader, exact-zone retrieval, and address orchestration complete; final acceptance validation is next. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
@@ -206,8 +206,8 @@ Implementation sequence:
 | 6.1 Define retrieval contract and test matrix | Complete | Contract direction, failure behavior, scope boundary, and fixtures are recorded in the prototype plan. |
 | 6.2 Load the approved ruleset | Complete | `ApprovedR1Ruleset` validates every canonical artifact, freezes trusted data, exposes safe metadata, and returns defensive copies. |
 | 6.3 Retrieve rules by exact zone | Complete | Exact R1-6L/R1-8L keys return all ten approved rules plus their transitive provenance closure. |
-| 6.4 Connect Block 5 lookup | Next | Successful address lookup produces the combined versioned contract; existing controlled failures remain intact. |
-| 6.5 Validate Block 6 | Pending | Real and synthetic fixtures prove completeness, rejection behavior, and deterministic repeatability. |
+| 6.4 Connect Block 5 lookup | Complete | `R1StandardsPipeline` produces the combined contract only after an unambiguous supported-zone lookup. |
+| 6.5 Validate Block 6 | Next | Real and synthetic fixtures prove completeness, rejection behavior, and deterministic repeatability. |
 
 Approved Block 6 test matrix:
 
@@ -237,6 +237,17 @@ tests/test_zone_standards.py
 `retrieve_zone_standards()` accepts only an exact zone key and a validated loader, returns all ten approved zone-owned regulations without flattening them, and constructs the transitive closure of rule, exception-family, conflict, citation, and source-document references. R1-6L returns 12 citations, nine exception families, two source documents, and no conflicts; R1-8L returns 14 citations, nine exception families, two source documents, and the preserved street-side conflict. Nine focused tests cover exact matching, completeness, paired yards, vertical adjustments, corner applicability, missing references, mutation isolation, and byte-equivalent repeatability. The complete suite passes 95 tests.
 
 Corner-lot classification is not currently implemented. Retrieval returns the street-side regulation with `applicability.lot_context: corner`; it does not claim that a particular parcel is a corner lot.
+
+Block 6.4 implementation:
+
+```text
+santa_clara_zoning/pipeline.py
+tests/test_standards_pipeline.py
+```
+
+`R1StandardsPipeline.from_defaults()` loads the approved ruleset and checksum-verified local GIS lookup once. `analyze_address()` adds result-contract version `1.0.0`, calls exact-zone retrieval only after `r1_zone_found`, and returns `r1_standards_found` with the parcel, zoning, regulations, provenance, limitations, and combined GIS/ruleset versions. Existing lookup failures retain their status and evidence without acquiring regulations. Inconsistent success evidence, incomplete regulatory results, and regulatory integrity failures stop the pipeline rather than becoming misleading planning-review outcomes.
+
+Eight focused tests cover the Barto R1-6L and Brookside R1-8L pipelines, paired yards, the documented street-side conflict, controlled Warburton/Los Padres/unmatched outcomes, no retrieval after lookup failure, fail-closed component boundaries, and byte-equivalent repeatability. The approved v2 runtime gate passes and the complete suite passes 103 tests.
 
 Block 6 exit conditions:
 
@@ -287,3 +298,4 @@ None currently recorded.
 | 2026-07-17 | Version the Block 6 output contract separately from regulatory data. | `contract_version` describes result shape and semantics, while `ruleset_version` identifies the regulations; a separate engine version is deferred until meaningful evaluation logic exists. |
 | 2026-07-18 | Validate and freeze the approved JSON ruleset once at application startup. | Keeps JSON authoritative for the prototype, prevents per-address revalidation and accidental mutation, and leaves storage replaceable by a future database-backed repository. |
 | 2026-07-18 | Require exact zone keys and retrieve every approved rule without parcel-fact filtering. | GIS already establishes the canonical zone; preserving lot-context and story applicability avoids guessing whether a parcel is a corner lot or what a proposal contains. |
+| 2026-07-18 | Keep address orchestration thin and preserve Block 5 failures without regulatory attachment. | Regulations are safe to retrieve only after one unambiguous parcel and current-zoning match; regulatory integrity failures are system errors, not parcel-specific review outcomes. |
