@@ -22,6 +22,22 @@ Each project artifact has a distinct role:
 
 Numeric standards must not be copied into this catalog. Keeping values in the versioned ruleset avoids synchronizing the same legal data across multiple documents.
 
+## Shared core and jurisdiction extensions
+
+The product should reuse a shared capability ID only when the regulation has the same operational and legal meaning across jurisdictions. Local terminology may map to a shared capability, but local values, citations, conditions, exceptions, conflicts, and approval details remain in the jurisdiction's versioned ruleset.
+
+When a provision does not fit an existing shared capability exactly, it must not be flattened into a near-match. It should be proposed as a controlled jurisdiction extension. Before extension data can be authored or used, the extension must have:
+
+- a documented meaning and product boundary;
+- a collision-resistant jurisdiction identity;
+- an approved standalone or embedded machine representation;
+- provenance, validation, approval, and failure requirements; and
+- deterministic retrieval, evaluation, and presentation behavior appropriate to its support stage.
+
+An unrecognized extension must be rejected or reported as `not evaluated`; it must never be silently discarded. If equivalent extensions recur across jurisdictions, they may be deliberately promoted into the shared core through a versioned catalog, schema, migration, validation, and testing change.
+
+The current Santa Clara R1 prototype uses only the shared capabilities cataloged below. It does not yet implement arbitrary jurisdiction extensions.
+
 ## Capability stages
 
 “Supported” is not a single binary state. A regulation moves through these cumulative stages:
@@ -171,12 +187,14 @@ An item in this table must not be described as prohibited, irrelevant, or evalua
 
 A new capability should move through this sequence:
 
-1. Define its meaning and boundaries in this catalog.
-2. Verify the controlling provisions, definitions, exceptions, and amendment status.
-3. Define and validate its machine-readable representation.
-4. Add approved jurisdiction-specific rule data with provenance.
-5. Implement deterministic retrieval or evaluation and failure states.
-6. Add positive, negative, ambiguity, and repeatability tests.
-7. Expose it in the interface only with its sources and limitations.
+1. Determine whether an existing shared capability is an exact semantic fit.
+2. If no exact fit exists, classify the proposal as a new shared capability or a controlled jurisdiction extension and document that decision.
+3. Define its meaning and boundaries in this catalog or a future jurisdiction-extension catalog governed by it.
+4. Verify the controlling provisions, definitions, exceptions, and amendment status.
+5. Define and validate its machine-readable representation.
+6. Add approved jurisdiction-specific rule data with provenance.
+7. Implement deterministic retrieval or evaluation and explicit failure states.
+8. Add positive, negative, ambiguity, unknown-capability, and repeatability tests.
+9. Expose it in the interface only with its sources and limitations.
 
 Cataloging a capability does not by itself authorize runtime use. It becomes operational only after its rules and deterministic behavior pass their applicable gates.

@@ -54,7 +54,7 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 |---|---|---|---|---|
 | `AUTO-001` | Build an AI-assisted candidate extraction workflow | Extract candidate rules, definitions, exceptions, cross-references, and conflicts into validated schemas while preventing AI from approving its own output. | Post-prototype workflow automation | Proposed |
 | `AUTO-002` | Automate source-change and amendment impact detection | Compare new code editions and ordinances with approved snapshots, identify affected capabilities and zones, and require focused re-verification. | Post-prototype maintenance workflow | Proposed |
-| `AUTO-003` | Generalize onboarding for additional jurisdictions | Reuse capability semantics and validation machinery without carrying Santa Clara values, exceptions, or conflict policies into another city. | Multi-jurisdiction phase | Proposed |
+| `AUTO-003` | Generalize onboarding for additional jurisdictions | Map exact semantic matches into a validated shared capability core while preserving unmatched local rules as typed, source-backed, namespaced extensions; do not carry Santa Clara values or silently discard local differences. | Multi-jurisdiction phase | Proposed |
 
 For additional zoning capabilities—including ADUs, SB 9, density bonus, parking, overlays, averaging, encroachments, and nonconformities—use the authoritative deferred queue in `docs/regulations/supported-regulations.md`.
 

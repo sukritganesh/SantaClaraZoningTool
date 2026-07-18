@@ -53,6 +53,14 @@ When something changes, update only its owning document unless the change genuin
 - Preserve source citations, effective dates, ruleset versions, assumptions, and validation status.
 - The same versioned inputs and engine version should produce the same result.
 
+## Reuse common semantics without erasing local rules
+
+- Reuse a shared capability only when the local provision is an exact semantic fit; keep jurisdiction values, terminology, citations, conditions, exceptions, conflicts, and precedence in jurisdiction-owned data.
+- Do not force a unique local rule into a nearby shared field. Preserve it as a candidate controlled jurisdiction extension until its identity, typed representation, validation, deterministic behavior, and presentation path are approved.
+- Never silently drop or guess an unknown capability or requirement shape. Reject it or return an explicit unsupported or `not evaluated` outcome.
+- Promote a recurring local pattern into the shared core only through deliberate catalog, authoring-contract, schema, migration, validator, and test changes.
+- Treat AI-proposed capability mappings and extensions as candidates until source verification and human approval are complete.
+
 ## Preserve and resolve regulatory conflicts
 
 - Never erase or silently normalize conflicting source values. Record each assertion, its location, and its source version.

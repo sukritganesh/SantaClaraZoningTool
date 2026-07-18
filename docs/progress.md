@@ -284,6 +284,8 @@ The Block 7 plan is recorded in `docs/r1-prototype-plan.md`. It introduces a pur
 
 The initial overview will remain intentionally brief. It may compose the exact zone, supported single-family use, required approvals, ruleset scope, and disclaimer, but it will not interpret the `6L` or `8L` suffix or invent a per-zone narrative. Richer source-backed zone profiles are deferred.
 
+The presentation contract will also establish the product's reuse boundary: shared capabilities use common deterministic mappings, while a future jurisdiction-specific capability must have an explicit registered extension path. Unknown capabilities or requirement shapes must fail visibly and may not be silently dropped. This safeguard does not add new regulations to the current R1 scope.
+
 Implementation sequence:
 
 | Substep | Status | Intended result |
@@ -348,3 +350,4 @@ None currently recorded.
 | 2026-07-18 | Close Block 6 with one canonical real address per supported regulatory branch instead of arbitrary parcel sampling. | After exact zoning resolution, same-zone parcels retrieve the same base-zone rules; stronger contract, provenance, failure, mutation, and cross-process determinism checks add more distinct coverage. |
 | 2026-07-18 | Put a pure UI-neutral presenter between Block 6 and the first interface. | Keeps display wording and grouping testable while preventing frontend code from interpreting raw regulations or maintaining duplicate values. |
 | 2026-07-18 | Use a brief template-derived zone overview for the current prototype. | The approved ruleset has no source-backed per-zone narrative; the presenter can safely compose existing zone, use, approval, scope, and disclaimer fields without inventing suffix meanings. |
+| 2026-07-18 | Build toward a shared regulatory core with controlled jurisdiction extensions. | Common semantics and renderers should be reusable across cities, while unique local rules remain typed, source-backed, validated, and visible instead of being forced into a near-match or silently omitted. |

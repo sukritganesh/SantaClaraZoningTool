@@ -2,7 +2,7 @@
 
 **Status:** Initial research and planning
 
-**Last updated:** July 16, 2026
+**Last updated:** July 18, 2026
 
 **Prototype scope:** Santa Clara R1-6L and R1-8L single-family residential zones
 
@@ -50,6 +50,22 @@ The prototype must distinguish between:
 - outside the prototype's current scope;
 - unresolved because data is missing or conflicting; and
 - requiring staff interpretation.
+
+### Reusable core with controlled local extensions
+
+The future product should reuse stable capability semantics, typed requirement shapes, validation rules, and presentation components for regulatory concepts that genuinely mean the same thing across jurisdictions. Jurisdiction-owned rulesets must continue to hold local values, terminology, citations, exceptions, precedence, conflicts, and approval details.
+
+A provision must not be forced into a nearby shared capability when its legal meaning does not fit. A genuinely local rule should instead use a controlled jurisdiction extension that is:
+
+- explicitly named and documented;
+- typed and machine-validated;
+- backed by source provenance and the same approval gates as shared capabilities;
+- handled by deterministic retrieval, evaluation, and presentation code; and
+- rejected or labeled `not evaluated` when the active runtime does not recognize it, never silently omitted or guessed.
+
+AI-assisted workflows may recommend a shared-capability mapping or draft a jurisdiction extension, but they cannot approve either conclusion. A local pattern should be promoted into the shared core only after repeated use demonstrates equivalent semantics and the catalog, authoring contract, schema, migrations, validators, and tests are deliberately updated.
+
+This principle guides future workflow automation without expanding the current Santa Clara R1 scope.
 
 ## 3. Initial Functional Scope
 
@@ -552,6 +568,8 @@ The presenter will:
 
 It will not contain zone-specific numeric constants, legal conclusions, spatial calculations, or fallback guesses. A candidate presentation-contract version `1.0.0` will be reviewed in Block 7.1 independently of the Block 6 result-contract version.
 
+For future jurisdictions, the presentation layer will use common component mappings for shared capabilities and explicit adapters for approved jurisdiction extensions. The current presenter only needs the approved prototype capabilities, but its dispatch behavior must fail visibly when it encounters an unrecognized capability or requirement shape. It must never drop an unknown regulatory record merely because no display component exists.
+
 ### Candidate presentation model
 
 The UI-neutral model should follow this direction:
@@ -662,6 +680,7 @@ Suggested unsupported-zone message:
 - Warburton, Los Padres, unmatched, and synthetic review-required results render controlled failure views with no regulatory cards.
 - Every displayed consequential value retains rule and citation references.
 - Presenter output cannot mutate the Block 6 result and is byte-equivalent for identical inputs.
+- Every approved shared capability is mapped without a jurisdiction-specific numeric branch; an unrecognized capability or requirement shape produces an explicit integrity failure rather than disappearing from the result.
 - Tests fail if the presenter hard-codes a zone value, drops a supported regulation, hides a conflict, or converts an unevaluated subject into a conclusion.
 
 ### Block 7 exit conditions
@@ -675,7 +694,8 @@ Block 7 is complete when:
 5. no displayed regulatory number is maintained separately from the Block 6 result;
 6. unsupported and integrity outcomes cannot appear as successful planning conclusions;
 7. the initial interface accepts an address and renders the approved presentation model; and
-8. focused and full-suite validation pass with reproducible setup instructions.
+8. unknown capabilities or requirement shapes fail visibly rather than being silently omitted; and
+9. focused and full-suite validation pass with reproducible setup instructions.
 
 ## 10. Validation Strategy
 

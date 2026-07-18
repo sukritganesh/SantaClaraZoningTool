@@ -2,7 +2,7 @@
 
 **Status:** Approved authoring contract; first v2 jurisdiction ruleset approved and runtime-eligible
 
-**Last updated:** July 17, 2026
+**Last updated:** July 18, 2026
 
 **Approved by:** Project owner on July 16, 2026
 
@@ -79,7 +79,7 @@ For example, R1-6L and R1-8L each receive their own maximum-height record even w
 
 ### Capability IDs
 
-A capability ID identifies the meaning of a supported regulation across jurisdictions and zones. It MUST match the catalog, such as:
+A shared capability ID identifies the meaning of a supported regulation across jurisdictions and zones. It MUST match the catalog, such as:
 
 - `use.single_family_dwelling`
 - `approval.zoning_clearance`
@@ -107,6 +107,25 @@ us.ca.santa_clara.r1-8l.setback.interior_side
 Rule IDs MUST be unique across the ruleset, stable across value-only amendments, and separate for every zone. A rule ID MUST NOT contain a current value, effective date, array position, or source page number.
 
 Zone membership is established by containment under `zones`; it MUST NOT be repeated as a multi-zone applicability list on the rule.
+
+## Shared capabilities and jurisdiction extensions
+
+Authors MUST map a local provision to a shared capability only when the capability's documented meaning, units, applicability, and required behavior are an exact fit. Local names may be preserved as source terminology, but they do not justify inventing a near-synonym capability or changing the shared capability's semantics.
+
+When no shared capability fits, the workflow MUST preserve the provision as a proposed jurisdiction extension rather than flattening it into an inaccurate shared record. A future extension must use an approved collision-resistant jurisdiction namespace and must define:
+
+- its capability identity and meaning;
+- its standalone or embedded typed representation;
+- its source, applicability, exception, conflict, and approval requirements;
+- its deterministic retrieval and evaluation behavior;
+- its presentation adapter and explicit unsupported behavior; and
+- its schema, domain, mutation, and regression tests.
+
+The current v2 schema and runtime support only the cataloged Santa Clara prototype capabilities. They do not permit arbitrary extension records. The namespace grammar and dispatch contract for a first jurisdiction extension must therefore be approved and implemented before such data is authored.
+
+AI may propose a mapping or draft an extension design. It MUST NOT approve a semantic match, create runtime-eligible extension data, or discard a provision because no current capability represents it. Unknown capabilities or requirement shapes MUST fail validation or produce an explicit unsupported outcome; they MUST NOT disappear from retrieval or presentation.
+
+A recurring extension may be promoted into the shared core only through an intentional versioned change to the catalog, this guide, schema, migrations, validators, and tests. Promotion must be based on equivalent semantics across jurisdictions, not merely similar labels or current numeric values.
 
 ## Shared reference data
 
@@ -519,11 +538,12 @@ The workflow must keep capability meaning, machine representation, legal data, a
 ### Add a regulation capability
 
 1. Verify the controlling text, definitions, applicability, exceptions, amendments, and conflicts.
-2. Add the capability and its boundary to the catalog at the `Cataloged` stage.
-3. Add its standalone or embedded JSON mapping to this guide.
-4. Extend the schema and schema tests if the existing payload types cannot represent it exactly.
-5. Author separate candidate records for every applicable zone with shared provenance references.
-6. Run domain validation, obtain approval, and update the capability stage only after its gate passes.
+2. Decide whether an existing shared capability is an exact fit, a new shared capability is warranted, or a controlled jurisdiction extension is required.
+3. Add the capability and its boundary to the catalog at the `Cataloged` stage, or establish the governed jurisdiction-extension catalog before authoring local data.
+4. Add its standalone or embedded JSON mapping to this guide.
+5. Extend the schema and schema tests if the existing payload types cannot represent it exactly.
+6. Author separate candidate records for every applicable zone with shared provenance references.
+7. Run domain validation, obtain approval, and update the capability stage only after its gate passes.
 
 ### Add a zone in an existing jurisdiction
 
@@ -537,10 +557,11 @@ The workflow must keep capability meaning, machine representation, legal data, a
 ### Add another jurisdiction
 
 1. Create new immutable GIS and regulatory-source snapshots and an amendment baseline.
-2. Reuse catalog capability IDs and schema payloads only when their meanings match.
-3. Create a distinct jurisdiction ruleset, jurisdiction slug, zone keys, and rule IDs.
-4. Do not copy Santa Clara values, exceptions, precedence assumptions, or conflict resolutions as defaults.
-5. Validate the jurisdiction's own address, parcel, zone, source, and regulatory fixtures before approval.
+2. Map provisions to shared capability IDs and schema payloads only when their meanings match exactly.
+3. Preserve unmatched provisions as candidate jurisdiction extensions; do not force or omit them.
+4. Create a distinct jurisdiction ruleset, jurisdiction slug, zone keys, and rule IDs.
+5. Do not copy Santa Clara values, exceptions, precedence assumptions, conflict resolutions, or display wording as defaults.
+6. Validate the jurisdiction's own address, parcel, zone, source, regulatory, extension-dispatch, and unknown-capability fixtures before approval.
 
 ### Add an overlay, specific plan, state override, or other special rule layer
 
@@ -596,7 +617,7 @@ JSON Schema should enforce local structure. A domain validator must enforce iden
 
 ## Approved design decisions
 
-The project owner approved these decisions on July 16, 2026:
+The project owner approved decisions 1–11 on July 16, 2026, and decision 12 on July 18, 2026:
 
 1. `zones` is an object keyed by exact GIS zone designation.
 2. Each zone has a direct `regulations` map keyed by catalog capability ID.
@@ -609,5 +630,6 @@ The project owner approved these decisions on July 16, 2026:
 9. Multiple adjustments require an explicit highest-to-lowest precedence list.
 10. The catalog, authoring guide, JSON Schema, source verification, and runtime engine retain separate responsibilities.
 11. Every catalog capability has an explicit standalone-rule or embedded-behavior JSON mapping before jurisdiction data is authored.
+12. Shared capability IDs are used only for exact semantic matches; genuinely local rules require controlled jurisdiction extensions and must never be forced into, or silently omitted from, the common model.
 
 Approval of this guide authorized schema implementation, not automatic approval of jurisdiction data. The project owner separately approved the reviewed Santa Clara data on July 17, 2026; immutable ruleset version `2026-07-17.2` is therefore runtime-eligible while the v1 artifact and v2 candidate remain unchanged.
