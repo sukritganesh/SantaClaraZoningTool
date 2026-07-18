@@ -711,8 +711,8 @@ Suggested unsupported-zone message:
 |---|---|---|
 | 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
 | 7.2 Implement the pure presenter | Complete | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
-| 7.3 Validate presenter behavior | Next | Test both R1 zones, all controlled failures, conflicts, conditional applicability, provenance, mutation isolation, and repeatability |
-| 7.4 Build the initial interface | Pending | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
+| 7.3 Validate presenter behavior | Complete | Both R1 zones, controlled failures, conflicts, conditional applicability, provenance, mutation isolation, input ordering, and cross-process repeatability pass |
+| 7.4 Build the initial interface | Next | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
 ### Block 7 validation matrix
@@ -791,6 +791,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Complete Block 7.3's validation matrix against the implemented pure presenter. Expand the focused coverage with any remaining mutation, ordering, provenance, cross-process repeatability, and real-pipeline assertions needed to prove presentation contract `1.0.0` before selecting and building the initial interface.
+Begin Block 7.4 by selecting the lightest suitable local interface for this prototype. The interface should accept an address, call the existing Block 6 pipeline and Block 7 presenter without reinterpreting either contract, and render the approved success and controlled-failure views. Review the interface plan before implementation.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

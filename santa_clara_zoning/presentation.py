@@ -226,6 +226,12 @@ def _present_rule(
     conflict_id = rule.get("conflict_id")
     if conflict_id is not None and not isinstance(conflict_id, str):
         _fail("invalid_conflict_reference", f"Invalid conflict on {capability}")
+    validation_status = _text(rule, "validation_status", capability)
+    if validation_status.startswith("project_resolved") and conflict_id is None:
+        _fail(
+            "missing_conflict_reference",
+            f"{capability} is project-resolved but has no conflict reference",
+        )
 
     item = {
         "capability_id": capability,
@@ -239,7 +245,7 @@ def _present_rule(
             f"{capability}.exception_family_ids",
         ),
         "conflict_id": conflict_id,
-        "validation_status": _text(rule, "validation_status", capability),
+        "validation_status": validation_status,
     }
 
     if kind == "status":
