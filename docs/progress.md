@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.5a complete — documented local startup path verified by the project owner
+**Current position:** Block 7.5b complete — browser-state and responsive-layout matrix passes
 
-**Next action:** Run Block 7.5b browser-state and responsive-layout validation
+**Next action:** Run Block 7.5c keyboard, focus, disclosure, source-interaction, contrast, and reduced-motion validation
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract and interface are complete; documented startup passes, while the remaining Block 7.5 browser and accessibility matrix is pending. |
+| 7. Present a simple result | In progress | Contract, interface, startup, and responsive browser-state matrix pass; Block 7.5c accessibility interaction validation remains. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -384,6 +384,12 @@ passed
 
 Block 7.5a startup reproduction was completed by the project owner on July 18, 2026. From a local terminal, the documented environment and Flask startup path launched the application successfully against the existing canonical snapshots. Additional Python validation commands completed successfully, normal application use showed no browser-console or server errors, and no data re-download was required. The README startup instructions therefore require no correction. Browser-state, responsive-layout, keyboard, source-interaction, contrast, and visual-polish validation remain pending in Blocks 7.5b–7.5f.
 
+Block 7.5b browser-state and responsive-layout validation was completed on July 18, 2026 using the real local application. The landing page, canonical R1-6L Barto result, canonical R1-8L Brookside result, unsupported Warburton result, ambiguous Los Padres result, and unmatched-address result were each rendered at 1440-by-1000, 768-by-1024, and 390-by-844 CSS-pixel viewports.
+
+All 18 state-and-viewport combinations produced the expected presentation kind, retained the submitted address, kept the search form visible, rendered one page heading, and avoided document-level horizontal overflow or out-of-viewport primary containers. Both successful results retained all ten supported regulatory elements. At 768 and 390 pixels, the 928-pixel setback table overflowed only inside its labeled scroll region; the document itself remained viewport-width. Each unsuccessful result rendered zero regulatory elements and its correct controlled heading. The R1-8L conflict remained fully visible at tablet width with its selected value, competing assertions, and re-review trigger. A three-source setback popup remained entirely inside the 390-by-844 viewport. Browser logs and the temporary Flask server showed no warning, error, or failed application request.
+
+Visual inspection confirmed readable desktop hierarchy, clean tablet stacking, contained mobile table scrolling, legible conflict qualifications, and a clear mobile ambiguity state. No Block 7.5b presentation defect was found, so no production, test, or README change was required. Keyboard behavior, focus order, disclosure operation, popup dismissal, contrast, touch-target sizing, and reduced-motion checks remain assigned to Block 7.5c rather than inferred from this responsive pass.
+
 Validation evidence:
 
 ```text
@@ -402,7 +408,7 @@ Implementation sequence:
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
-| 7.5 Validate and close Block 7 | In progress | Startup reproduction passes; browser-state, responsive, keyboard, source-interaction, visual, and final regression validation remain. |
+| 7.5 Validate and close Block 7 | In progress | Startup and responsive browser-state validation pass; keyboard, accessibility interaction, visual wording, and final regression validation remain. |
 
 Planning boundaries:
 
