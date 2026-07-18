@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.3 complete — presenter contract validated
+**Current position:** Block 7.4 in progress — web-interface design approved
 
-**Next action:** Plan Block 7.4 and select the lightest suitable local interface
+**Next action:** Select the lightweight web framework and approve component boundaries
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract `1.0.0`, the pure presenter, and the Block 7.3 acceptance matrix are complete; 123 repository tests pass. |
+| 7. Present a simple result | In progress | Contract, presenter, and validation matrix are complete; the lightweight web-interface architecture is approved. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -294,6 +294,8 @@ The presenter preserves rule identity, applicability, conditions, exception fami
 
 Block 7.3 hardens that boundary with real-pipeline acceptance tests for Barto and Brookside plus Warburton, Los Padres, unmatched, empty-input, and review-required outcomes. Contract-shape, JSON-serialization, wording, display-order, conditional-applicability, provenance-closure, source-link, mutation-isolation, input-order, and cross-process repeatability checks pass. Mutation tests prove that numeric and zone values flow from authoritative input, while removed conflicts, unsupported statuses, malformed paired setbacks, and unsupported adjustment effects fail closed. A project-resolved rule now cannot be presented without its conflict reference.
 
+The project owner approved the initial Block 7.4 interface direction on July 18, 2026. It is a lightweight, scroll-first local web application with persistent address search; property identity and zoning; supported use; separate approvals; compact standards; a setback table; visible warnings; expandable limitations; and superscript references leading to a bottom source-and-version section. Error states preserve the entered address, provide a direct retry path, and never attach regulatory cards. The detailed interaction and visual-language contract is recorded in `docs/r1-prototype-plan.md`; framework selection remains the next design decision.
+
 Validation evidence:
 
 ```text
@@ -311,7 +313,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | Next | Accept an address and render the approved view model through the lightest suitable local UI surface. |
+| 7.4 Build the initial interface | In progress | Scroll-first web architecture, visual language, sources, and error-state behavior approved; framework and component boundaries remain. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:
@@ -374,3 +376,4 @@ None currently recorded.
 | 2026-07-18 | Keep integrity-error adaptation separate from pure result presentation. | The presenter stays stateless and fail-closed, while a deliberate application boundary can produce a safe `system_error` view without exposing internal details. |
 | 2026-07-18 | Require every project-resolved display rule to retain its conflict reference. | Prevents a presentation mutation or malformed input from hiding the competing source assertions behind a selected project value. |
 | 2026-07-18 | Validate presenter determinism with reordered inputs, mutated authoritative values, and independent hash-seeded processes. | Proves that presentation order is deliberate, regulatory values are not hard-coded, and identical versioned inputs serialize identically across processes. |
+| 2026-07-18 | Use a scroll-first local web interface with expandable secondary detail. | Keeps the main planning answer immediately visible while making limitations, source receipts, and versions inspectable without dominating the page. |

@@ -705,6 +705,30 @@ Suggested unsupported-zone message:
 
 > This address was located successfully, but its parcel is outside the filtered R1-6L/R1-8L snapshot. Its exact non-R1 zoning was not determined, and no regulations were attached.
 
+### Approved initial web-interface design
+
+The project owner approved a lightweight local web application and its initial page architecture on July 18, 2026. The page is scroll-first: primary regulatory content remains visible, while secondary limitations, methodology, and source detail may use native expandable disclosures. The interface must remain a thin consumer of presentation contract `1.0.0`; it may format values but may not reinterpret rules, duplicate numeric standards, or construct new regulatory conclusions.
+
+The successful page presents:
+
+1. a persistent address search that remains available after every outcome;
+2. a property header with matched address, APN, exact zone, locality, and prototype scope;
+3. a concise supported-use overview with the controlled permission wording;
+4. Zoning Clearance and Architectural Review as distinct approval rows;
+5. height, stories, and structure coverage as compact metric summaries;
+6. setbacks as a comparative table showing base values, typed second-story totals, and concise qualifications;
+7. visible warnings for corner-only applicability, proposal-dependent paired yards, and source conflicts;
+8. an expandable limitations section for deferred topics and exception families; and
+9. unobtrusive superscript references that lead to an expandable source-and-version section at the bottom.
+
+The primary content must not be hidden behind tabs, carousels, or nested accordions. Footnotes and an expandable source list are preferred to a modal for the first iteration because they preserve context, work well on narrow screens, and keep all receipts inspectable together. A later source drawer or modal may be added without changing the presenter contract. An official external link may appear only when it exists in authoritative source data.
+
+The visual language is clean and modern: white content surfaces, a very light gray-green page background, charcoal text, soft gray borders, and restrained forest-green accents for primary actions, the supported-use state, and active controls. Muted amber is reserved for consequential qualifications and preserved source conflicts. Red is reserved for genuine system or data-integrity failures rather than ordinary unmatched or unsupported-scope outcomes. Color never carries meaning without text or an icon.
+
+For R1-8L, paired interior-side values must be labeled as a coordinated smaller/larger pair whose physical assignment is proposal-dependent; the interface must not label them left and right. The preserved 10-foot/15-foot street-side conflict receives a visible warning with the selected project value, competing assertions, project-resolution status, and re-review conditions. It must not be relegated to a footnote.
+
+For unsuccessful outcomes, the address field and entered value remain visible. One focused message replaces the regulatory result and explains whether the address was unmatched, ambiguous, outside the supported R1 snapshot, requires review, or encountered a system/data-integrity error. The page provides an immediate path to edit and resubmit the address. Regulatory cards remain empty whenever the presentation result is not `success`.
+
 ### Block 7 implementation sequence
 
 | Substep | Status | Intended result |
@@ -712,7 +736,7 @@ Suggested unsupported-zone message:
 | 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
 | 7.2 Implement the pure presenter | Complete | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
 | 7.3 Validate presenter behavior | Complete | Both R1 zones, controlled failures, conflicts, conditional applicability, provenance, mutation isolation, input ordering, and cross-process repeatability pass |
-| 7.4 Build the initial interface | Next | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
+| 7.4 Build the initial interface | In progress | Lightweight local web surface and page architecture approved; choose the framework and component boundaries before implementation |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
 ### Block 7 validation matrix
@@ -791,6 +815,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Begin Block 7.4 by selecting the lightest suitable local interface for this prototype. The interface should accept an address, call the existing Block 6 pipeline and Block 7 presenter without reinterpreting either contract, and render the approved success and controlled-failure views. Review the interface plan before implementation.
+Continue Block 7.4 by selecting the lightweight web framework and approving the server, route, template, styling, and test boundaries. The implementation must accept an address, call the existing Block 6 pipeline and Block 7 presenter without reinterpreting either contract, and render the approved success and controlled-failure views.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.
