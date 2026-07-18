@@ -403,7 +403,7 @@ The project owner approved this direction on July 17, 2026. Contract version `1.
 
 Block 6 has two deterministic boundaries:
 
-1. A pure zone retriever accepts an exact supported zone and an approved, runtime-eligible ruleset.
+1. A pure zone retriever accepts an exact, case-sensitive supported zone key and an approved, runtime-eligible ruleset; it does not trim, normalize, or guess aliases.
 2. An address orchestrator runs the existing Block 5 lookup and calls the pure retriever only after an unambiguous `r1_zone_found` result.
 
 Conceptually:
@@ -478,9 +478,9 @@ The successful combined result will follow this contract direction:
 
 Empty rule and shared-reference objects in the example are structural placeholders; the real result contains the complete selected records. The `not_evaluated` array is copied from the approved ruleset rather than maintained independently in this contract document.
 
-The actual `regulations` object preserves each approved zone-owned rule rather than flattening it into presentation-only numbers. This retains rule IDs, applicability, paired side yards, base setbacks, story-based adjustments, conditions, validation states, source references, and exception-family references.
+The actual `regulations` object preserves every approved zone-owned rule rather than flattening it into presentation-only numbers. This retains rule IDs, applicability, paired side yards, base setbacks, story-based adjustments, conditions, validation states, source references, and exception-family references. The street-side regulation is returned with `lot_context: corner`; retrieval does not determine whether the selected parcel is a corner lot.
 
-`shared_references` contains only the source documents, citations, exception families, and conflicts referenced by the selected zone's regulations. The result is therefore self-contained without copying unrelated ruleset content.
+`shared_references` contains the transitive provenance closure for the selected zone: citations referenced directly by requirements, citations referenced by selected exception families and conflict assertions, the selected exception and conflict records, and the source documents referenced by those citations. The result is therefore self-contained without copying unrelated ruleset content.
 
 The orchestrator preserves existing Block 5 outcomes when address or spatial lookup does not produce one supported zone: `address_not_found`, `address_ambiguous`, `outside_supported_r1_snapshot`, or `review_required` with its existing reason code. Regulatory loading and retrieval must fail closed for an unapproved ruleset, unsupported zone, missing required capability, invalid reference, or other integrity error. It must never report partial success while silently omitting a required regulation.
 

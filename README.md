@@ -164,6 +164,19 @@ python3 -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Rule
 
 `ApprovedR1Ruleset.load()` runs the schema, domain, source-checksum, migration-replay, and runtime-eligibility gates. It retains a recursively read-only in-memory representation and returns defensive copies through `as_dict()`. Zone selection and address orchestration are intentionally deferred to the next Block 6 substeps.
 
+Retrieve the complete approved regulations and referenced provenance for one exact zone:
+
+```python
+from santa_clara_zoning import ApprovedR1Ruleset, retrieve_zone_standards
+
+ruleset = ApprovedR1Ruleset.load()
+standards = retrieve_zone_standards("R1-6L", ruleset)
+print(standards["regulatory_context"]["ruleset_version"])
+print(list(standards["regulations"]))
+```
+
+Retrieval is case-sensitive and does not normalize or guess zone codes. It preserves applicability, conditions, setback adjustments, paired yards, conflicts, and `not_evaluated` topics; it does not determine whether a parcel is a corner lot or evaluate a proposal.
+
 Create a later candidate in a new, nonexisting version directory with:
 
 ```bash
@@ -213,7 +226,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
 │   ├── lookup.py                      Snapshot loading and lookup outcomes
-│   └── ruleset.py                     Approved v2 runtime ruleset loader
+│   ├── ruleset.py                     Approved v2 runtime ruleset loader
+│   └── standards.py                   Pure exact-zone regulation retrieval
 ├── scripts/
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
 │   ├── download_address_points.py     Citywide address-point downloader
