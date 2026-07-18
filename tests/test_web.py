@@ -1,12 +1,19 @@
-"""Focused tests for the Block 7.4a Flask shell and route boundary."""
+"""Focused tests for the Block 7.4 Flask interface boundary."""
 
 from __future__ import annotations
 
+import copy
 import re
 import unittest
+from html.parser import HTMLParser
 from unittest.mock import Mock, patch
 
-from santa_clara_zoning import PipelineIntegrityError, RulesetLoadError
+from santa_clara_zoning import (
+    PipelineIntegrityError,
+    R1StandardsPipeline,
+    RulesetLoadError,
+    present_pipeline_result,
+)
 from santa_clara_zoning.lookup import DEFAULT_ADDRESS_SNAPSHOT, DEFAULT_R1_SNAPSHOT
 from santa_clara_zoning.web import create_app
 
@@ -47,6 +54,80 @@ def _view(kind: str = "success") -> dict:
         "sources": [],
         "versions": {},
     }
+
+
+class RenderedDocument(HTMLParser):
+    """Collect structural links without adding a browser-test dependency."""
+
+    def __init__(self, body: str) -> None:
+        super().__init__()
+        self.ids: list[str] = []
+        self.fragments: list[str] = []
+        self.controls: list[str] = []
+        self.labels_for: list[str] = []
+        self.input_ids: list[str] = []
+        self.tag_counts: dict[str, int] = {}
+        self.result_kinds: list[str] = []
+        self.rule_controls: dict[str, list[str]] = {}
+        self.popover_fragments: dict[str, list[str]] = {}
+        self._active_rules: list[tuple[str, str]] = []
+        self._popover_id: str | None = None
+        self._popover_depth = 0
+        self.feed(body)
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {key: value for key, value in attrs}
+        self.tag_counts[tag] = self.tag_counts.get(tag, 0) + 1
+
+        element_id = values.get("id")
+        if element_id:
+            self.ids.append(element_id)
+        href = values.get("href") or ""
+        if href.startswith("#"):
+            self.fragments.append(href[1:])
+        control = values.get("aria-controls")
+        if control:
+            self.controls.append(control)
+        if tag == "label" and values.get("for"):
+            self.labels_for.append(str(values["for"]))
+        if tag == "input" and element_id:
+            self.input_ids.append(element_id)
+        if values.get("data-result-kind"):
+            self.result_kinds.append(str(values["data-result-kind"]))
+
+        rule_id = values.get("data-rule-id")
+        if rule_id:
+            self._active_rules.append((tag, rule_id))
+        classes = set((values.get("class") or "").split())
+        if tag == "button" and "source-marker" in classes and control:
+            if self._active_rules:
+                active_rule = self._active_rules[-1][1]
+                self.rule_controls.setdefault(active_rule, []).append(control)
+
+        if self._popover_id is not None:
+            self._popover_depth += 1
+            if tag == "a" and href.startswith("#source-"):
+                self.popover_fragments[self._popover_id].append(href[1:])
+        elif element_id and element_id.startswith("source-popup-"):
+            self._popover_id = element_id
+            self._popover_depth = 1
+            self.popover_fragments[element_id] = []
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._popover_id is not None:
+            self._popover_depth -= 1
+            if self._popover_depth == 0:
+                self._popover_id = None
+        if self._active_rules and self._active_rules[-1][0] == tag:
+            self._active_rules.pop()
+
+
+def _rule_items(view: dict) -> list[dict]:
+    return [
+        item
+        for section in ("use_permissions", "approvals", "key_standards", "setbacks")
+        for item in view[section]
+    ]
 
 
 class WebShellTest(unittest.TestCase):
@@ -136,6 +217,11 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('class="outcome-card outcome-card--system_error"', body)
         self.assertIn("System or data validation error", body)
         self.assertNotIn("private diagnostic detail", body)
+        self.assertNotIn("data-capability-id", body)
+        self.assertNotIn("data-rule-id", body)
+        self.assertNotIn('class="source-marker"', body)
+        self.assertNotIn("Regulatory sources", body)
+        self.assertNotIn("<dt>Ruleset</dt>", body)
 
     def test_unexpected_error_is_not_relabelled(self) -> None:
         self.pipeline.analyze_address.side_effect = RuntimeError("programming defect")
@@ -175,6 +261,11 @@ class WebShellTest(unittest.TestCase):
         self.assertIn("Edit the address and try again", body)
         self.assertNotIn("What base zoning permits", body)
         self.assertNotIn("Key base-zone standards", body)
+        self.assertNotIn("data-capability-id", body)
+        self.assertNotIn("data-rule-id", body)
+        self.assertNotIn('class="source-marker"', body)
+        self.assertNotIn("Regulatory sources", body)
+        self.assertNotIn("<dt>Ruleset</dt>", body)
 
     def test_post_is_not_an_application_route(self) -> None:
         response = self.client.post("/", data={"address": "636 Barto St"})
@@ -208,7 +299,14 @@ class WebStartupFailureTest(unittest.TestCase):
 class WebShellIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.app = create_app()
+        cls.pipeline = R1StandardsPipeline.from_defaults()
+        cls.barto_view = present_pipeline_result(
+            cls.pipeline.analyze_address("636 Barto Street")
+        )
+        cls.brookside_view = present_pipeline_result(
+            cls.pipeline.analyze_address("108 Brookside Avenue")
+        )
+        cls.app = create_app(cls.pipeline)
         cls.app.config.update(TESTING=True)
 
     def test_default_app_runs_real_barto_pipeline_and_presenter(self) -> None:
@@ -266,6 +364,21 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertIn("Santa Clara Zoning Code, Title 18", setback_rows[0])
         self.assertIn("Section 18.10.030, Table 2-3", setback_rows[0])
 
+        view = self.barto_view
+        for value in view["property"].values():
+            with self.subTest(property_value=value):
+                self.assertIn(str(value), body)
+        for standard in view["key_standards"]:
+            rendered_value = f'{standard["value"]["number"]} {standard["value"]["unit"]}'
+            with self.subTest(rule_id=standard["rule_id"]):
+                self.assertIn(rendered_value, body)
+        for item in view["not_evaluated"]:
+            with self.subTest(topic=item["topic"]):
+                self.assertIn(item["topic"], body)
+        for version in view["versions"].values():
+            with self.subTest(version=version):
+                self.assertIn(version, body)
+
     def test_brookside_renders_paired_values_and_full_conflict_notice(self) -> None:
         response = self.app.test_client().get(
             "/",
@@ -281,6 +394,74 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertIn("not an official City correction", body)
         self.assertIn("Competing source assertions", body)
         self.assertIn("Official City or codifier clarification", body)
+        self.assertNotIn("Left setback", body)
+        self.assertNotIn("Right setback", body)
+
+        conflict = next(
+            warning
+            for warning in self.brookside_view["warnings"]
+            if warning["kind"] == "source_conflict"
+        )
+        self.assertIn(conflict["resolution"]["rationale"], body)
+        for assertion in conflict["assertions"]:
+            rendered_value = f'{assertion["value"]["number"]} {assertion["value"]["unit"]}'
+            with self.subTest(assertion=assertion["assertion_id"]):
+                self.assertIn(rendered_value, body)
+
+    def test_success_html_has_complete_source_and_semantic_closure(self) -> None:
+        fixtures = {
+            "636 Barto Street": self.barto_view,
+            "108 Brookside Avenue": self.brookside_view,
+        }
+
+        for address, view in fixtures.items():
+            with self.subTest(address=address):
+                response = self.app.test_client().get(
+                    "/",
+                    query_string={"address": address},
+                )
+                document = RenderedDocument(response.get_data(as_text=True))
+
+                self.assertEqual(document.tag_counts.get("h1"), 1)
+                self.assertEqual(document.tag_counts.get("main"), 1)
+                self.assertIn("address", document.labels_for)
+                self.assertIn("address", document.input_ids)
+                self.assertEqual(document.result_kinds, ["success"])
+                self.assertEqual(len(document.ids), len(set(document.ids)))
+                self.assertLessEqual(set(document.fragments), set(document.ids))
+                self.assertLessEqual(set(document.controls), set(document.ids))
+
+                for item in _rule_items(view):
+                    controls = document.rule_controls.get(item["rule_id"], [])
+                    self.assertEqual(len(controls), 1, item["rule_id"])
+                    expected_sources = {
+                        f"source-{citation_id}" for citation_id in item["citation_ids"]
+                    }
+                    self.assertEqual(
+                        set(document.popover_fragments[controls[0]]),
+                        expected_sources,
+                    )
+
+    def test_success_sections_render_in_the_approved_order(self) -> None:
+        response = self.app.test_client().get(
+            "/",
+            query_string={"address": "636 Barto Street"},
+        )
+        body = response.get_data(as_text=True)
+        ordered_ids = (
+            "result-heading",
+            "overview-heading",
+            "permissions-heading",
+            "approvals-heading",
+            "standards-heading",
+            "setbacks-heading",
+            "warnings-heading",
+            "limitations-heading",
+            "sources-heading",
+        )
+
+        positions = [body.index(f'id="{element_id}"') for element_id in ordered_ids]
+        self.assertEqual(positions, sorted(positions))
 
     def test_controlled_lookup_outcomes_render_no_regulatory_sections(self) -> None:
         fixtures = {
@@ -303,6 +484,11 @@ class WebShellIntegrationTest(unittest.TestCase):
                 self.assertIn("Edit the address and try again", body)
                 self.assertNotIn("What base zoning permits", body)
                 self.assertNotIn("Key base-zone standards", body)
+                self.assertNotIn("data-capability-id", body)
+                self.assertNotIn("data-rule-id", body)
+                self.assertNotIn('class="source-marker"', body)
+                self.assertNotIn("Regulatory sources", body)
+                self.assertNotIn("<dt>Ruleset</dt>", body)
 
     def test_ambiguous_address_lists_candidates_without_selecting_one(self) -> None:
         response = self.app.test_client().get(
@@ -315,6 +501,61 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertIn("Matching address records", body)
         self.assertIn("No candidate was selected automatically", body)
         self.assertIn("unit 1", body)
+
+    def test_route_renders_presenter_values_without_hidden_web_constants(self) -> None:
+        pipeline = Mock()
+        pipeline_result = {"sentinel": "pipeline-result"}
+        pipeline.analyze_address.return_value = pipeline_result
+        view = copy.deepcopy(self.barto_view)
+        view["property"]["display_address"] = "987 Sentinel Place"
+        view["property"]["zone"] = "R1-SENTINEL"
+        view["overview"]["summary"] = "Sentinel presentation summary"
+        view["key_standards"][0]["value"] = {
+            "number": 913.5,
+            "unit": "widgets",
+        }
+        regulatory_source = next(
+            source
+            for source in view["sources"]
+            if source["kind"] == "regulatory_citation"
+        )
+        regulatory_source["document"]["title"] = "<script>source</script>"
+        app = create_app(pipeline)
+        app.config.update(TESTING=True)
+
+        with patch(
+            "santa_clara_zoning.web.present_pipeline_result",
+            return_value=view,
+        ) as presenter:
+            response = app.test_client().get(
+                "/",
+                query_string={"address": "<script>address</script>"},
+            )
+
+        body = response.get_data(as_text=True)
+        self.assertIn("987 Sentinel Place", body)
+        self.assertIn("R1-SENTINEL", body)
+        self.assertIn("Sentinel presentation summary", body)
+        self.assertIn("913.5 widgets", body)
+        self.assertIn("&lt;script&gt;source&lt;/script&gt;", body)
+        self.assertIn('value="&lt;script&gt;address&lt;/script&gt;"', body)
+        self.assertNotIn("<script>source</script>", body)
+        pipeline.analyze_address.assert_called_once_with("<script>address</script>")
+        presenter.assert_called_once_with(pipeline_result)
+
+    def test_rendered_success_is_repeatable_across_request_order(self) -> None:
+        client = self.app.test_client()
+        first = client.get(
+            "/",
+            query_string={"address": "636 Barto Street"},
+        ).get_data()
+        client.get("/", query_string={"address": "108 Brookside Avenue"})
+        repeated = client.get(
+            "/",
+            query_string={"address": "636 Barto Street"},
+        ).get_data()
+
+        self.assertEqual(first, repeated)
 
 
 if __name__ == "__main__":

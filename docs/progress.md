@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.4a complete — Flask shell and route boundary validated
+**Current position:** Block 7.4 complete — initial web interface and rendered-contract validation pass
 
-**Next action:** Review Block 7.4b semantic-template mapping before implementation
+**Next action:** Run Block 7.5 browser, keyboard, responsive-layout, and final setup validation
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract, presenter, and validation matrix are complete; Block 7.4a adds the validated Flask shell and route. |
+| 7. Present a simple result | In progress | Contract, presenter, and initial web interface are complete; Block 7.5 browser and final setup validation remains. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -360,6 +360,28 @@ node --check santa_clara_zoning/static/app.js
 passed
 ```
 
+Block 7.4d completes rendered-interface validation in `tests/test_web.py`. The tests exercise canonical R1-6L and R1-8L results, including scalar and paired setbacks, required approvals, limitations, the preserved R1-8L source conflict, and every value exposed by the current presentation contract. A structural HTML parser verifies unique element IDs; address label association; fragment and `aria-controls` closure; exactly one source marker per displayed rule; and an exact match between each marker's popup links and that rule's citation IDs.
+
+The same suite proves that the route contains no hidden regulatory constants by injecting sentinel presenter values, passes entered addresses to the pipeline once, passes pipeline output to the presenter once, and escapes both entered and presenter-supplied hostile markup. Repeated Barto rendering remains byte-equivalent even after an intervening Brookside request. Lookup failures, review-required views, startup failures, and known integrity failures remain non-regulatory: they render no capabilities, rule IDs, source markers, regulatory receipts, or ruleset version.
+
+Block 7.4d deliberately makes no browser-interaction, responsive-layout, keyboard-behavior, or visual-polish claim. Those checks remain the acceptance boundary for Block 7.5.
+
+Block 7.4d validation evidence:
+
+```text
+.venv/bin/python -W error::ResourceWarning -B -m unittest tests.test_web -v
+20 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+143 passed, 0 failed, 0 skipped
+
+node --check santa_clara_zoning/static/app.js
+passed
+
+git diff --check
+passed
+```
+
 Validation evidence:
 
 ```text
@@ -377,7 +399,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | In progress | Blocks 7.4a–7.4c and the approved source-display refinement are complete; 16 focused and 139 full tests pass. Review Block 7.4d web validation next. |
+| 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:
