@@ -1,10 +1,10 @@
 # R1 Prototype Progress
 
-**Last updated:** July 17, 2026
+**Last updated:** July 18, 2026
 
-**Current position:** Block 6 in progress — retrieval contract direction approved
+**Current position:** Block 6 in progress — approved-ruleset loader complete
 
-**Next action:** Block 6.2 — implement and test the approved-ruleset loader
+**Next action:** Block 6.3 — implement pure retrieval by exact supported zone
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -18,7 +18,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
-| 6. Implement deterministic standards retrieval | In progress | Contract direction and test matrix approved; runtime loader is next. |
+| 6. Implement deterministic standards retrieval | In progress | Contract and approved-ruleset loader complete; pure exact-zone retrieval is next. |
 | 7. Present a simple result | Not started | Requires a working retrieval path and readable output. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
@@ -204,8 +204,8 @@ Implementation sequence:
 | Substep | Status | Intended result |
 |---|---|---|
 | 6.1 Define retrieval contract and test matrix | Complete | Contract direction, failure behavior, scope boundary, and fixtures are recorded in the prototype plan. |
-| 6.2 Load the approved ruleset | Next | A validated loader accepts only immutable, runtime-eligible v2 data and fails closed otherwise. |
-| 6.3 Retrieve rules by exact zone | Pending | A pure function returns the complete approved capability set for R1-6L or R1-8L with referenced provenance. |
+| 6.2 Load the approved ruleset | Complete | `ApprovedR1Ruleset` validates every canonical artifact, freezes trusted data, exposes safe metadata, and returns defensive copies. |
+| 6.3 Retrieve rules by exact zone | Next | A pure function returns the complete approved capability set for R1-6L or R1-8L with referenced provenance. |
 | 6.4 Connect Block 5 lookup | Pending | Successful address lookup produces the combined versioned contract; existing controlled failures remain intact. |
 | 6.5 Validate Block 6 | Pending | Real and synthetic fixtures prove completeness, rejection behavior, and deterministic repeatability. |
 
@@ -217,6 +217,15 @@ Approved Block 6 test matrix:
 - Candidate, incomplete, corrupted, or otherwise runtime-ineligible rulesets are rejected.
 - Missing required capabilities or broken references cannot produce partial success.
 - Repeated execution against identical snapshots and ruleset version produces identical structured output.
+
+Block 6.2 implementation:
+
+```text
+santa_clara_zoning/ruleset.py
+tests/test_ruleset_loader.py
+```
+
+The loader reads the approved ruleset, schema, crosswalk, and source v1 artifact once, then runs schema and domain validation, local source checksum verification, migration completeness and replay, and runtime eligibility. Its internal JSON tree is recursively frozen; public metadata is immutable or copied, and `as_dict()` returns a defensive copy for later retrieval code. Nine focused tests reject the candidate, missing capabilities, changed regulatory values, bad source checksums, broken crosswalks, and missing files while proving repeatable loading and mutation isolation. The complete suite passes 86 tests.
 
 Block 6 exit conditions:
 
@@ -265,3 +274,4 @@ None currently recorded.
 | 2026-07-17 | Limit v2 operational semantics to cataloged prototype capabilities even when the schema supports future shapes. | Height-triggered and additive setbacks remain representable for future work but cannot silently enter the current R1 runtime contract. |
 | 2026-07-17 | Promote the reviewed candidate into separate immutable ruleset v2 version `2026-07-17.2`. | Preserves the exact reviewed candidate while recording explicit project-owner approval and providing a runtime-eligible source for Block 6. |
 | 2026-07-17 | Version the Block 6 output contract separately from regulatory data. | `contract_version` describes result shape and semantics, while `ruleset_version` identifies the regulations; a separate engine version is deferred until meaningful evaluation logic exists. |
+| 2026-07-18 | Validate and freeze the approved JSON ruleset once at application startup. | Keeps JSON authoritative for the prototype, prevents per-address revalidation and accidental mutation, and leaves storage replaceable by a future database-backed repository. |

@@ -156,6 +156,14 @@ python3 scripts/validate_r1_rules_v2.py \
 
 The original candidate can still be validated without the runtime requirement by using the validator defaults.
 
+Application code loads and validates the approved artifact once before serving lookups:
+
+```bash
+python3 -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Ruleset.load(); print(r.version, r.supported_zones, r.regulation_count)'
+```
+
+`ApprovedR1Ruleset.load()` runs the schema, domain, source-checksum, migration-replay, and runtime-eligibility gates. It retains a recursively read-only in-memory representation and returns defensive copies through `as_dict()`. Zone selection and address orchestration are intentionally deferred to the next Block 6 substeps.
+
 Create a later candidate in a new, nonexisting version directory with:
 
 ```bash
@@ -204,7 +212,8 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── santa_clara_zoning/
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
-│   └── lookup.py                      Snapshot loading and lookup outcomes
+│   ├── lookup.py                      Snapshot loading and lookup outcomes
+│   └── ruleset.py                     Approved v2 runtime ruleset loader
 ├── scripts/
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
 │   ├── download_address_points.py     Citywide address-point downloader
