@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.4 in progress — web-interface design approved
+**Current position:** Block 7.4 architecture approved — implementation not started
 
-**Next action:** Select the lightweight web framework and approve component boundaries
+**Next action:** Implement Block 7.4a — Flask shell and route boundary
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -294,7 +294,9 @@ The presenter preserves rule identity, applicability, conditions, exception fami
 
 Block 7.3 hardens that boundary with real-pipeline acceptance tests for Barto and Brookside plus Warburton, Los Padres, unmatched, empty-input, and review-required outcomes. Contract-shape, JSON-serialization, wording, display-order, conditional-applicability, provenance-closure, source-link, mutation-isolation, input-order, and cross-process repeatability checks pass. Mutation tests prove that numeric and zone values flow from authoritative input, while removed conflicts, unsupported statuses, malformed paired setbacks, and unsupported adjustment effects fail closed. A project-resolved rule now cannot be presented without its conflict reference.
 
-The project owner approved the initial Block 7.4 interface direction on July 18, 2026. It is a lightweight, scroll-first local web application with persistent address search; property identity and zoning; supported use; separate approvals; compact standards; a setback table; visible warnings; expandable limitations; and superscript references leading to a bottom source-and-version section. Error states preserve the entered address, provide a direct retry path, and never attach regulatory cards. The detailed interaction and visual-language contract is recorded in `docs/r1-prototype-plan.md`; framework selection remains the next design decision.
+The project owner approved the initial Block 7.4 interface direction on July 18, 2026. It is a lightweight, scroll-first local web application with persistent address search; property identity and zoning; supported use; separate approvals; compact standards; a setback table; visible warnings; expandable limitations; and superscript references leading to a bottom source-and-version section. Error states preserve the entered address, provide a direct retry path, and never attach regulatory cards.
+
+The project owner also approved Flask `3.1.3`, server-rendered Jinja, custom CSS, minimal JavaScript, one `GET /?address=...` route, an application-factory boundary that loads or accepts the pipeline once, semantic template partials, and Flask test-client coverage within the existing `unittest` suite. The approved 7.4a–7.4d sequence is Flask shell, semantic templates, visual implementation, and web validation. The complete architecture and test boundary are in `docs/r1-prototype-plan.md`; no web implementation or dependency change has occurred yet.
 
 Validation evidence:
 
@@ -313,7 +315,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | In progress | Scroll-first web architecture, visual language, sources, and error-state behavior approved; framework and component boundaries remain. |
+| 7.4 Build the initial interface | In progress | Flask/Jinja architecture and 7.4a–7.4d sequence approved; Block 7.4a implementation is next. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:
@@ -377,3 +379,4 @@ None currently recorded.
 | 2026-07-18 | Require every project-resolved display rule to retain its conflict reference. | Prevents a presentation mutation or malformed input from hiding the competing source assertions behind a selected project value. |
 | 2026-07-18 | Validate presenter determinism with reordered inputs, mutated authoritative values, and independent hash-seeded processes. | Proves that presentation order is deliberate, regulatory values are not hard-coded, and identical versioned inputs serialize identically across processes. |
 | 2026-07-18 | Use a scroll-first local web interface with expandable secondary detail. | Keeps the main planning answer immediately visible while making limitations, source receipts, and versions inspectable without dominating the page. |
+| 2026-07-18 | Use Flask 3.1.3, Jinja, custom CSS, and one read-only address route for the prototype interface. | Preserves the existing synchronous Python pipeline, provides precise semantic and visual control, and avoids a separate API, frontend build system, database, or duplicated client-side regulatory state. |

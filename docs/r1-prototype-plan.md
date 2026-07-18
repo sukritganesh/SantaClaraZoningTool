@@ -729,6 +729,66 @@ For R1-8L, paired interior-side values must be labeled as a coordinated smaller/
 
 For unsuccessful outcomes, the address field and entered value remain visible. One focused message replaces the regulatory result and explains whether the address was unmatched, ambiguous, outside the supported R1 snapshot, requires review, or encountered a system/data-integrity error. The page provides an immediate path to edit and resubmit the address. Regulatory cards remain empty whenever the presentation result is not `success`.
 
+### Approved Block 7.4 web architecture
+
+The project owner approved the implementation architecture on July 18, 2026:
+
+- Flask `3.1.3`, pinned as a direct dependency;
+- server-rendered Jinja templates;
+- custom responsive CSS with no CSS framework or build tool;
+- native HTML forms, anchors, and disclosure elements, with custom JavaScript added only if an approved interaction cannot be expressed accessibly without it;
+- one read-only `GET /` route whose optional `address` query parameter selects the landing or analyzed state; and
+- the existing `unittest` suite plus Flask's in-process test client.
+
+The web application remains a thin adapter:
+
+```text
+GET /?address=<entered address>
+             ↓
+Flask application factory and route
+             ↓
+R1StandardsPipeline.analyze_address()
+             ↓
+present_pipeline_result()
+             ↓
+Jinja template selected by presentation kind
+             ↓
+HTML response
+```
+
+`create_app()` loads the canonical pipeline once rather than rebuilding snapshots and the ruleset for each request. The route passes the entered address to the pipeline without adding fuzzy matching or web-specific zoning logic. Known ruleset, pipeline, standards, and presentation integrity failures are converted only through `present_integrity_error()`; unexpected programming failures are not silently relabeled as planning outcomes.
+
+The approved initial file boundaries are:
+
+```text
+santa_clara_zoning/
+├── web.py
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── _success.html
+│   ├── _outcome.html
+│   └── _sources.html
+└── static/
+    └── app.css
+
+tests/
+└── test_web.py
+```
+
+`web.py` owns application construction, the one route, dependency injection for tests, and the known-integrity-error boundary. Templates may branch on the approved presentation `kind` and format presentation fields, but they may not read raw ruleset data, calculate standards, rename controlled statuses, or maintain jurisdiction-specific regulatory values. `app.css` owns the approved visual system and responsive layout. The first version has no database, authentication, session state, JSON API, frontend framework, Node dependency, live GIS request, or runtime AI call.
+
+Web tests cover the empty landing page; real Barto and Brookside successes; Warburton, Los Padres, unmatched, empty-input, review-required, and system-error views; HTML escaping; footnote-to-source linkage; absence of regulatory content on non-successes; and route-level mutation isolation. They do not duplicate rule-engine assertions or encode another copy of zone values. Browser-level responsive, keyboard, disclosure, contrast, and visual-polish checks remain in Block 7.5.
+
+Block 7.4 proceeds in four approved substeps:
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 7.4a Flask shell | Next | Add the pinned dependency, application factory, one GET route, pipeline injection, and known-integrity-error boundary |
+| 7.4b Semantic templates | Pending | Render every approved presentation kind with accessible HTML before visual polish |
+| 7.4c Visual implementation | Pending | Implement the approved green, white, gray, and amber responsive design in custom CSS |
+| 7.4d Web validation | Pending | Add route and rendered-output tests for success, controlled outcomes, sources, safety, and isolation |
+
 ### Block 7 implementation sequence
 
 | Substep | Status | Intended result |
@@ -736,7 +796,7 @@ For unsuccessful outcomes, the address field and entered value remain visible. O
 | 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
 | 7.2 Implement the pure presenter | Complete | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
 | 7.3 Validate presenter behavior | Complete | Both R1 zones, controlled failures, conflicts, conditional applicability, provenance, mutation isolation, input ordering, and cross-process repeatability pass |
-| 7.4 Build the initial interface | In progress | Lightweight local web surface and page architecture approved; choose the framework and component boundaries before implementation |
+| 7.4 Build the initial interface | In progress | Flask/Jinja architecture, route, templates, styling, tests, and 7.4a–7.4d sequence approved; implementation has not started |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
 ### Block 7 validation matrix
@@ -805,16 +865,14 @@ The first prototype is complete when it can:
 - identify unsupported zones and error states cleanly; and
 - reproduce the same output from the same versioned inputs.
 
-## 12. Remaining Decisions After Block 6
+## 12. Remaining Decisions
 
-- Block 7 presentation form: command-line renderer or small local web application.
-- Application framework if a web interface is selected.
 - Whether and when to add authoritative corner-lot classification rather than displaying the street-side rule conditionally.
 - When the direct immutable-snapshot lookup should be replaced by GeoPackage, DuckDB Spatial, PostGIS, or another indexed spatial store.
 - Whether a later deployed version uses local snapshots, refreshed snapshots, live GIS services, or a controlled combination.
 
 ## 13. Likely Immediate Next Step
 
-Continue Block 7.4 by selecting the lightweight web framework and approving the server, route, template, styling, and test boundaries. The implementation must accept an address, call the existing Block 6 pipeline and Block 7 presenter without reinterpreting either contract, and render the approved success and controlled-failure views.
+Begin Block 7.4a within the approved architecture: pin Flask, add the application factory and single GET route, inject or load the existing pipeline once, and establish the known-integrity-error boundary. Do not add templates beyond the minimum shell, visual styling, or the later 7.4b–7.4d work in this substep.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.
