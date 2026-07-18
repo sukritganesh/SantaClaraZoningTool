@@ -57,11 +57,24 @@ class WebShellTest(unittest.TestCase):
 
     def test_landing_page_does_not_run_the_pipeline(self) -> None:
         response = self.client.get("/")
+        body = response.get_data(as_text=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn('name="address"', response.get_data(as_text=True))
-        self.assertNotIn("data-result-kind", response.get_data(as_text=True))
+        self.assertIn('name="address"', body)
+        self.assertIn('href="/static/app.css"', body)
+        self.assertIn('class="lookup-panel"', body)
+        self.assertNotIn("data-result-kind", body)
         self.pipeline.analyze_address.assert_not_called()
+
+    def test_stylesheet_is_served_as_a_local_static_asset(self) -> None:
+        response = self.client.get("/static/app.css")
+        self.addCleanup(response.close)
+        body = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "text/css")
+        self.assertIn("--green: #17633e", body)
+        self.assertIn("@media (prefers-reduced-motion: reduce)", body)
 
     def test_address_runs_pipeline_and_presenter_once(self) -> None:
         pipeline_result = {"fixture": "pipeline result"}
@@ -106,6 +119,7 @@ class WebShellTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('data-result-kind="system_error"', body)
+        self.assertIn('class="outcome-card outcome-card--system_error"', body)
         self.assertIn("System or data validation error", body)
         self.assertNotIn("private diagnostic detail", body)
 
@@ -214,7 +228,9 @@ class WebShellIntegrationTest(unittest.TestCase):
         for heading in expected_sections:
             with self.subTest(heading=heading):
                 self.assertIn(heading, body)
-        self.assertIn("<table>", body)
+        self.assertIn('<table class="setbacks-table">', body)
+        self.assertIn('class="table-scroll"', body)
+        self.assertIn('tabindex="0"', body)
         self.assertIn('scope="col"', body)
         self.assertIn('scope="row"', body)
         self.assertIn("Total minimum beginning at story 2", body)

@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <section aria-labelledby="search-heading">
+  <section class="lookup-panel" aria-labelledby="search-heading">
     <h2 id="search-heading">Look up a property</h2>
-    <form action="{{ url_for('index') }}" method="get" role="search">
-      <label for="address">Santa Clara street address</label>
-      <input
-        id="address"
-        name="address"
-        type="text"
-        value="{{ entered_address }}"
-        autocomplete="street-address"
-        aria-describedby="address-help"
-        required
-      >
-      <p id="address-help">Enter one street address within the City of Santa Clara.</p>
+    <form class="lookup-form" action="{{ url_for('index') }}" method="get" role="search">
+      <div class="lookup-field">
+        <label for="address">Santa Clara street address</label>
+        <input
+          id="address"
+          name="address"
+          type="text"
+          value="{{ entered_address }}"
+          autocomplete="street-address"
+          aria-describedby="address-help"
+          placeholder="Example: 636 Barto Street"
+          required
+        >
+      </div>
       <button type="submit">Analyze property</button>
+      <p id="address-help">Enter one street address within the City of Santa Clara.</p>
     </form>
   </section>
 
@@ -27,7 +30,7 @@
       {% set _ = source_numbers.update({source.citation_id: citation_counter.value}) %}
     {% endfor %}
 
-    <div aria-live="polite">
+    <div class="result-region" aria-live="polite">
       {% if view.kind == "success" %}
         {% include "_success.html" %}
       {% else %}

@@ -1,13 +1,13 @@
-<section aria-labelledby="sources-heading">
+<section class="sources-section" aria-labelledby="sources-heading">
   <h2 id="sources-heading">Sources and data versions</h2>
-  <details>
+  <details class="disclosure-card source-disclosure">
     <summary>Inspect source receipts and versions</summary>
     {% set gis_sources = view.sources | selectattr("kind", "equalto", "gis_layer") | list %}
     {% set regulatory_sources = view.sources | selectattr("kind", "equalto", "regulatory_citation") | list %}
 
     {% if regulatory_sources %}
       <h3>Regulatory sources</h3>
-      <ol>
+      <ol class="source-list">
         {% for source in regulatory_sources %}
           <li id="source-{{ source.citation_id }}">
             <strong>{{ source.document.title }}</strong>, {{ source.document.version }} — {{ source.locator }}.
@@ -25,7 +25,7 @@
 
     {% if gis_sources %}
       <h3>GIS layers</h3>
-      <ul>
+      <ul class="gis-list">
         {% for source in gis_sources %}
           <li id="source-{{ source.source_id }}">
             <a href="{{ source.url }}">{{ source.source_id | replace("_", " ") | title }}</a>
@@ -36,7 +36,7 @@
 
     {% if view.versions %}
       <h3>Versions</h3>
-      <dl>
+      <dl class="versions-grid">
         {% if view.versions.pipeline_contract %}<div><dt>Pipeline contract</dt><dd>{{ view.versions.pipeline_contract }}</dd></div>{% endif %}
         {% if view.versions.address_snapshot %}<div><dt>Address snapshot</dt><dd>{{ view.versions.address_snapshot }}</dd></div>{% endif %}
         {% if view.versions.r1_gis_snapshot %}<div><dt>R1 GIS snapshot</dt><dd>{{ view.versions.r1_gis_snapshot }}</dd></div>{% endif %}

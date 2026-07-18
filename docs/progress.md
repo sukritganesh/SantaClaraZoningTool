@@ -329,6 +329,20 @@ Block 7.4b validation evidence:
 137 passed, 0 failed, 0 skipped
 ```
 
+Block 7.4c is implemented in `santa_clara_zoning/static/app.css` with CSS-oriented hooks in the existing Jinja templates. The interface now uses a responsive gray-green page shell, forest-green actions and supported-use treatment, white content surfaces, compact approval and standards cards, a keyboard-scrollable setback table, amber qualification and conflict treatments, expandable limitations and source receipts, and distinct neutral, review-required, and system-error outcomes. The implementation uses system fonts, native controls, and no external assets, CSS framework, JavaScript, or new runtime dependency.
+
+Styling does not change presentation order or regulatory meaning. Paired setbacks remain smaller/larger values, the street-side rule remains conditionally applicable, second-story values remain total minimums, source references remain linked, and non-success outcomes still receive no regulatory sections. Responsive browser, keyboard, disclosure, and visual-polish review remains in Block 7.5 rather than being inferred from stylesheet presence.
+
+Block 7.4c validation evidence:
+
+```text
+.venv/bin/python -W error::ResourceWarning -B -m unittest tests.test_web -v
+15 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+138 passed, 0 failed, 0 skipped
+```
+
 Validation evidence:
 
 ```text
@@ -346,7 +360,7 @@ Implementation sequence:
 | 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | In progress | Blocks 7.4a–7.4b complete: the Flask shell and semantic templates pass 14 focused and 137 full tests; review Block 7.4c visual implementation next. |
+| 7.4 Build the initial interface | In progress | Blocks 7.4a–7.4c complete: the Flask shell, semantic templates, and responsive visual system pass 15 focused and 138 full tests; review Block 7.4d web validation next. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
 
 Planning boundaries:

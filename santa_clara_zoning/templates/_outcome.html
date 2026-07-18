@@ -1,14 +1,14 @@
-<article data-result-kind="{{ view.kind }}" aria-labelledby="outcome-heading">
-  <header>
-    <p>{{ view.property.scope_label }}</p>
+<article class="outcome-card outcome-card--{{ view.kind }}" data-result-kind="{{ view.kind }}" aria-labelledby="outcome-heading">
+  <header class="outcome-header">
+    <p class="scope-badge">{{ view.property.scope_label }}</p>
     <h2 id="outcome-heading">{{ view.overview.headline }}</h2>
     <p>{{ view.overview.summary }}</p>
   </header>
 
   {% if view.property.display_address or view.property.apn or view.property.zone or view.property.parcel_zone or view.property.zoning_zone %}
-    <section aria-labelledby="available-property-heading">
+    <section class="outcome-section" aria-labelledby="available-property-heading">
       <h3 id="available-property-heading">Available property evidence</h3>
-      <dl>
+      <dl class="evidence-grid">
         {% if view.property.display_address %}<div><dt>Matched address</dt><dd>{{ view.property.display_address }}</dd></div>{% endif %}
         {% if view.property.apn %}<div><dt>Assessor parcel number</dt><dd>{{ view.property.apn }}</dd></div>{% endif %}
         {% if view.property.zone %}<div><dt>Zoning designation</dt><dd>{{ view.property.zone }}</dd></div>{% endif %}
@@ -19,10 +19,10 @@
   {% endif %}
 
   {% if view.candidates and view.candidates.addresses %}
-    <section aria-labelledby="candidate-heading">
+    <section class="outcome-section" aria-labelledby="candidate-heading">
       <h3 id="candidate-heading">Matching address records</h3>
       <p>No candidate was selected automatically.</p>
-      <ol>
+      <ol class="candidate-list">
         {% for candidate in view.candidates.addresses %}
           <li>
             <strong>{{ candidate.display_address }}</strong>
@@ -36,7 +36,7 @@
   {% endif %}
 
   {% if view.evidence %}
-    <details>
+    <details class="disclosure-card outcome-evidence">
       <summary>Inspect lookup evidence</summary>
       {% if view.evidence.spatial_match_counts %}
         <dl>
@@ -53,5 +53,5 @@
     </details>
   {% endif %}
 
-  <p><a href="#address">Edit the address and try again</a></p>
+  <p><a class="secondary-action" href="#address">Edit the address and try again</a></p>
 </article>
