@@ -566,19 +566,24 @@ The presenter will:
 - carry conditions, exceptions, conflicts, limitations, and versions forward; and
 - return a new object without mutating the pipeline result.
 
-It will not contain zone-specific numeric constants, legal conclusions, spatial calculations, or fallback guesses. A candidate presentation-contract version `1.0.0` will be reviewed in Block 7.1 independently of the Block 6 result-contract version.
+It will not contain zone-specific numeric constants, legal conclusions, spatial calculations, or fallback guesses. The project owner approved presentation-contract version `1.0.0` on July 18, 2026, independently of the Block 6 result-contract version.
 
 For future jurisdictions, the presentation layer will use common component mappings for shared capabilities and explicit adapters for approved jurisdiction extensions. The current presenter only needs the approved prototype capabilities, but its dispatch behavior must fail visibly when it encounters an unrecognized capability or requirement shape. It must never drop an unknown regulatory record merely because no display component exists.
 
-### Candidate presentation model
+### Approved presentation contract 1.0.0
 
-The UI-neutral model should follow this direction:
+The successful UI-neutral model follows this required top-level shape:
 
 ```json
 {
   "presentation_contract_version": "1.0.0",
   "kind": "success",
   "source_status": "r1_standards_found",
+  "source_reason_code": "approved_r1_standards_retrieved",
+  "query": {
+    "entered_address": "<entered address>",
+    "normalized_address": "<normalized address>"
+  },
   "property": {
     "display_address": "<matched address>",
     "apn": "<APN>",
@@ -597,11 +602,49 @@ The UI-neutral model should follow this direction:
   "warnings": [],
   "not_evaluated": [],
   "sources": [],
-  "versions": {}
+  "versions": {
+    "pipeline_contract": "1.0.0",
+    "address_snapshot": "<snapshot version>",
+    "r1_gis_snapshot": "<snapshot version>",
+    "ruleset": "<approved ruleset version>"
+  }
 }
 ```
 
-This is a planning direction rather than an approved schema. Block 7.1 must define required fields, controlled display statuses, ordering, source-link behavior, and failure-result shapes before implementation.
+This is the approved design contract for Block 7.2. The implementation may use typed Python models internally, but its serialized output must preserve these names and semantics. An executable schema or equivalent runtime validation belongs with the implementation and tests; it must not redefine the approved meaning.
+
+The contract is a tagged outcome union:
+
+| `kind` | Source | Required behavior |
+|---|---|---|
+| `success` | `r1_standards_found` | Populate the complete successful shape above. |
+| `lookup_failure` | `address_not_found`, `address_ambiguous`, or `outside_supported_r1_snapshot` | Preserve the source status, reason code, query, available property evidence, candidates where applicable, sources, and versions; all regulatory display arrays remain absent or empty. |
+| `review_required` | Block 5 `review_required` | Preserve the source reason and available parcel/zoning evidence without attaching regulatory conclusions. |
+| `system_error` | Ruleset, pipeline, presenter, or unknown-capability integrity failure | Return a controlled system/data message and integrity reason code; never convert the error into a parcel-specific planning conclusion. |
+
+Every outcome includes `presentation_contract_version`, `kind`, `source_status` when one exists, `source_reason_code`, the original query when available, a controlled headline and summary, available provenance, and version information. Property fields may be absent only when the source result did not establish them. Candidate address records appear only for `address_ambiguous` and must not be silently selected.
+
+Each consequential rule-derived display item must retain:
+
+- `capability_id` and `rule_id`;
+- a controlled label and either the authoritative status code or typed display value;
+- applicable conditions and qualifiers;
+- citation IDs, exception-family IDs, and conflict IDs; and
+- no numeric or permission value maintained outside the Block 6 result.
+
+Source receipts must preserve citation ID, source-document ID, document title and version, and locator. An official URL may be displayed only when the authoritative source data supplies one; the presenter must not fabricate a link. The `versions` object maps the input `contract_version` to `pipeline_contract`, preserves available GIS snapshot versions, and includes `ruleset` only when regulations were actually attached.
+
+Approved controlled wording includes:
+
+| Source meaning | Display wording |
+|---|---|
+| `permitted_by_right` | Permitted by right under the supported base zoning |
+| Required approval | Required |
+| Conditional hearing trigger | May require a Development Review Hearing; show the source condition |
+| Numeric maximum | Base-zone maximum |
+| Setback minimum | Base-zone minimum |
+| Unsupported subject | Not evaluated |
+| Unresolved parcel or regulatory fact | Review required |
 
 ### Deterministic mapping rules
 
@@ -664,13 +707,13 @@ Suggested unsupported-zone message:
 
 ### Block 7 implementation sequence
 
-| Substep | Intended result |
-|---|---|
-| 7.1 Approve presentation contract and wording | Fix the UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version |
-| 7.2 Implement the pure presenter | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
-| 7.3 Validate presenter behavior | Test both R1 zones, all controlled failures, conflicts, conditional applicability, provenance, mutation isolation, and repeatability |
-| 7.4 Build the initial interface | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
-| 7.5 Validate and close Block 7 | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
+| Substep | Status | Intended result |
+|---|---|---|
+| 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
+| 7.2 Implement the pure presenter | Next | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
+| 7.3 Validate presenter behavior | Pending | Test both R1 zones, all controlled failures, conflicts, conditional applicability, provenance, mutation isolation, and repeatability |
+| 7.4 Build the initial interface | Pending | Add address input and a simple result view using the approved presentation model; choose the lightest suitable local UI surface before coding |
+| 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
 
 ### Block 7 validation matrix
 
@@ -742,13 +785,12 @@ The first prototype is complete when it can:
 
 - Block 7 presentation form: command-line renderer or small local web application.
 - Application framework if a web interface is selected.
-- How the result view groups permissions, approvals, dimensional standards, setbacks, sources, conflicts, and `not evaluated` topics.
 - Whether and when to add authoritative corner-lot classification rather than displaying the street-side rule conditionally.
 - When the direct immutable-snapshot lookup should be replaced by GeoPackage, DuckDB Spatial, PostGIS, or another indexed spatial store.
 - Whether a later deployed version uses local snapshots, refreshed snapshots, live GIS services, or a controlled combination.
 
 ## 13. Likely Immediate Next Step
 
-Review and approve Block 7.1's candidate presentation contract and wording rules. This step should fix the required success and failure fields, controlled labels, display order, provenance linkage, and presentation version before any presenter or interface code is written.
+Implement Block 7.2's pure deterministic presenter against approved presentation contract `1.0.0`. The presenter should map every supported Block 6 success and controlled outcome into a new UI-neutral object without hard-coded zone values, runtime AI, mutation of the source result, or silent omission of unknown capabilities.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

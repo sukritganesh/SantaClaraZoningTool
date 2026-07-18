@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7 planning complete — presentation contract review is next
+**Current position:** Block 7.1 complete — presentation contract `1.0.0` approved
 
-**Next action:** Block 7.1 — approve the UI-neutral presentation contract and wording rules
+**Next action:** Block 7.2 — implement the pure deterministic presenter
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | Planning | Detailed scope, architecture boundary, content hierarchy, substeps, validation matrix, and exit conditions are recorded. |
+| 7. Present a simple result | In progress | Block 7.1 approved UI-neutral presentation contract `1.0.0`, controlled wording, outcome mapping, provenance rules, and display order. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -286,12 +286,14 @@ The initial overview will remain intentionally brief. It may compose the exact z
 
 The presentation contract will also establish the product's reuse boundary: shared capabilities use common deterministic mappings, while a future jurisdiction-specific capability must have an explicit registered extension path. Unknown capabilities or requirement shapes must fail visibly and may not be silently dropped. This safeguard does not add new regulations to the current R1 scope.
 
+The project owner approved Block 7.1 on July 18, 2026. Presentation contract `1.0.0` fixes the successful top-level model; controlled `success`, `lookup_failure`, `review_required`, and `system_error` outcomes; deterministic wording; display order; rule and citation linkage; source-receipt behavior; and version mapping. The normative design is in `docs/r1-prototype-plan.md`; executable types and validation will be added with Blocks 7.2 and 7.3.
+
 Implementation sequence:
 
 | Substep | Status | Intended result |
 |---|---|---|
-| 7.1 Approve presentation contract and wording | Next | Fix success/failure view-model shapes, controlled language, ordering, provenance links, and presentation version. |
-| 7.2 Implement the pure presenter | Pending | Map every supported typed rule and controlled outcome without hard-coded zone values. |
+| 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
+| 7.2 Implement the pure presenter | Next | Map every supported typed rule and controlled outcome without hard-coded zone values. |
 | 7.3 Validate presenter behavior | Pending | Prove both zone branches, conflicts, conditional applicability, failures, provenance, mutation isolation, and repeatability. |
 | 7.4 Build the initial interface | Pending | Accept an address and render the approved view model through the lightest suitable local UI surface. |
 | 7.5 Validate and close Block 7 | Pending | Confirm readable, deterministic, evidence-backed output and reproducible setup instructions. |
@@ -351,3 +353,4 @@ None currently recorded.
 | 2026-07-18 | Put a pure UI-neutral presenter between Block 6 and the first interface. | Keeps display wording and grouping testable while preventing frontend code from interpreting raw regulations or maintaining duplicate values. |
 | 2026-07-18 | Use a brief template-derived zone overview for the current prototype. | The approved ruleset has no source-backed per-zone narrative; the presenter can safely compose existing zone, use, approval, scope, and disclaimer fields without inventing suffix meanings. |
 | 2026-07-18 | Build toward a shared regulatory core with controlled jurisdiction extensions. | Common semantics and renderers should be reusable across cities, while unique local rules remain typed, source-backed, validated, and visible instead of being forced into a near-match or silently omitted. |
+| 2026-07-18 | Approve UI-neutral presentation contract `1.0.0`. | Fixes deterministic success and failure semantics, controlled wording, display order, provenance linkage, source behavior, and version mapping before presenter implementation begins. |
