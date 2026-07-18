@@ -450,6 +450,7 @@ class RulesetV2MigrationDomainTest(unittest.TestCase):
         ruleset["status"] = "approved_for_prototype"
         ruleset["approved_on"] = "2026-07-17"
         crosswalk = self.changed_crosswalk()
+        crosswalk["migration_status"] = "approved_runtime_validated"
         crosswalk["target_ruleset"]["status"] = "approved_for_prototype"
         errors = validate_migration(
             ruleset,

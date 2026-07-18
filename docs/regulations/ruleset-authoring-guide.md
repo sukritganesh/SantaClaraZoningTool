@@ -1,6 +1,6 @@
 # Ruleset v2 Authoring Guide
 
-**Status:** Approved authoring contract; candidate domain-validated, approval and promotion pending
+**Status:** Approved authoring contract; first v2 jurisdiction ruleset approved and runtime-eligible
 
 **Last updated:** July 17, 2026
 
@@ -8,7 +8,7 @@
 
 This guide defines how humans and AI-assisted extraction workflows must represent supported regulations in the deterministic ruleset. `rulesets/schema/ruleset-v2.schema.json` implements the local structural parts of this contract.
 
-The current v1 schema and approved Santa Clara ruleset remain authoritative until an explicitly approved and dated v2 version passes the runtime-eligibility gate.
+Santa Clara ruleset v2 version `2026-07-17.2` is the first explicitly approved and dated artifact to pass the runtime-eligibility gate. The v1 artifact and reviewed v2 candidate remain preserved for traceability.
 
 ## Relationship to other project artifacts
 
@@ -19,7 +19,7 @@ The current v1 schema and approved Santa Clara ruleset remain authoritative unti
 - `docs/r1-rule-verification.md` remains the legal-source trace for Santa Clara values.
 - `docs/progress.md` records implementation and migration status.
 
-Examples in this guide illustrate the proposed representation. They do not replace the approved ruleset or authorize runtime use.
+Examples in this guide illustrate the representation. They do not replace the approved versioned ruleset or independently authorize runtime use.
 
 ## Normative language
 
@@ -610,4 +610,4 @@ The project owner approved these decisions on July 16, 2026:
 10. The catalog, authoring guide, JSON Schema, source verification, and runtime engine retain separate responsibilities.
 11. Every catalog capability has an explicit standalone-rule or embedded-behavior JSON mapping before jurisdiction data is authored.
 
-Approval of this guide authorized schema implementation and the separately reviewed migration and validation steps, not automatic runtime use. The approved v1 artifacts remain unchanged and operational until the project owner approves and promotes a separate immutable v2 version.
+Approval of this guide authorized schema implementation, not automatic approval of jurisdiction data. The project owner separately approved the reviewed Santa Clara data on July 17, 2026; immutable ruleset version `2026-07-17.2` is therefore runtime-eligible while the v1 artifact and v2 candidate remain unchanged.

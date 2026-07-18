@@ -128,28 +128,33 @@ python3 -m unittest discover -s tests -v
 
 The ruleset reports selected base-zone standards only. It preserves citations, deferred exception families, validation states, and the documented R1-8L corner-side conflict separately from the selected 15-foot value.
 
-The approved zone-first v2 structural contract is `rulesets/schema/ruleset-v2.schema.json`. The separate candidate migration is:
+The approved zone-first v2 structural contract is `rulesets/schema/ruleset-v2.schema.json`. The reviewed candidate remains preserved at:
 
 ```text
 rulesets/santa_clara/r1/2026-07-17/ruleset.json
 rulesets/santa_clara/r1/2026-07-17/migration-crosswalk.json
 ```
 
-The candidate contains 20 zone-owned regulations and a complete 16-rule v1 crosswalk. It passes schema, domain, source, migration, and deterministic-replay validation but is not yet operational; the approved v1 ruleset remains authoritative until explicit v2 approval and promotion.
+The separately approved v2 artifact is:
 
-Validate the candidate and its local source checksums:
-
-```bash
-python3 scripts/validate_r1_rules_v2.py --verify-source-files
+```text
+rulesets/santa_clara/r1/2026-07-17.2/ruleset.json
+rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json
 ```
 
-This command exits successfully for a valid candidate and separately reports that it is not runtime-eligible. The stronger runtime gate intentionally fails until an immutable approved and dated version exists:
+Version `2026-07-17.2` contains the same 20 zone-owned regulations and complete 16-rule v1 crosswalk as the reviewed candidate. Only its version and approval metadata differ. It is the canonical regulatory source for deterministic standards retrieval; the approved v1 artifact remains preserved for traceability.
+
+Validate the approved ruleset, its local source checksums, migration replay, and runtime eligibility:
 
 ```bash
 python3 scripts/validate_r1_rules_v2.py \
+  --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json \
+  --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json \
   --verify-source-files \
   --require-runtime-eligible
 ```
+
+The original candidate can still be validated without the runtime requirement by using the validator defaults.
 
 Create a later candidate in a new, nonexisting version directory with:
 
@@ -160,6 +165,15 @@ python3 scripts/migrate_r1_rules_v2.py \
 ```
 
 The migration verifies the approved v1 ruleset and its source-file checksums, refuses to overwrite an existing destination, validates the v2 schema before writing, and emits the migration crosswalk and checksums.
+
+Promotion is also non-overwriting. For a newly reviewed candidate, use a new version and output directory:
+
+```bash
+python3 scripts/promote_r1_rules_v2.py \
+  --approved-on YYYY-MM-DD \
+  --version YYYY-MM-DD.N \
+  --output-dir rulesets/santa_clara/r1/YYYY-MM-DD.N
+```
 
 ## Repository map
 
@@ -185,7 +199,8 @@ The migration verifies the approved v1 ruleset and its source-file checksums, re
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
 │   └── santa_clara/r1/
 │       ├── 2026-07-16/                Versioned approved v1 R1 rules
-│       └── 2026-07-17/                Domain-valid unapproved v2 candidate
+│       ├── 2026-07-17/                Preserved reviewed v2 candidate
+│       └── 2026-07-17.2/              Approved runtime-eligible v2 rules
 ├── santa_clara_zoning/
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
@@ -196,6 +211,7 @@ The migration verifies the approved v1 ruleset and its source-file checksums, re
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
 │   ├── lookup_r1_zone.py              Offline address-to-zone command
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
+│   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
 │   ├── validate_r1_rules.py           Approved v1 ruleset validator
 │   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate
 └── tests/

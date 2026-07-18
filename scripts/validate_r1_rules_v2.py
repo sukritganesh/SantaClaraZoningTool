@@ -629,8 +629,15 @@ def validate_migration(
         errors.append("migration_id is unsupported")
     if not valid_date(crosswalk.get("generated_on")):
         errors.append("generated_on must be an ISO date")
-    if crosswalk.get("migration_status") != "candidate_schema_validated":
-        errors.append("migration_status is unsupported")
+    expected_migration_status = (
+        "approved_runtime_validated"
+        if ruleset.get("status") == "approved_for_prototype"
+        else "candidate_schema_validated"
+    )
+    if crosswalk.get("migration_status") != expected_migration_status:
+        errors.append(
+            f"migration_status must be {expected_migration_status}"
+        )
 
     path_records = [
         ("source_ruleset", source_v1_path),
