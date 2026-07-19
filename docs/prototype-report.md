@@ -70,6 +70,24 @@ The system also preserves uncertainty rather than smoothing it away. During sour
 
 That behavior is important for government workflow automation. Real regulations are not always perfectly clean or internally consistent. A trustworthy system must be able to surface a conflict, apply an approved policy when one exists, and request review when it does not.
 
+## Why versioning matters
+
+A zoning answer is never based on one timeless source. Parcel records change, zoning maps are updated, ordinances are amended, structured rules are reviewed, and application behavior evolves. If those changes are not tracked separately, it becomes difficult to reproduce an earlier result or explain why a later answer is different.
+
+The prototype therefore versions each major part of the evidence chain:
+
+| Versioned component | Version used by this prototype | What it identifies |
+|---|---|---|
+| Address data | Snapshot dated July 16, 2026 | The city address records used to find the property |
+| Parcel and zoning data | Snapshot dated July 14, 2026 | The parcel and current-zoning records used for the spatial lookup |
+| Regulatory sources | July 2025 code, audited through July 16, 2026 | The code baseline and the later legislation reviewed for relevant changes |
+| Approved ruleset | `2026-07-17.2` | The exact structured R1 rules accepted for runtime use |
+| Pipeline and presentation contracts | `1.0.0` | The meaning and organization of the result passed through the application and displayed to the user |
+
+These versions appear with the result rather than remaining hidden inside the software. Together with the entered address and approved assumptions, they identify the materials and behavior that produced the answer.
+
+This gives the project a practical reproducibility promise: the same versioned inputs produce the same result. When a city updates its maps or regulations, the workflow can create a new snapshot or ruleset instead of silently overwriting the old one. A changed answer can then be traced to a specific data, legal, or software update. That history will be especially important if the workflow is eventually used to maintain regulatory tools for many jurisdictions.
+
 ## Where AI fits
 
 AI can be valuable in building and maintaining a system like this. It can help locate relevant provisions, extract candidate tables, normalize terminology, identify cross-references, and suggest tests. In a broader multi-city workflow, those capabilities could greatly reduce the time required to prepare a new jurisdiction.
