@@ -515,7 +515,7 @@ The project owner accepted Block 5 and authorized a read-only Block 6 audit on J
 
 Release-baseline findings:
 
-- `codex/residential-zone-expansion` is 21 commits ahead of `main`, and released tag `v0.1.0-r1-prototype` remains an ancestor of the branch;
+- after recording this audit, `codex/residential-zone-expansion` is 22 commits ahead of `main`, and released tag `v0.1.0-r1-prototype` remains an ancestor of the branch;
 - the approved R1 ruleset, released R1 runtime archive and manifest, R1 amendment audit, and R1 verification record have no branch diff from the released tag;
 - the current branch has no successor release tag, application-version artifact, release report, or GitHub Actions workflow;
 - exact dependency pins remain `jsonschema==4.23.0` and `Flask==3.1.3`, the active Python environment is 3.9.6, and `pip check` passes;
