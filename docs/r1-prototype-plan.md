@@ -892,30 +892,79 @@ Block 7 is complete when:
 8. unknown capabilities or requirement shapes fail visibly rather than being silently omitted; and
 9. focused and full-suite validation pass with reproducible setup instructions.
 
-## 10. Validation Strategy
+## 10. Block 8: Validate the Vertical Slice
 
-At minimum, test:
+Block 8 is the final system-acceptance block for the current prototype. It validates the assembled production path from immutable local source artifacts through address matching, spatial lookup, exact-zone regulatory retrieval, deterministic presentation, and rendered web output. It does not add another feature, repeat every component test, or reinterpret the governing sources.
 
-- one confirmed R1-6L address;
-- one confirmed R1-8L address;
-- one non-R1 address as a negative control;
-- an address with a unit number;
-- an invalid or unmatched address;
-- an ambiguous or incomplete address;
-- a parcel/zoning mismatch if one can be identified;
-- preservation of the street-side rule's corner-only applicability without claiming that the parcel has been classified as a corner lot; and
-- repeat runs using the same snapshot and ruleset.
+The acceptance harness should use the real default `LocalR1Lookup`, `ApprovedR1Ruleset`, `R1StandardsPipeline`, presenter, Flask application factory, and canonical local snapshots. Mocked or synthetic inputs remain appropriate only for integrity boundaries that cannot safely be produced from approved artifacts. Existing focused tests remain the authority for schema mutation details, geometry primitives, individual presenter shapes, and browser polish.
 
-Initial local-snapshot fixtures:
+### 10.1 Acceptance matrix
 
-- 636 Barto Street — APN 293-16-045 and R1-6L.
-- 108 Brookside Avenue — APN 303-22-022 and R1-8L.
-- 1500 Warburton Avenue — verified non-R1 negative control (PQP).
-- 1577 Pomeroy Avenue 202 — unit-bearing record for parsing and matching.
-- 324 Los Padres Boulevard — duplicated full-address value for ambiguity handling.
-- 99999 No Such Street — unmatched-input fixture.
+| Fixture | Expected complete-path result | Acceptance focus |
+|---|---|---|
+| `636 Barto Street` | Success; APN `293-16-045`; R1-6L | Exact address normalization, parcel/zoning agreement, all ten approved capabilities, scalar setbacks, approvals, citations, limitations, and versions |
+| `108 Brookside Avenue` | Success; APN `303-22-022`; R1-8L | Paired interior yards, selected 15-foot street-side value, preserved 10-versus-15-foot conflict, re-review language, and full provenance |
+| `1500 Warburton Avenue` | `outside_supported_r1_snapshot` | A matched non-R1 address remains a controlled non-regulatory result; the filtered snapshot must not invent its exact current zone |
+| `1577 Pomeroy Avenue, Unit 202` | One exact unit-bearing address record followed by `outside_supported_r1_snapshot` | Unit normalization and source identity survive the complete path without attaching unsupported regulations |
+| `324 Los Padres Boulevard` | `address_ambiguous` with two candidates | No parcel or regulatory result is selected silently |
+| `99999 No Such Street` | `address_not_found` | No regulatory content, receipt, or ruleset version is attached |
+| Empty input | Controlled invalid-address result | The web and presentation layers retain a retry path without manufacturing evidence |
+| Synthetic parcel/zoning mismatch | `review_required` | Inconsistent spatial evidence cannot become a successful planning conclusion |
+| Synthetic approved-artifact integrity failure | Safe `system_error` at the web boundary | Internal validation failures do not leak details or become parcel-specific review outcomes |
 
-City staff reports are useful for test-case comparison but are not substitutes for the current GIS and zoning code.
+The two success fixtures should assert the final contract shape and selected consequential values, not maintain a second regulatory implementation. Expected test values are acceptance oracles only; any future source or ruleset update must change the authoritative artifact first and then deliberately update the corresponding expectation. A failing expectation may not be weakened merely to make the suite pass.
+
+### 10.2 End-to-end acceptance harness
+
+Add one dedicated `tests/test_vertical_slice.py` module. It should compose the real application and verify complete user journeys rather than reaching into private helpers. The module should cover:
+
+- the fixture matrix above through production entry points;
+- exact success-section and rule-family closure for both supported zones;
+- absence of regulatory cards, regulatory receipts, and ruleset versions on controlled failures;
+- address, APN, zone, capability, conflict, source, and version closure across pipeline, presenter, and rendered HTML;
+- normalized variants of a canonical address producing the same authoritative result;
+- byte-equivalent rendered success output across repeated requests and intervening fixture order; and
+- byte-equivalent rendered output in independent processes with different Python hash seeds.
+
+Do not create a parallel rules engine, duplicate the GIS join, or write a second HTML parser when an existing test helper can be reused cleanly. If the dedicated module would only repeat an existing assertion, cite that focused test in the closeout evidence instead of copying it.
+
+### 10.3 Offline and integrity proof
+
+Run the real vertical slice with outbound socket connections deliberately blocked before application construction. The Barto and Brookside requests must still succeed from the canonical local GIS, code-source, and ruleset artifacts. This proves the runtime path does not depend on live ArcGIS, an LLM API, a database, a CDN, or another undeclared service.
+
+The acceptance pass must also confirm that default startup verifies snapshot manifests and checksums, the approved ruleset remains runtime-eligible, and displayed version fields match the artifacts actually loaded. Corrupt-source and candidate-ruleset mutation details remain covered by their focused loader and lookup tests; Block 8 needs only to prove that such an integrity failure cannot cross the application boundary as a successful result.
+
+### 10.4 Execution sequence
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 8.1 Approve the acceptance contract and fixture matrix | Pending | Fix the final system boundary, expected outcomes, evidence requirements, and explicit exclusions before adding tests |
+| 8.2 Implement complete-path acceptance tests | Pending | Add `tests/test_vertical_slice.py` using real production composition and canonical artifacts without duplicating internal algorithms |
+| 8.3 Prove offline, integrity, provenance, and determinism boundaries | Pending | Demonstrate no undeclared runtime service, complete evidence/version closure, controlled fail-closed behavior, and cross-process rendered repeatability |
+| 8.4 Run the final validation matrix | Pending | Run the dedicated acceptance module, approved ruleset validation with source checksums, and the complete repository suite |
+| 8.5 Record evidence and close Block 8 | Pending | Record commands, fixture outcomes, versions, counts, and limitations; mark the prototype complete only if every criterion passes |
+
+The expected implementation surface is the dedicated acceptance test module and, only if a real failure exposes a defect, the existing owning production module plus a focused regression test. Update the README only if a useful new validation command or a corrected setup requirement belongs in the human runbook. `docs/progress.md` remains the sole execution ledger.
+
+### 10.5 Block 8 exclusions
+
+Block 8 does not include new zones or regulations, corner-lot classification, proposal evaluation, a database migration, live-GIS refresh, deployment, authentication, performance or penetration testing, exhaustive multi-browser or screen-reader certification, or visual redesign. It must not change a regulatory value merely because an expected fixture fails; such a failure stops acceptance and returns to the owning source-verification or ruleset workflow.
+
+### 10.6 Exit conditions
+
+Block 8 is complete when:
+
+1. every fixture in the approved matrix produces its exact controlled outcome through the complete production path;
+2. R1-6L and R1-8L successes preserve their approved rules, typed setback structures, qualifications, conflicts, sources, limitations, and versions through rendered output;
+3. unit-bearing, ambiguous, unmatched, unsupported, review-required, and integrity outcomes cannot acquire unsupported regulatory conclusions;
+4. the real application succeeds with outbound network access blocked;
+5. identical versioned inputs produce byte-equivalent pipeline, presentation, and rendered results across request order and independent processes;
+6. default artifact loading verifies the canonical GIS and regulatory integrity gates and exposes the loaded versions;
+7. the approved ruleset validator, dedicated vertical-slice suite, focused web suite, and complete repository suite all pass without skips caused by missing canonical artifacts;
+8. setup and validation commands are reproducible from the repository runbook; and
+9. `docs/progress.md` records the exact artifacts, commands, fixture outcomes, test counts, limitations, and final milestone disposition.
+
+City staff reports remain useful for test-case comparison but are not substitutes for the current GIS and zoning-code sources.
 
 ## 11. Completion Criteria
 
@@ -941,6 +990,6 @@ The first prototype is complete when it can:
 
 ## 13. Likely Immediate Next Step
 
-Review Block 7.4b's semantic mapping before implementation. Define how `success`, `lookup_failure`, `review_required`, and `system_error` presentation objects populate `index.html`, `_success.html`, `_outcome.html`, and `_sources.html`; preserve all approved ordering, qualifications, source references, and non-regulatory failure behavior without adding visual polish yet.
+Review and approve Block 8.1's acceptance contract, fixture matrix, and explicit exclusions. After approval, implement the dedicated complete-path test module without changing production behavior unless an acceptance failure proves a genuine defect in an existing owning layer.
 
 This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

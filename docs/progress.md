@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7 complete — the deterministic local presentation milestone passes every approved exit condition
+**Current position:** Block 8 acceptance plan drafted — execution has not started
 
-**Next action:** Plan Block 8 validation of the complete address-to-presentation vertical slice
+**Next action:** Review and approve Block 8.1's acceptance contract, fixture matrix, and exclusions
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -20,7 +20,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
 | 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
-| 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
+| 8. Validate the vertical slice | Not started | Detailed acceptance matrix, complete-path harness, offline proof, determinism checks, execution sequence, and exit conditions are drafted for approval. |
 
 ## Completed-block evidence
 
@@ -457,6 +457,12 @@ Implementation sequence:
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
 | 7.5 Validate and close Block 7 | Complete | Every approved browser, accessibility, wording, provenance, deterministic-rendering, setup, and regression acceptance condition has reproducible evidence. |
+
+## Block 8 planning
+
+The Block 8 acceptance plan is recorded in `docs/r1-prototype-plan.md`. It treats the milestone as final system validation rather than feature work: one dedicated complete-path module will exercise the real production composition and canonical artifacts across the two supported successes, unit-bearing input, unsupported zoning, ambiguity, unmatched and empty input, synthetic spatial review, and an integrity failure. New evidence will focus on offline operation, final provenance/version closure, controlled failure isolation, and cross-process rendered determinism without duplicating the focused tests from earlier blocks.
+
+Execution remains unstarted pending project-owner approval of Block 8.1. No production code, fixture expectation, README command, or milestone status has changed during planning.
 
 Planning boundaries:
 
