@@ -193,7 +193,9 @@ Historical filenames that accurately describe the released prototype—such as `
 
 Refactoring should follow behavior boundaries rather than a repository-wide text replacement. Names that are public contracts, historical artifacts, or source identities need explicit migration decisions.
 
-## 10. Block 2 contract design proposal
+## 10. Block 2 contract design
+
+**Status:** Design approved by the project owner on July 19, 2026.
 
 **Proposal status:** Ready for project-owner review; no schema, validator, migration, ruleset, runtime, presentation, or interface implementation is authorized by this section alone.
 
@@ -376,9 +378,9 @@ Schema validation should enforce local tagged shapes. A residential domain valid
 
 Mutation tests must break each invariant independently: matrix completeness, profile identity, use/structure correspondence, unsupported requirement kinds, illegal disposition/capability pairs, missing sources, unresolved conflicts, approval gates, crosswalk entries, R1 replay, zero-count treatment, and excluded-designation handling.
 
-### 10.10 Block 2 implementation sequence after proposal approval
+### 10.10 Block 2 implementation sequence
 
-If this proposal is approved, Block 2 implementation should proceed in these gated steps:
+Block 2 implementation proceeds in these gated steps:
 
 1. Update the capability catalog for the two new legal-use capabilities and the approved disposition/support boundaries, while leaving additional regulation families deferred.
 2. Update the ruleset authoring guide with the v3 hierarchy, identity rules, payload mappings, special-pathway contract, and structured not-evaluated representation while preserving the approved v2 contract as historical compatibility evidence.
@@ -390,6 +392,8 @@ If this proposal is approved, Block 2 implementation should proceed in these gat
 8. Obtain project-owner approval of the implemented contracts before Block 3 authors any new-zone rule records.
 
 Block 2 does not author R2-R6 or Patrick Henry numeric data, load the residential GIS at runtime, modify the production pipeline, or change user-visible presentation.
+
+Schema and domain validation deliberately distinguish a **partial candidate** from a **runtime-eligible ruleset**. A partial candidate may contain a nonempty subset of the exact target zones so the approved R1 rules can prove migration and contract behavior during Block 2. Runtime eligibility remains fail-closed and requires all 12 exact target designations, every approved use-permission matrix cell, every required ordinary profile or special pathway, project approval, and all source and conflict gates. Partial candidates must never be loadable by the production runtime.
 
 ## 11. Implementation blocks
 

@@ -1,10 +1,10 @@
 # Supported Regulations Catalog
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
-**Current jurisdictional scope:** City of Santa Clara R1-6L and R1-8L prototype
+**Current jurisdictional scope:** City of Santa Clara selected residential zoning expansion; the released runtime remains limited to R1-6L and R1-8L until the residential v3 approval and integration gates pass
 
-This catalog defines the regulation families and supporting behaviors that belong to the prototype's supported product scope. It explains what each capability means and where its current implementation stops. It does not define JSON fields or database tables, and it does not store jurisdiction-specific numeric values.
+This catalog defines the regulation families and supporting behaviors that belong to Santa Clara Zoning Explorer's selected residential scope. It explains what each capability means and where its current implementation stops. It does not define JSON fields or database tables, and it does not store jurisdiction-specific numeric values.
 
 As regulation coverage grows, detailed family-specific documents may be added beside this catalog in `docs/regulations/`. This file remains the top-level index.
 
@@ -13,7 +13,8 @@ As regulation coverage grows, detailed family-specific documents may be added be
 Each project artifact has a distinct role:
 
 - This catalog defines **which regulatory capabilities are supported** and what support means.
-- `ruleset-authoring-guide.md` defines the approved ruleset v2 representation for humans and AI-assisted extraction workflows.
+- `ruleset-authoring-guide.md` defines the preserved approved ruleset v2 representation for the released R1 lineage.
+- `residential-ruleset-authoring-guide.md` defines the approved ruleset v3 representation for the residential expansion lineage.
 - The versioned ruleset stores approved Santa Clara values, citations, applicability, conditions, and provenance.
 - `docs/r1-rule-verification.md` records the legal-source analysis supporting those values.
 - The JSON Schema defines how supported capabilities are represented in machine-readable data.
@@ -36,7 +37,7 @@ When a provision does not fit an existing shared capability exactly, it must not
 
 An unrecognized extension must be rejected or reported as `not evaluated`; it must never be silently discarded. If equivalent extensions recur across jurisdictions, they may be deliberately promoted into the shared core through a versioned catalog, schema, migration, validation, and testing change.
 
-The current Santa Clara R1 prototype uses only the shared capabilities cataloged below. It does not yet implement arbitrary jurisdiction extensions.
+The current Santa Clara work uses only the shared capabilities cataloged below. It does not yet implement arbitrary jurisdiction extensions.
 
 ## Capability stages
 
@@ -50,7 +51,7 @@ The current Santa Clara R1 prototype uses only the shared capabilities cataloged
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The current Santa Clara rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Parcel- or proposal-level evaluation and presentation remain later stages.
+The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. The residential expansion contract catalogs two-family and multifamily use identities, multiple structure profiles, and explicit nonnumeric dispositions; new-zone values remain non-runtime candidate data until their later authoring and approval gates pass. Parcel- or proposal-level compliance evaluation remains outside this phase.
 
 ## Current supported regulation families
 
@@ -58,7 +59,9 @@ The current Santa Clara rules are cataloged, encoded in approved ruleset v2 vers
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `use.single_family_dwelling` | Single-family dwelling use classification | Base R1 permission status; separate approvals remain visible | Retrievable from approved v2 |
+| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Retrievable for R1 from approved v2; residential v3 contract approved |
+| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Residential v3 contract approved; no runtime data |
+| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Residential v3 contract approved; no runtime data |
 | `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Retrievable from approved v2 |
 | `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Retrievable from approved v2 |
 
@@ -87,7 +90,17 @@ The current Santa Clara rules are cataloged, encoded in approved ruleset v2 vers
 
 The system may report the base permission category for a single-family dwelling in a supported zone. “Permitted by right” must never be translated into “no approvals required.” Use classification and approval requirements remain separate outputs.
 
-The current capability does not evaluate two-family dwellings, ADUs, JADUs, SB 9 projects, home occupations, or other residential and accessory uses.
+The current capability does not evaluate ADUs, JADUs, SB 9 eligibility, home occupations, or other residential and accessory uses.
+
+### Two-family dwelling use classification
+
+The expansion keeps two-family as a distinct legal-use capability and `two_family_primary_structure` as a distinct structure identity. Its ordinary dimensional analysis uses the `multifamily` workflow family; this reuse must not erase its separate use or structure identity.
+
+R1's Chapter 18.24 two-home pathway is not an ordinary two-family profile. It can involve attached or detached homes and branches on eligibility, configuration, existing improvements, and proposal facts. The product may list that permission pathway, but its dimensional analysis remains `not evaluated` until those inputs and rules are implemented.
+
+### Multifamily dwelling use classification
+
+The expansion may report the source-table permission status for a multifamily dwelling in a target residential zone. A source-table `not_listed` result means only that the use is not listed in the controlling base table; it must not be presented as a prohibition or as a complete entitlement conclusion.
 
 ### Zoning Clearance
 
@@ -157,6 +170,9 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 - Preservation of conflicting source assertions
 - Documented project resolutions that remain distinct from official government corrections
 - Controlled `not evaluated` and `review required` outcomes
+- Explicit `no maximum listed`, `FAA-controlled`, and `plan-dependent` source dispositions without invented numeric substitutes
+- Separation of legal-use permission, workflow family, primary-structure identity, ordinary analysis profiles, and special pathways
+- Partial-candidate validation that remains distinct from complete runtime eligibility
 
 ## Identified but not currently supported
 
@@ -172,12 +188,13 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 | Legal nonconforming structures | Source provisions identified; legal-status facts and evaluator are absent |
 | Accessory structures | Deferred from the initial primary-structure scope |
 | ADUs and JADUs | Deferred; local and state-law interaction is not encoded |
-| SB 9 and two-unit projects | Deferred; eligibility and state-law overrides are not encoded |
+| R1 Chapter 18.24 two-home dimensional analysis | Permission pathway is cataloged; eligibility, configuration, and branch-specific dimensional evaluation remain `not evaluated` |
+| SB 9 project evaluation beyond the source-verified local pathway | Deferred; state-law eligibility and override analysis are not encoded |
 | Density and density bonus | Deferred; project and affordability inputs are not encoded |
 | Minimum parcel area and frontage | Values identified but parcel-creation evaluation is deferred |
 | Driveway approach length | Value identified but proposal-specific applicability is deferred |
 | Daylight plane | Geometry and applicability interpretation are deferred |
-| Parking | Not researched or encoded for this prototype |
+| Parking | Not researched or encoded for this selected residential phase |
 | Historic, specific-plan, airport, and other overlays | GIS and regulatory evaluation are deferred |
 | Proposal-specific compliance | No project geometry or detailed proposal evaluator exists |
 

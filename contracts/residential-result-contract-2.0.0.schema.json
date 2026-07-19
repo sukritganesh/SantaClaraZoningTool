@@ -1,0 +1,486 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:santa-clara-zoning-portal:contract:residential-result:2.0.0",
+  "title": "Residential analysis result contract 2.0.0",
+  "description": "Status and payload contract separating exact-zone resolution, explicit analysis selection, standards retrieval, and controlled no-regulations outcomes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "status",
+    "reason_code",
+    "query",
+    "versions",
+    "property",
+    "available_selections",
+    "requested_selection_id",
+    "selection",
+    "regulations",
+    "not_evaluated_topics",
+    "conflicts",
+    "sources",
+    "disclaimer"
+  ],
+  "properties": {
+    "contract_version": {"const": "2.0.0"},
+    "status": {
+      "enum": [
+        "residential_zone_found",
+        "residential_standards_found",
+        "analysis_not_evaluated",
+        "selection_not_available",
+        "outside_supported_residential_snapshot",
+        "address_not_found",
+        "address_ambiguous",
+        "review_required"
+      ]
+    },
+    "reason_code": {
+      "enum": [
+        "selection_required",
+        "selected_profile_retrieved",
+        "selected_special_pathway_not_evaluated",
+        "requested_selection_unavailable_for_zone",
+        "zone_outside_exact_target_snapshot",
+        "no_matching_address",
+        "multiple_address_matches",
+        "spatial_or_regulatory_review_required"
+      ]
+    },
+    "query": {"$ref": "#/$defs/query"},
+    "versions": {"$ref": "#/$defs/versions"},
+    "property": {
+      "oneOf": [
+        {"$ref": "#/$defs/resolvedProperty"},
+        {"type": "null"}
+      ]
+    },
+    "available_selections": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/availableSelection"},
+      "uniqueItems": true
+    },
+    "requested_selection_id": {
+      "oneOf": [
+        {"$ref": "#/$defs/referenceId"},
+        {"type": "null"}
+      ]
+    },
+    "selection": {
+      "oneOf": [
+        {"$ref": "#/$defs/profileSelection"},
+        {"$ref": "#/$defs/pathwaySelection"},
+        {"type": "null"}
+      ]
+    },
+    "regulations": {
+      "oneOf": [
+        {"$ref": "#/$defs/selectedRegulationMap"},
+        {"type": "null"}
+      ]
+    },
+    "not_evaluated_topics": {"$ref": "#/$defs/topicMap"},
+    "conflicts": {"$ref": "#/$defs/conflictMap"},
+    "sources": {"$ref": "#/$defs/sourceClosure"},
+    "disclaimer": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "residential_zone_found"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "selection_required"},
+          "property": {"$ref": "#/$defs/resolvedProperty"},
+          "available_selections": {"minItems": 1},
+          "requested_selection_id": {"type": "null"},
+          "selection": {"type": "null"},
+          "regulations": {"type": "null"},
+          "not_evaluated_topics": {"maxProperties": 0},
+          "conflicts": {"maxProperties": 0},
+          "sources": {"$ref": "#/$defs/emptySourceClosure"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "residential_standards_found"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "selected_profile_retrieved"},
+          "property": {"$ref": "#/$defs/resolvedProperty"},
+          "available_selections": {"minItems": 1},
+          "requested_selection_id": {"$ref": "#/$defs/referenceId"},
+          "selection": {"$ref": "#/$defs/profileSelection"},
+          "regulations": {"$ref": "#/$defs/selectedRegulationMap"},
+          "sources": {"$ref": "#/$defs/nonemptySourceClosure"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "analysis_not_evaluated"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "selected_special_pathway_not_evaluated"},
+          "property": {"$ref": "#/$defs/resolvedProperty"},
+          "available_selections": {"minItems": 1},
+          "requested_selection_id": {"$ref": "#/$defs/referenceId"},
+          "selection": {"$ref": "#/$defs/pathwaySelection"},
+          "regulations": {"type": "null"},
+          "not_evaluated_topics": {"minProperties": 1},
+          "sources": {"$ref": "#/$defs/nonemptySourceClosure"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "selection_not_available"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "requested_selection_unavailable_for_zone"},
+          "property": {"$ref": "#/$defs/resolvedProperty"},
+          "available_selections": {"minItems": 1},
+          "requested_selection_id": {"$ref": "#/$defs/referenceId"},
+          "selection": {"type": "null"},
+          "regulations": {"type": "null"},
+          "not_evaluated_topics": {"maxProperties": 0},
+          "conflicts": {"maxProperties": 0},
+          "sources": {"$ref": "#/$defs/nonemptySourceClosure"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "outside_supported_residential_snapshot"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "zone_outside_exact_target_snapshot"},
+          "property": {"$ref": "#/$defs/resolvedProperty"},
+          "available_selections": {"maxItems": 0},
+          "requested_selection_id": {"type": "null"},
+          "selection": {"type": "null"},
+          "regulations": {"type": "null"},
+          "not_evaluated_topics": {"maxProperties": 0},
+          "conflicts": {"maxProperties": 0},
+          "sources": {"$ref": "#/$defs/emptySourceClosure"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": ["address_not_found", "address_ambiguous", "review_required"]
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "available_selections": {"maxItems": 0},
+          "requested_selection_id": {"type": "null"},
+          "selection": {"type": "null"},
+          "regulations": {"type": "null"},
+          "not_evaluated_topics": {"maxProperties": 0},
+          "conflicts": {"maxProperties": 0},
+          "sources": {"$ref": "#/$defs/emptySourceClosure"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "address_not_found"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "no_matching_address"},
+          "property": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "address_ambiguous"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "multiple_address_matches"},
+          "property": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "review_required"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {"const": "spatial_or_regulatory_review_required"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address"],
+      "properties": {
+        "address": {"type": "string", "minLength": 1}
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "address_snapshot",
+        "residential_gis_snapshot",
+        "ruleset",
+        "ruleset_schema"
+      ],
+      "properties": {
+        "address_snapshot": {"$ref": "#/$defs/nullableVersion"},
+        "residential_gis_snapshot": {"$ref": "#/$defs/nullableVersion"},
+        "ruleset": {"$ref": "#/$defs/nullableVersion"},
+        "ruleset_schema": {"$ref": "#/$defs/nullableVersion"}
+      }
+    },
+    "nullableVersion": {
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "null"}
+      ]
+    },
+    "resolvedProperty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matched_address", "parcel_id", "zone"],
+      "properties": {
+        "matched_address": {"type": "string", "minLength": 1},
+        "parcel_id": {"type": "string", "minLength": 1},
+        "zone": {"type": "string", "minLength": 1}
+      }
+    },
+    "availableSelection": {
+      "oneOf": [
+        {"$ref": "#/$defs/availableProfile"},
+        {"$ref": "#/$defs/availablePathway"}
+      ]
+    },
+    "availableProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "selection_kind",
+        "label",
+        "workflow_family",
+        "legal_use_capability_id",
+        "primary_structure_type",
+        "analysis_status"
+      ],
+      "properties": {
+        "selection_id": {"$ref": "#/$defs/referenceId"},
+        "selection_kind": {"const": "profile"},
+        "label": {"type": "string", "minLength": 1},
+        "workflow_family": {"enum": ["single_family", "multifamily"]},
+        "legal_use_capability_id": {"$ref": "#/$defs/useCapabilityId"},
+        "primary_structure_type": {"$ref": "#/$defs/structureType"},
+        "analysis_status": {"const": "available"}
+      }
+    },
+    "availablePathway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "selection_kind",
+        "label",
+        "workflow_family",
+        "legal_use_capability_id",
+        "primary_structure_type",
+        "analysis_status"
+      ],
+      "properties": {
+        "selection_id": {"$ref": "#/$defs/referenceId"},
+        "selection_kind": {"const": "special_pathway"},
+        "label": {"type": "string", "minLength": 1},
+        "workflow_family": {"const": "multifamily"},
+        "legal_use_capability_id": {"const": "use.two_family_dwelling"},
+        "primary_structure_type": {"type": "null"},
+        "analysis_status": {"const": "not_evaluated"}
+      }
+    },
+    "profileSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "selection_kind",
+        "profile_id",
+        "workflow_family",
+        "legal_use_capability_id",
+        "primary_structure_type"
+      ],
+      "properties": {
+        "selection_id": {"$ref": "#/$defs/referenceId"},
+        "selection_kind": {"const": "profile"},
+        "profile_id": {"enum": ["single_family", "two_family", "multifamily"]},
+        "workflow_family": {"enum": ["single_family", "multifamily"]},
+        "legal_use_capability_id": {"$ref": "#/$defs/useCapabilityId"},
+        "primary_structure_type": {"$ref": "#/$defs/structureType"}
+      }
+    },
+    "pathwaySelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_id",
+        "selection_kind",
+        "special_pathway_id",
+        "workflow_family",
+        "legal_use_capability_id",
+        "primary_structure_type"
+      ],
+      "properties": {
+        "selection_id": {"$ref": "#/$defs/referenceId"},
+        "selection_kind": {"const": "special_pathway"},
+        "special_pathway_id": {"$ref": "#/$defs/referenceId"},
+        "workflow_family": {"const": "multifamily"},
+        "legal_use_capability_id": {"const": "use.two_family_dwelling"},
+        "primary_structure_type": {"type": "null"}
+      }
+    },
+    "selectedRegulationMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/capabilityId"},
+      "additionalProperties": {"$ref": "#/$defs/selectedRegulation"}
+    },
+    "selectedRegulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "label",
+        "requirement",
+        "applicability",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "properties": {
+        "rule_id": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "requirement": {
+          "type": "object",
+          "required": ["kind"]
+        },
+        "applicability": {
+          "type": "object",
+          "required": ["lot_context"]
+        },
+        "conditions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "exception_family_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/referenceId"},
+          "uniqueItems": true
+        },
+        "validation_status": {"type": "string", "minLength": 1},
+        "conflict_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/referenceId"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "topicMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 1
+      }
+    },
+    "conflictMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 1
+      }
+    },
+    "sourceClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_documents", "citations", "exception_families"],
+      "properties": {
+        "source_documents": {"type": "object"},
+        "citations": {"type": "object"},
+        "exception_families": {"type": "object"}
+      }
+    },
+    "emptySourceClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_documents", "citations", "exception_families"],
+      "properties": {
+        "source_documents": {"type": "object", "maxProperties": 0},
+        "citations": {"type": "object", "maxProperties": 0},
+        "exception_families": {"type": "object", "maxProperties": 0}
+      }
+    },
+    "nonemptySourceClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_documents", "citations", "exception_families"],
+      "properties": {
+        "source_documents": {"type": "object", "minProperties": 1},
+        "citations": {"type": "object", "minProperties": 1},
+        "exception_families": {"type": "object"}
+      }
+    },
+    "useCapabilityId": {
+      "enum": [
+        "use.single_family_dwelling",
+        "use.two_family_dwelling",
+        "use.multifamily_dwelling"
+      ]
+    },
+    "structureType": {
+      "enum": [
+        "single_family_primary_structure",
+        "two_family_primary_structure",
+        "multifamily_primary_structure"
+      ]
+    },
+    "referenceId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    }
+  }
+}

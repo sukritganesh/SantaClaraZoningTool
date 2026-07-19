@@ -13,7 +13,8 @@ Active development is expanding the released R1 vertical slice to selected cityw
 - [R1 prototype report](docs/prototype-report.md) — historical plain-language account of the released vertical slice and its validation.
 - [R1 prototype plan](docs/r1-prototype-plan.md) — historical scope, architecture, source research, data model, and completion criteria for the released baseline.
 - [Supported regulations catalog](docs/regulations/supported-regulations.md) — regulation families, capability stages, current boundaries, and deferred expansion queue.
-- [Ruleset v2 authoring guide](docs/regulations/ruleset-authoring-guide.md) — approved zone-first representation contract and examples for human and AI-assisted authors.
+- [Residential ruleset v3 authoring guide](docs/regulations/residential-ruleset-authoring-guide.md) — active residential representation, migration, and approval contract.
+- [Ruleset v2 authoring guide](docs/regulations/ruleset-authoring-guide.md) — preserved approved R1 representation contract and examples for human and AI-assisted authors.
 - [Residential Title 18 amendment audit](docs/residential-title18-amendment-audit.md) — active July 2025 baseline, later-legislation effects, and expansion recheck triggers.
 - [R1 Title 18 amendment audit](docs/title18-amendment-audit.md) — checksum-pinned historical audit used by the approved R1 rulesets.
 - [R1 rule-level verification](docs/r1-rule-verification.md) — historical definitions, measurement rules, exceptions, conflicts, and approval record for the released rules.
@@ -218,6 +219,31 @@ python3 scripts/validate_r1_rules_v2.py \
 
 The original candidate can still be validated without the runtime requirement by using the validator defaults.
 
+## Validate the residential expansion contracts
+
+Residential schema v3 and result contract `2.0.0` are implemented as development contracts without changing the released R1 application. The current v3 artifact contains only the deterministic migration of the two approved R1 zones, plus the source-verified R1 two-family special-pathway and multifamily `not_listed` records needed to exercise the new shape:
+
+```text
+rulesets/santa_clara/residential/2026-07-19.1/ruleset.json
+rulesets/santa_clara/residential/2026-07-19.1/migration-crosswalk.json
+```
+
+Validate its schema, residential domain invariants, GIS fixture contract, local source checksums, complete crosswalk, deterministic replay, and R1 semantic equivalence:
+
+```bash
+python3 scripts/validate_residential_rules_v3.py --verify-source-files
+```
+
+The candidate is deliberately not runtime eligible: it lacks the ten unauthored target designations, carries candidate status, and has no v3 approval. Supplying `--require-runtime-eligible` must therefore fail closed until Block 3 produces and approves the complete 12-zone ruleset.
+
+Validate all eight nonruntime result-contract fixtures:
+
+```bash
+python3 scripts/validate_residential_result_contract.py
+```
+
+The fixtures exercise zone-found, standards-found, special-pathway-not-evaluated, unavailable-selection, outside-snapshot, address-not-found, address-ambiguous, and review-required meanings. They do not change the production pipeline or imply that candidate v3 rules are serving users.
+
 Application code loads and validates the approved artifact once before serving lookups:
 
 ```bash
@@ -300,6 +326,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   └── santa-clara-r1-runtime-…zip   Committed canonical runtime data
 ├── data/
 │   └── raw/                          Ignored, installed immutable snapshots
+├── contracts/
+│   └── residential-result-contract-2.0.0.schema.json  Expansion result contract
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── future-improvements.md        Deferred enhancement burndown
@@ -307,7 +335,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── residential-rule-verification.md Active residential source and rule gate
 │   ├── residential-title18-amendment-audit.md Active expansion amendment audit
 │   ├── regulations/
-│   │   ├── ruleset-authoring-guide.md Approved ruleset v2 authoring contract
+│   │   ├── residential-ruleset-authoring-guide.md Active ruleset v3 contract
+│   │   ├── ruleset-authoring-guide.md Preserved ruleset v2 authoring contract
 │   │   └── supported-regulations.md   Regulatory capability catalog
 │   ├── r1-prototype-plan.md          Detailed prototype specification
 │   ├── r1-rule-verification.md       Verified source trace and rule contract
@@ -315,10 +344,13 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── rulesets/
 │   ├── schema/r1-ruleset.schema.json Current v1 ruleset contract
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
-│   └── santa_clara/r1/
-│       ├── 2026-07-16/                Versioned approved v1 R1 rules
-│       ├── 2026-07-17/                Preserved reviewed v2 candidate
-│       └── 2026-07-17.2/              Approved runtime-eligible v2 rules
+│   ├── schema/ruleset-v3.schema.json  Residential expansion contract
+│   └── santa_clara/
+│       ├── residential/2026-07-19.1/  Nonruntime migrated R1 v3 candidate
+│       └── r1/
+│           ├── 2026-07-16/            Versioned approved v1 R1 rules
+│           ├── 2026-07-17/            Preserved reviewed v2 candidate
+│           └── 2026-07-17.2/          Approved runtime-eligible v2 rules
 ├── santa_clara_zoning/
 │   ├── addressing.py                  Controlled address normalization and matching
 │   ├── geometry.py                    GeoJSON point-in-polygon operations
@@ -337,14 +369,18 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── download_residential_gis.py    Selected residential-zone GIS downloader
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
 │   ├── lookup_r1_zone.py              Offline address-to-zone command
+│   ├── migrate_r1_rules_v3.py         Non-overwriting approved-v2-to-v3 migration
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
 │   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
+│   ├── validate_residential_result_contract.py Expansion fixture validator
+│   ├── validate_residential_rules_v3.py Residential domain and runtime gate
 │   ├── validate_r1_rules.py           Approved v1 ruleset validator
 │   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate
 └── tests/
     ├── fixtures/
-    │   └── residential_gis_fixture_inventory.json  Expanded routing fixtures
+    │   ├── residential_gis_fixture_inventory.json  Expanded routing fixtures
+    │   └── residential_result_contract_cases.json  Nonruntime result cases
     └── test_*.py                       Rule, address, geometry, and lookup tests
 ```
 
-The existing `blender-mcp-test/` directory is unrelated experimental work and is not part of the zoning prototype.
+The existing `blender-mcp-test/` directory is unrelated experimental work and is not part of Santa Clara Zoning Explorer.
