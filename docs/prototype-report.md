@@ -200,4 +200,4 @@ The Santa Clara R1 prototype proves a modest but meaningful idea: a user can beg
 
 More importantly, it establishes the foundation for the larger goal. The same overall workflow—gather, structure, verify, connect, evaluate, explain, and cite—can guide the development of broader building-regulation automation while keeping human review and authoritative evidence at the center.
 
-For setup and local operation, see the [README](../README.md). For the detailed validation record, see [project progress](progress.md). For implementation scope and design decisions, see the [R1 prototype plan](r1-prototype-plan.md).
+For setup and local operation, see the [README](../README.md). For the detailed validation record, see the [archived R1 prototype progress](progress-archive/2026-07-18-r1-prototype-progress.md). For implementation scope and design decisions, see the [R1 prototype plan](r1-prototype-plan.md).

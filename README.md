@@ -1,19 +1,22 @@
-# Santa Clara Zoning Portal
+# Santa Clara Zoning Explorer
 
-A block-by-block prototype for answering a narrow version of: **What residential development standards apply at this Santa Clara address?**
+**Selected residential zoning standards by address.**
 
-The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family residential zones. This is an early technical prototype, not a complete entitlement analysis or legal/planning determination.
+Active development is expanding the released R1 vertical slice to selected citywide and Patrick Henry residential zones, including single-family, two-family, and multifamily choices where verified. The current runnable release, `v0.1.0-r1-prototype`, still covers only Santa Clara's `R1-6L` and `R1-8L` single-family residential zones. Neither the released baseline nor the planned expansion is a complete entitlement analysis or legal/planning determination.
 
 ## Project documents
 
-- [Prototype report](docs/prototype-report.md) — a plain-language account of what was built, why it matters, what was validated, and how it supports the longer-term workflow-automation goal.
+- [Residential expansion plan](docs/residential-expansion-plan.md) — active scope, architecture, migration strategy, implementation blocks, and completion criteria.
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
+- [Residential rule verification](docs/residential-rule-verification.md) — active source trace, candidate dispositions, GIS acquisition contract, and approval gate for the expanded zones.
 - [Future improvements](docs/future-improvements.md) — the cross-cutting enhancement burndown; active execution remains tracked in the progress ledger.
-- [R1 prototype plan](docs/r1-prototype-plan.md) — scope, architecture, source research, proposed data model, and completion criteria.
+- [R1 prototype report](docs/prototype-report.md) — historical plain-language account of the released vertical slice and its validation.
+- [R1 prototype plan](docs/r1-prototype-plan.md) — historical scope, architecture, source research, data model, and completion criteria for the released baseline.
 - [Supported regulations catalog](docs/regulations/supported-regulations.md) — regulation families, capability stages, current boundaries, and deferred expansion queue.
 - [Ruleset v2 authoring guide](docs/regulations/ruleset-authoring-guide.md) — approved zone-first representation contract and examples for human and AI-assisted authors.
-- [Title 18 amendment audit](docs/title18-amendment-audit.md) — the July 2025 baseline, later legislation ledger, R1 impact findings, and recheck triggers.
-- [R1 rule-level verification](docs/r1-rule-verification.md) — definitions, measurement rules, exceptions, conflicts, and the machine-readable rule contract.
+- [Residential Title 18 amendment audit](docs/residential-title18-amendment-audit.md) — active July 2025 baseline, later-legislation effects, and expansion recheck triggers.
+- [R1 Title 18 amendment audit](docs/title18-amendment-audit.md) — checksum-pinned historical audit used by the approved R1 rulesets.
+- [R1 rule-level verification](docs/r1-rule-verification.md) — historical definitions, measurement rules, exceptions, conflicts, and approval record for the released rules.
 - [AGENTS.md](AGENTS.md) — operating instructions for Codex tasks in this workspace.
 - [Google Drive source](GOOGLE_DRIVE_SOURCE.txt) — link to the shared planning documents and zoning-code PDF.
 
@@ -21,7 +24,7 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Quick start from a fresh clone
 
-The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local web prototype uses pinned Flask with server-rendered Jinja templates.
+The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The released local application uses pinned Flask with server-rendered Jinja templates.
 
 - Python 3.9 or newer
 - Approximately 135 MB of free space for the committed ZIP and its extracted runtime data
@@ -37,7 +40,7 @@ python scripts/bootstrap_demo_data.py
 
 On Windows PowerShell, create and activate the environment with `py -3 -m venv .venv` and `.\.venv\Scripts\Activate.ps1`, then run the same `python -m pip` and bootstrap commands.
 
-Then start the application:
+Then start the current released R1 application:
 
 ```bash
 python -m flask --app santa_clara_zoning.web run
@@ -47,7 +50,7 @@ Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Useful supported fixtures i
 
 The repository includes a 35,499,787-byte compressed bundle at `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`. The bootstrap command verifies the archive and every included file against `demo-data/bundle-manifest.json`, installs the approved snapshots under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
 
-No database, API key, runtime AI service, or live City GIS request is required to run the prototype. Internet access is needed only to install Python dependencies if they are not already cached.
+No database, API key, runtime AI service, or live City GIS request is required to run the released baseline. Internet access is needed only to install Python dependencies if they are not already cached.
 
 Run the automated checks with:
 
@@ -63,7 +66,7 @@ node --check santa_clara_zoning/static/app.js
 
 ## Refresh source snapshots for development
 
-The committed bundle is the quickest and canonical way to run this prototype. The following commands are for researchers or developers who deliberately want to retrieve a new dated source snapshot from Santa Clara's live ArcGIS services; they are not part of normal setup.
+The committed bundle is the quickest and canonical way to run the released R1 baseline. The following commands are for researchers or developers who deliberately want to retrieve a new dated source snapshot from Santa Clara's live ArcGIS services; they are not part of normal setup.
 
 ### Download an R1 GIS snapshot
 
@@ -223,7 +226,7 @@ print(list(result["regulations"]))
 
 A supported address returns `r1_standards_found` with parcel and zoning evidence, all approved zone regulations, their referenced provenance, explicit limitations, and GIS/ruleset versions. Unmatched, ambiguous, unsupported, or spatially inconsistent lookups retain their controlled Block 5 outcome and do not receive regulations. Ruleset integrity failures stop the pipeline rather than being mislabeled as parcel-specific planning review.
 
-## Run the local web prototype
+## Run the released local R1 application
 
 After completing the quick start, launch the development server from the repository root at any time with:
 
@@ -270,12 +273,15 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── future-improvements.md        Deferred enhancement burndown
+│   ├── residential-expansion-plan.md Active residential expansion specification
+│   ├── residential-rule-verification.md Active residential source and rule gate
+│   ├── residential-title18-amendment-audit.md Active expansion amendment audit
 │   ├── regulations/
 │   │   ├── ruleset-authoring-guide.md Approved ruleset v2 authoring contract
 │   │   └── supported-regulations.md   Regulatory capability catalog
 │   ├── r1-prototype-plan.md          Detailed prototype specification
 │   ├── r1-rule-verification.md       Verified source trace and rule contract
-│   └── title18-amendment-audit.md    Post-July-2025 source audit
+│   └── title18-amendment-audit.md    Checksum-pinned historical R1 audit
 ├── rulesets/
 │   ├── schema/r1-ruleset.schema.json Current v1 ruleset contract
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
