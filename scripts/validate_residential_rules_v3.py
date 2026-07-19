@@ -145,6 +145,7 @@ MAXIMUM_UNITS = {
 }
 MAXIMUM_REQUIREMENT_KINDS = {
     "maximum_quantity",
+    "lot_area_tiered_maximum",
     "no_maximum_listed",
     "faa_controlled",
     "plan_dependent",
@@ -290,6 +291,10 @@ def requirement_source_refs(requirement: dict[str, Any]) -> list[str]:
         for adjustment in requirement["adjustments"]:
             refs.extend(adjustment["source_refs"])
         return refs
+    if requirement["kind"] == "lot_area_tiered_maximum":
+        return requirement_source_refs(
+            requirement["below_threshold"]
+        ) + requirement_source_refs(requirement["at_or_above_threshold"])
     return list(requirement["source_refs"])
 
 
@@ -321,7 +326,29 @@ def operational_assertion_value(rule: dict[str, Any]) -> dict[str, Any]:
         }
     if kind == "setback":
         return requirement["base"]["value"]
+    if kind == "lot_area_tiered_maximum":
+        return {"kind": kind}
     return {"kind": kind, "reason_code": requirement["reason_code"]}
+
+
+def validate_coverage_tier_outcome(
+    outcome: dict[str, Any],
+    *,
+    location: str,
+    errors: list[str],
+) -> None:
+    """Validate one side of a lot-area-tiered coverage requirement."""
+
+    if outcome["kind"] == "no_maximum_listed":
+        return
+    value = outcome["value"]
+    if value["unit"] != "percent":
+        errors.append(f"{location} must use unit percent")
+    number = value["number"]
+    if isinstance(number, bool) or number <= 0:
+        errors.append(f"{location} numeric maximum must be positive")
+    if number > 100:
+        errors.append(f"{location} coverage maximum cannot exceed 100 percent")
 
 
 def validate_setback_value(
@@ -387,6 +414,26 @@ def validate_requirement(
                 errors.append(f"{location} story maximum must be an integer")
             if capability == "standard.maximum_structure_coverage" and number > 100:
                 errors.append(f"{location} coverage maximum cannot exceed 100 percent")
+        elif kind == "lot_area_tiered_maximum":
+            if capability != "standard.maximum_structure_coverage":
+                errors.append(
+                    f"{location} lot-area tiers are supported only for structure coverage"
+                )
+            threshold = requirement["threshold"]
+            if threshold != {"number": 10000, "unit": "sq_ft"}:
+                errors.append(
+                    f"{location}.threshold must match the source-table 10000 sq_ft split"
+                )
+            validate_coverage_tier_outcome(
+                requirement["below_threshold"],
+                location=f"{location}.below_threshold",
+                errors=errors,
+            )
+            validate_coverage_tier_outcome(
+                requirement["at_or_above_threshold"],
+                location=f"{location}.at_or_above_threshold",
+                errors=errors,
+            )
     elif capability in {
         "setback.front",
         "setback.rear",

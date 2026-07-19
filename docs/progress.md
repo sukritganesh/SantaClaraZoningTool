@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 2 contract implementation is complete on `codex/residential-zone-expansion`; the approved design is encoded in the capability and authoring contracts, schema v3, domain and migration gates, a nonruntime migrated R1 candidate, and executable result-contract `2.0.0` fixtures, while production runtime and user-visible behavior remain unchanged
+**Current position:** Block 3 remains in progress on `codex/residential-zone-expansion`; the R2-R6 citywide tranche is implemented and technically validated in nonruntime candidate `2026-07-19.2`, while owner acceptance, Patrick Henry authoring, complete ruleset approval, runtime integration, and user-visible changes remain pending
 
-**Next action:** Project-owner review and acceptance of the completed Block 2 implementation; after approval, begin Block 3 by authoring the verified R2-R6 and Patrick Henry use/profile records in candidate v3 data, without yet changing runtime lookup or presentation
+**Next action:** Obtain project-owner acceptance of the completed R2-R6 tranche, then author the five Patrick Henry designations in a new successor candidate and run the complete 12-zone approval gate; do not load candidate `2026-07-19.2` in production
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -26,9 +26,12 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Released zoning-code and amendment snapshot: `data/raw/2026-07-16/santa_clara_zoning_code/manifest.json`
 - Adopted Patrick Henry plan snapshot: `data/raw/2026-07-18/patrick_henry_drive_specific_plan/manifest.json`
 - Approved R1 ruleset: `rulesets/santa_clara/r1/2026-07-17.2/ruleset.json`
-- Residential ruleset schema: `rulesets/schema/ruleset-v3.schema.json`
+- Accepted R1 migration schema: `rulesets/schema/ruleset-v3.schema.json`
+- Additive citywide schema: `rulesets/schema/ruleset-v3.1.schema.json`
 - Nonruntime migrated R1 v3 candidate: `rulesets/santa_clara/residential/2026-07-19.1/ruleset.json`
 - Approved-v2-to-candidate-v3 crosswalk: `rulesets/santa_clara/residential/2026-07-19.1/migration-crosswalk.json`
+- Nonruntime R1-R6 v3.1 candidate: `rulesets/santa_clara/residential/2026-07-19.2/ruleset.json`
+- R1-candidate-to-citywide expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.2/citywide-expansion-crosswalk.json`
 - Residential result contract: `contracts/residential-result-contract-2.0.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
@@ -41,8 +44,8 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 |---|---|---|
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
-| 2. Generalize the data and result contracts | Implementation complete; owner acceptance pending | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests pass. Production runtime integration remains outside this block. |
-| 3. Author and approve residential rules | Not started | All target zone/use/structure cells receive explicit verified dispositions and the new ruleset becomes runtime-eligible. |
+| 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
+| 3. Author and approve residential rules | In progress; citywide tranche implemented | Candidate `2026-07-19.2` preserves R1 and contains the verified R2-R6 records with complete validation evidence; owner acceptance is the gate before Patrick Henry authoring and final approval. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
@@ -178,6 +181,39 @@ Implementation validation evidence:
 - the released R1 v2 validator continues to pass all schema, domain, source, migration, and runtime-eligibility gates; and
 - `git diff --check` passes.
 
+## Block 3 citywide R2-R6 authoring evidence
+
+The citywide tranche is implemented as a new direct successor rather than an edit to the accepted Block 2 checkpoint:
+
+- `rulesets/schema/ruleset-v3.1.schema.json` preserves the closed v3 hierarchy and adds only `lot_area_tiered_maximum` within maximum structure coverage, plus exact source-document verification statuses for the approved matrix and adopted enactment;
+- `scripts/author_citywide_residential_rules.py` consumes immutable candidate `2026-07-19.1`, preserves its R1 zones and inherited records, and deterministically authors nonoverwriting candidate `2026-07-19.2` plus its expansion crosswalk;
+- `scripts/validate_citywide_residential_rules.py` validates the entire approved-v2-to-v3.0-to-v3.1 lineage, both schema/domain contracts, local source checksums, deterministic replays, exact inherited R1 preservation, and the GIS fixture contract;
+- candidate `2026-07-19.2` contains seven exact zones, 21 explicit use-permission records, 11 ordinary profiles, 99 profile regulations, two preserved R1 special pathways, 17 structured not-evaluated topics, and the preserved R1-8L conflict;
+- the added citywide tranche contributes 15 use-permission records, nine ordinary profiles, and 81 independent profile regulations while retaining the same nine supported regulation families per profile;
+- R2 includes single-family, two-family, and multifamily profiles; R3 and R4 include two-family and multifamily profiles; R5 and R6 include multifamily only, while all zones retain three explicit source-table permission cells;
+- R3 and R4 coverage preserves separate outcomes below and at or above 10,000 square feet; R5 and R6 preserve `no_maximum_listed` rather than zero, infinity, or “unlimited”;
+- the R1/R2 32-foot proximity transition is attached as `not evaluated` to R3-R6 profiles, and Ordinance 2085 Objective Design Standards are attached as `not evaluated` only to multifamily profiles; neither becomes a new evaluated regulation;
+- R5 and R6 remain legal and synthetic contract targets with no invented address despite their zero live-feature counts; and
+- the production loader, GIS lookup, standards retrieval, pipeline, presenter, templates, and frontend remain unchanged, so the released R1 application still loads only approved v2 data.
+
+Canonical citywide-tranche checksums:
+
+- schema v3.1: `7fa85189f1c8a1c5dbee3537cb494f2661ad80f77a1e9bda50e050f6f68e8103`;
+- R1-R6 candidate: `57166a693fbab477fec631e251cc909541db912ee01e2a3ef2345dbbc06f0d94`; and
+- citywide expansion crosswalk: `c8b7fcdba8ef4081cb2d02b68dd0c483f0812835a7074f33cc91fc57b1337c07`.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_citywide_residential_rules.py --verify-source-files` passes the complete chained lineage, schema, domain, source-checksum, matrix, replay, R1-preservation, and GIS-fixture gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because `PH-R5`, `UV`, `VR`, `UC`, and `HDF` are absent, the candidate is not approved, and every candidate record remains unapproved;
+- `.venv/bin/python -B scripts/validate_residential_rules_v3.py --verify-source-files` continues to validate accepted candidate `2026-07-19.1` and its original R1 migration byte-for-byte;
+- `.venv/bin/python -B scripts/validate_r1_rules_v2.py --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json --verify-source-files --require-runtime-eligible` continues to validate the released 20-rule R1 artifact as runtime eligible;
+- `.venv/bin/python -B scripts/validate_residential_result_contract.py` continues to pass all eight nonruntime result fixtures;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 219 tests, including 14 new citywide matrix, tier semantics, source, approval, mutation, preservation, checksum, and deterministic replay tests; and
+- `git diff --check` passes.
+
+This evidence makes the R2-R6 tranche ready for project-owner review, not runtime use. Block 3 remains open for owner acceptance, Patrick Henry authoring, complete-source review, per-record approval, and final runtime eligibility.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -199,7 +235,7 @@ Implementation validation evidence:
 - A missing maximum must be presented as no maximum listed in the controlling base table, not as unlimited.
 - An FAA-controlled height and a plan-dependent Patrick Henry rear setback require explicit nonnumeric dispositions within the existing regulation families.
 - Patrick Henry rear setback must not default to zero without an affirmative verified source value.
-- Objective Design Standards, 32-foot transitions, and recreation-space rules may be disclosed as applicable but are not evaluated in this phase.
+- Candidate `2026-07-19.2` discloses Objective Design Standards on multifamily profiles and the applicable 32-foot R1/R2 proximity transition without evaluating them; Patrick Henry recreation-space rules remain for the next tranche and will likewise stay outside the evaluated regulation map.
 
 ## Blockers
 
@@ -226,3 +262,7 @@ None currently recorded.
 | 2026-07-19 | Approve the complete Block 1 residential verification record, including the explicit `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and the Patrick Henry rear-setback treatment as no universal numeric base value, with plan/project review required and no zero default. | The source, GIS, fixture, and disposition evidence passed its technical gates and is authorized to drive Block 2 contract design; this approval does not make new-zone rules runtime eligible. |
 | 2026-07-19 | Approve the complete Block 2 residential contract design and begin implementation. | The audited design preserves the immutable v2 baseline, separates legal use from ordinary profiles and special pathways, represents nonnumeric source meanings explicitly, and supplies deterministic migration and result-contract gates before runtime expansion. |
 | 2026-07-19 | Permit partial v3 candidates for contract and migration validation, but require the exact complete 12-zone target before runtime eligibility. | Block 2 must prove the contract with migrated R1 data without prematurely authoring or approving R2-R6 and Patrick Henry numeric standards; schema validity must not be confused with runtime completeness. |
+| 2026-07-19 | Accept the completed Block 2 implementation and authorize the Block 3 R2-R6 citywide authoring tranche. | The schema, migration, equivalence, GIS-fixture, and result-contract gates passed; citywide data can now be authored without coupling it to Patrick Henry or production runtime changes. |
+| 2026-07-19 | Preserve `2026-07-19.1` and create a new versioned candidate for citywide expansion. | The committed R1-only candidate is reproducible migration evidence; adding R2-R6 in place would erase that checkpoint and weaken lineage inspection. |
+| 2026-07-19 | Add schema `3.1.0` as a successor while preserving schema `3.0.0` unchanged. | R3 and R4 have separate coverage outcomes below and at/above 10,000 square feet; a typed tier within the existing coverage capability preserves both outcomes without flattening data or broadening the regulation catalog. |
+| 2026-07-19 | Keep the completed R1-R6 candidate nonruntime and nonapproved until Patrick Henry and full Block 3 approval. | Technical validity and deterministic source encoding do not satisfy the complete 12-zone matrix, owner approval, or production-loader gates. |

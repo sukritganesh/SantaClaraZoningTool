@@ -219,7 +219,9 @@ The address normalizer, geometry primitives, immutable-source discipline, shared
 
 ### 10.2 Version and artifact boundary
 
-The recommended representation is **ruleset schema `3.0.0`** in a new residential lineage. A major version is appropriate because one zone can now contain several legal-use and structure selections, requirement records can carry nonnumeric dispositions, and global string limitations become structured and profile-specific.
+The implemented base representation is **ruleset schema `3.0.0`** in a new residential lineage. A major version is appropriate because one zone can now contain several legal-use and structure selections, requirement records can carry nonnumeric dispositions, and global string limitations become structured and profile-specific. Accepted R1 migration candidate `2026-07-19.1` remains pinned to this schema.
+
+The R2-R6 authoring tranche requires one additive **schema `3.1.0`** refinement: a closed lot-area-tiered maximum shape within the existing structure-coverage capability. This preserves the two Table 2-3 lot-area outcomes for R3 and R4 without flattening either tier, inventing an unlimited value, or introducing a new regulation family. Schema `3.0.0` and candidate `2026-07-19.1` remain unchanged as the direct predecessor checkpoint.
 
 The new artifacts should be introduced alongside, not in place of:
 
@@ -289,6 +291,7 @@ The existing `status`, `maximum_quantity`, and `setback` payloads remain the typ
 |---|---|---|
 | `status` | Source-backed use or approval category | Use permissions, Zoning Clearance, and Architectural Review |
 | `maximum_quantity` | Ordinary numeric maximum with explicit unit | Height, stories, and structure coverage |
+| `lot_area_tiered_maximum` | Separate maximum or no-maximum-listed outcomes below and at/above one stated lot-area threshold | Structure coverage only; added in schema `3.1.0` without creating a new capability |
 | `setback` | Ordinary base minimum with supported typed adjustments | Front, rear, interior-side, and street-side setbacks |
 | `no_maximum_listed` | The controlling base table supplies no maximum | A maximum capability only; never rendered as unlimited |
 | `faa_controlled` | The source supplies `FAA` instead of an ordinary number | Patrick Henry `UC` height and stories only in this phase |

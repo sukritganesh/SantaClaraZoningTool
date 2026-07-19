@@ -51,7 +51,7 @@ The current Santa Clara work uses only the shared capabilities cataloged below. 
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. The residential expansion contract catalogs two-family and multifamily use identities, multiple structure profiles, and explicit nonnumeric dispositions; new-zone values remain non-runtime candidate data until their later authoring and approval gates pass. Parcel- or proposal-level compliance evaluation remains outside this phase.
+The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Residential candidate `2026-07-19.2` now encodes the verified R2-R6 use/profile matrix and selected standards, including two-family and multifamily identities and explicit nonnumeric dispositions. It is nonruntime candidate data; Patrick Henry authoring, complete-matrix review, approval, and application integration remain open. Parcel- or proposal-level compliance evaluation remains outside this phase.
 
 ## Current supported regulation families
 
@@ -59,28 +59,28 @@ The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Retrievable for R1 from approved v2; residential v3 contract approved |
-| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Residential v3 contract approved; no runtime data |
-| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Residential v3 contract approved; no runtime data |
-| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Retrievable from approved v2 |
-| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Retrievable from approved v2 |
+| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Retrievable for R1 from approved v2; R2-R6 encoded in nonruntime candidate |
+| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Encoded for R1-R6 in nonruntime residential candidate |
+| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Encoded for R1-R6 in nonruntime residential candidate |
+| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
 
 ### Dimensional standards
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement and exception warnings | Retrievable from approved v2 |
-| `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Retrievable from approved v2 |
-| `standard.maximum_structure_coverage` | Maximum structure coverage | Base percentage only; remaining development capacity is not calculated | Retrievable from approved v2 |
+| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement, exception, and applicable proximity-transition warnings | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
 
 ### Setbacks
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `setback.front` | Front setback | Base requirement and supported upper-story difference | Retrievable from approved v2 |
-| `setback.rear` | Rear setback | Base requirement | Retrievable from approved v2 |
-| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Retrievable from approved v2 |
-| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Retrievable from approved v2 |
+| `setback.front` | Front setback | Base requirement and supported upper-story difference | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `setback.rear` | Rear setback | Base requirement and supported story-triggered replacement | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
 | `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Retrievable as embedded approved-v2 behavior |
 | `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Retrievable as embedded approved-v2 behavior |
 
@@ -122,7 +122,9 @@ The system may retrieve the base maximum number of stories. It does not yet dete
 
 ### Maximum structure coverage
 
-The system may retrieve the base maximum coverage percentage and explain that coverage can include structures beyond the primary dwelling. It does not yet calculate existing coverage, remaining buildable area, or the treatment of every site feature.
+The system may retrieve a universal base maximum percentage, preserve separate source-table outcomes below and at/above a stated lot-area threshold, or report that the controlling base table lists no maximum. A `no_maximum_listed` outcome is not an “unlimited” conclusion. The tiered representation remains part of the same structure-coverage capability rather than creating a new regulation.
+
+The system does not yet calculate existing coverage, remaining buildable area, or the treatment of every site feature.
 
 ## Setback capabilities
 
@@ -171,6 +173,7 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 - Documented project resolutions that remain distinct from official government corrections
 - Controlled `not evaluated` and `review required` outcomes
 - Explicit `no maximum listed`, `FAA-controlled`, and `plan-dependent` source dispositions without invented numeric substitutes
+- Typed lot-area-tiered maximum outcomes within an existing supported capability
 - Separation of legal-use permission, workflow family, primary-structure identity, ordinary analysis profiles, and special pathways
 - Partial-candidate validation that remains distinct from complete runtime eligibility
 

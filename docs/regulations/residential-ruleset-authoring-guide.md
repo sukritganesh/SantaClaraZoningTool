@@ -1,8 +1,8 @@
 # Residential Ruleset Authoring Guide
 
-**Contract:** Santa Clara residential ruleset schema `3.0.0`
+**Contract:** Santa Clara residential ruleset schema `3.1.0`; accepted R1 predecessor preserved under `3.0.0`
 
-**Status:** Approved representation contract; Block 2 implementation complete, nonruntime candidate awaiting project-owner acceptance
+**Status:** Block 2 representation accepted; additive citywide authoring contract implemented for Block 3
 
 **Last updated:** July 19, 2026
 
@@ -12,7 +12,7 @@ This guide is the human- and AI-facing representation contract for the residenti
 
 It does not contain Santa Clara's numeric values and does not authorize candidate data for runtime use. The capability meanings live in `supported-regulations.md`; zone-specific source conclusions live in `docs/residential-rule-verification.md`; active status and validation evidence live in `docs/progress.md`.
 
-The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The v3 lineage consumes that artifact through a deterministic migration; it does not edit or replace it.
+The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Schema `3.1.0` adds the minimum closed shape needed to preserve R3/R4 lot-area-tiered coverage without flattening either source-table tier.
 
 ## Non-negotiable semantics
 
@@ -52,7 +52,7 @@ Closed JSON objects reject unknown fields. Identifiers are map keys wherever pra
 
 The residential lineage uses:
 
-- schema version `3.0.0`;
+- schema version `3.0.0` for the accepted R1 migration checkpoint and additive `3.1.0` for the R1-R6 citywide candidate;
 - ruleset ID `santa-clara-residential-zoning`;
 - calendar-and-revision versions in the form `YYYY-MM-DD.N`;
 - status `candidate` while any representation, source, completeness, approval, or migration gate remains open; and
@@ -60,7 +60,7 @@ The residential lineage uses:
 
 `approved_on` must be null for a candidate and an ISO date for a runtime-approved ruleset. `verified_through` is the later-legislation audit cutoff, not the download date or authoring date.
 
-Every migrated candidate lists its predecessor ruleset identity, version, checksum, and migration-crosswalk path. A v3 candidate must never claim the predecessor's approval status merely because its source values were approved in v2.
+Every migrated or expanded candidate lists its direct predecessor ruleset identity, version, checksum, and crosswalk path. A candidate must never claim the predecessor's approval status merely because its source values were previously approved or accepted.
 
 ## Scope vocabulary
 
@@ -180,6 +180,16 @@ A pathway may be listed while dimensional analysis remains unavailable. Retrieva
 
 `maximum_quantity` stores a finite numeric value and a closed unit such as feet, stories, or percent. It is used only when a controlling source states a universal base maximum for that zone/profile/capability.
 
+### Lot-area-tiered maximum
+
+`lot_area_tiered_maximum` is an additive schema `3.1.0` requirement shape within `standard.maximum_structure_coverage`; it is not a new regulation family. It contains:
+
+- one positive `threshold` in square feet;
+- a `below_threshold` outcome; and
+- an `at_or_above_threshold` outcome.
+
+Each outcome is independently either `maximum_quantity` in percent or `no_maximum_listed`, with its own source references. The two tiers must never be flattened into one percentage, and a no-maximum-listed tier must never be converted to infinity or “unlimited.” The Santa Clara domain validator pins the current approved source-table split to 10,000 square feet while the shared JSON shape remains typed rather than jurisdiction-named.
+
 ### Setback
 
 `setback` preserves the v2 typed model: a sourced base scalar or paired distance plus zero or more sourced story- or height-triggered adjustments. Paired side yards remain coordinated requirements and must not be averaged.
@@ -292,9 +302,9 @@ A runtime-eligible ruleset must additionally:
 
 Schema validity alone never authorizes production loading.
 
-## Deterministic v2-to-v3 migration
+## Deterministic lineage
 
-The migration consumes the immutable approved R1 v2 artifact directly and emits a candidate v3 artifact plus an exhaustive crosswalk. It must:
+The first migration consumes the immutable approved R1 v2 artifact directly and emits candidate `2026-07-19.1` plus an exhaustive crosswalk. It must:
 
 - verify the predecessor identity, version, status, and checksum;
 - migrate each v2 rule exactly once;
@@ -308,6 +318,17 @@ The migration consumes the immutable approved R1 v2 artifact directly and emits 
 - prove a canonical semantic projection of every migrated R1 rule equals its v2 source except for explicitly crosswalked representation changes.
 
 Running the migrator twice against the same input must produce byte-identical ruleset and crosswalk content.
+
+The citywide authoring successor consumes accepted candidate `2026-07-19.1` directly and emits candidate `2026-07-19.2` plus a separate expansion crosswalk. It must:
+
+- preserve both R1 zone records, all inherited shared records, structured topics, and the R1-8L conflict exactly;
+- add exactly R2 through R6 with the approved use/profile matrix;
+- add exactly nine ordinary profiles and nine existing supported regulations per profile;
+- keep `not_listed`, `no_maximum_listed`, the R1/R2 proximity transition, and Objective Design Standards disclosures semantically distinct;
+- keep every new record nonapproved and the artifact nonruntime while Patrick Henry remains absent; and
+- prove byte-identical target and crosswalk replay from the pinned predecessor and authoring code.
+
+The additive schema version does not authorize changing the accepted `3.0.0` schema or `2026-07-19.1` artifact in place.
 
 ## Authoring workflow
 

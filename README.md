@@ -221,20 +221,33 @@ The original candidate can still be validated without the runtime requirement by
 
 ## Validate the residential expansion contracts
 
-Residential schema v3 and result contract `2.0.0` are implemented as development contracts without changing the released R1 application. The current v3 artifact contains only the deterministic migration of the two approved R1 zones, plus the source-verified R1 two-family special-pathway and multifamily `not_listed` records needed to exercise the new shape:
+Residential schemas `3.0.0` and `3.1.0` and result contract `2.0.0` are implemented as development contracts without changing the released R1 application. The accepted v3.0 R1 migration checkpoint remains preserved at:
 
 ```text
 rulesets/santa_clara/residential/2026-07-19.1/ruleset.json
 rulesets/santa_clara/residential/2026-07-19.1/migration-crosswalk.json
 ```
 
-Validate its schema, residential domain invariants, GIS fixture contract, local source checksums, complete crosswalk, deterministic replay, and R1 semantic equivalence:
+Validate that checkpoint's schema, residential domain invariants, GIS fixture contract, local source checksums, complete crosswalk, deterministic replay, and R1 semantic equivalence:
 
 ```bash
 python3 scripts/validate_residential_rules_v3.py --verify-source-files
 ```
 
-The candidate is deliberately not runtime eligible: it lacks the ten unauthored target designations, carries candidate status, and has no v3 approval. Supplying `--require-runtime-eligible` must therefore fail closed until Block 3 produces and approves the complete 12-zone ruleset.
+The current citywide successor adds the owner-approved R2-R6 matrix in a new nonruntime candidate. Schema `3.1.0` adds only a typed lot-area-tiered maximum shape within structure coverage so the R3/R4 source-table tiers are not flattened:
+
+```text
+rulesets/santa_clara/residential/2026-07-19.2/ruleset.json
+rulesets/santa_clara/residential/2026-07-19.2/citywide-expansion-crosswalk.json
+```
+
+Validate the full approved-v2 → accepted-v3.0 → citywide-v3.1 lineage, source checksums, exact R1 preservation, R2-R6 matrix, deterministic replay, and GIS fixture contract:
+
+```bash
+python3 scripts/validate_citywide_residential_rules.py --verify-source-files
+```
+
+Candidate `2026-07-19.2` deliberately remains nonruntime: it lacks the five Patrick Henry target designations, carries candidate status, and contains no residential-lineage approvals. Supplying `--require-runtime-eligible` to the citywide validator must fail closed until Patrick Henry authoring and complete ruleset approval are finished.
 
 Validate all eight nonruntime result-contract fixtures:
 
@@ -344,9 +357,11 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── rulesets/
 │   ├── schema/r1-ruleset.schema.json Current v1 ruleset contract
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
-│   ├── schema/ruleset-v3.schema.json  Residential expansion contract
+│   ├── schema/ruleset-v3.schema.json  Accepted residential v3.0 R1 contract
+│   ├── schema/ruleset-v3.1.schema.json Additive citywide coverage-tier contract
 │   └── santa_clara/
 │       ├── residential/2026-07-19.1/  Nonruntime migrated R1 v3 candidate
+│       ├── residential/2026-07-19.2/  Nonruntime R1-R6 v3.1 candidate
 │       └── r1/
 │           ├── 2026-07-16/            Versioned approved v1 R1 rules
 │           ├── 2026-07-17/            Preserved reviewed v2 candidate
@@ -363,6 +378,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   └── web.py                         Flask application factory and route boundary
 ├── scripts/
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
+│   ├── author_citywide_residential_rules.py Non-overwriting R2-R6 authoring replay
 │   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
 │   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
 │   ├── download_address_points.py     Citywide address-point downloader
@@ -373,6 +389,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
 │   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
 │   ├── validate_residential_result_contract.py Expansion fixture validator
+│   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
 │   ├── validate_residential_rules_v3.py Residential domain and runtime gate
 │   ├── validate_r1_rules.py           Approved v1 ruleset validator
 │   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate

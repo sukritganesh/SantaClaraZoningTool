@@ -1,0 +1,83 @@
+{
+  "crosswalk_version": "1.0.0",
+  "migration_id": "santa-clara-residential-v3-r1-to-citywide-r1-r6",
+  "generated_on": "2026-07-19",
+  "migration_status": "candidate_contract_validated",
+  "source_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.1/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.1",
+    "schema_version": "3.0.0",
+    "status": "candidate",
+    "sha256": "ad8f0ddb3eda82c724ae0c50fb23a89591ae78b72fab58e10868698eac4ed2ff"
+  },
+  "target_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.2/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.2",
+    "schema_version": "3.1.0",
+    "status": "candidate",
+    "sha256": "57166a693fbab477fec631e251cc909541db912ee01e2a3ef2345dbbc06f0d94"
+  },
+  "target_schema": {
+    "path": "rulesets/schema/ruleset-v3.1.schema.json",
+    "sha256": "7fa85189f1c8a1c5dbee3537cb494f2661ad80f77a1e9bda50e050f6f68e8103"
+  },
+  "counts": {
+    "source_zones": 2,
+    "target_zones": 7,
+    "carried_source_rules": 24,
+    "target_rules": 120,
+    "added_use_permissions": 15,
+    "added_analysis_profiles": 9,
+    "added_profile_regulations": 81,
+    "added_not_evaluated_topics": 6,
+    "carried_conflicts": 1
+  },
+  "preserved_components": [
+    {
+      "component_path": "zones.R1-6L",
+      "sha256": "99a74dda3ba21ad7198e27b998e762928f7cd386a6ace103d4f7865701ef14d5"
+    },
+    {
+      "component_path": "zones.R1-8L",
+      "sha256": "b2b1d2c3deb459260e0a2ae78569cd94b4b4c39be72c50e7a78c7003c6dc9529"
+    },
+    {
+      "component_path": "conflicts",
+      "sha256": "9d96bc1d87300ac115a82ee858807fe68b866652a561540a3eae4e20f333aef9"
+    },
+    {
+      "component_path": "jurisdiction",
+      "sha256": "e379545f95490f944c5aa591fe42fa70e48520cea205f814efe98f8bc1ed0a6f"
+    }
+  ],
+  "added_zone_profiles": {
+    "R2": [
+      "single_family",
+      "two_family",
+      "multifamily"
+    ],
+    "R3": [
+      "two_family",
+      "multifamily"
+    ],
+    "R4": [
+      "two_family",
+      "multifamily"
+    ],
+    "R5": [
+      "multifamily"
+    ],
+    "R6": [
+      "multifamily"
+    ]
+  },
+  "allowed_ruleset_changes": [
+    "Advance the closed authoring contract from schema 3.0.0 to additive schema 3.1.0.",
+    "Add the exact R2-R6 zones, use permissions, ordinary profiles, and selected standards.",
+    "Add a lot-area-tiered shape within maximum structure coverage for R3 and R4.",
+    "Add verified citywide sources, citations, exception disclosures, and not-evaluated topics.",
+    "Retain candidate status, null approval, and false rule approvals pending the full target matrix."
+  ]
+}
