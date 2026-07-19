@@ -1,0 +1,34 @@
+{
+  "archive": {
+    "file": "santa-clara-residential-runtime-data-2026-07-19.1.zip",
+    "format": "zip",
+    "sha256": "bbe2274b00b2687d4a540484e7fcf8cbdc7a8038a063cb4973b169038bb3e098",
+    "size_bytes": 4186509
+  },
+  "bundle_id": "santa-clara-residential-runtime-data",
+  "bundle_version": "2026-07-19.1",
+  "excluded_from_runtime_bundle": [
+    "Raw ArcGIS response chunks, metadata, object-ID responses, and count responses remain in the immutable research snapshot but are excluded because the validated manifest and consolidated layers are sufficient for deterministic runtime lookup."
+  ],
+  "included_files": [
+    {
+      "path": "data/raw/2026-07-18/santa_clara_residential_gis/current_zoning_residential.geojson",
+      "sha256": "cb18cf0a8f7b2ebc8754334285b0f73e3160ca7d7f3fc64eeb6df3963b23f862",
+      "size_bytes": 16554895
+    },
+    {
+      "path": "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json",
+      "sha256": "f71138d11eabdff773cb3f8fe156a41d0940b1adde72370f9bbab74a397aeb38",
+      "size_bytes": 522048
+    },
+    {
+      "path": "data/raw/2026-07-18/santa_clara_residential_gis/parcels_residential.geojson",
+      "sha256": "e31ce5afb81c717ddcbd639c17b57a4625bcf257175a14cc03a09bfc90f5ecc3",
+      "size_bytes": 14191101
+    }
+  ],
+  "install_root": ".",
+  "snapshots": {
+    "residential_gis": "2026-07-18"
+  }
+}

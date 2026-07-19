@@ -11,6 +11,10 @@ from typing import Mapping
 
 from scripts.bootstrap_demo_data import DemoDataBootstrapError, install_bundle
 from scripts.build_demo_data_bundle import ARCHIVE_PATH, MANIFEST_PATH
+from scripts.build_residential_demo_data_bundle import (
+    ARCHIVE_PATH as RESIDENTIAL_ARCHIVE_PATH,
+    MANIFEST_PATH as RESIDENTIAL_MANIFEST_PATH,
+)
 
 
 def _sha256(value: bytes) -> str:
@@ -199,6 +203,36 @@ class CommittedDemoDataBundleTest(unittest.TestCase):
                 (
                     repository
                     / "data/raw/2026-07-14/santa_clara_r1_gis/parcels_r1.geojson"
+                ).is_file()
+            )
+
+    def test_residential_add_on_matches_manifest_and_installs(self) -> None:
+        manifest = json.loads(
+            RESIDENTIAL_MANIFEST_PATH.read_text(encoding="utf-8")
+        )
+        archive_record = manifest["archive"]
+        self.assertEqual(archive_record["file"], RESIDENTIAL_ARCHIVE_PATH.name)
+        self.assertEqual(
+            archive_record["size_bytes"],
+            RESIDENTIAL_ARCHIVE_PATH.stat().st_size,
+        )
+        self.assertLess(RESIDENTIAL_ARCHIVE_PATH.stat().st_size, 10_000_000)
+        self.assertEqual(
+            archive_record["sha256"],
+            hashlib.sha256(RESIDENTIAL_ARCHIVE_PATH.read_bytes()).hexdigest(),
+        )
+        with tempfile.TemporaryDirectory() as raw_temp:
+            repository = Path(raw_temp) / "repository"
+            repository.mkdir()
+            installed, matched = install_bundle(
+                RESIDENTIAL_MANIFEST_PATH,
+                repository,
+            )
+            self.assertEqual((installed, matched), (3, 0))
+            self.assertTrue(
+                (
+                    repository
+                    / "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json"
                 ).is_file()
             )
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safely install the committed Santa Clara prototype runtime-data bundle."""
+"""Safely install the committed Santa Clara runtime-data bundles."""
 
 from __future__ import annotations
 
@@ -17,6 +17,10 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = REPO_ROOT / "demo-data/bundle-manifest.json"
+DEFAULT_MANIFESTS = (
+    DEFAULT_MANIFEST,
+    REPO_ROOT / "demo-data/residential-bundle-manifest.json",
+)
 ALLOWED_PREFIX = PurePosixPath("data/raw")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
@@ -198,8 +202,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--manifest",
         type=Path,
-        default=DEFAULT_MANIFEST,
-        help="Bundle manifest path (default: committed demo-data manifest)",
+        action="append",
+        help=(
+            "Bundle manifest path; repeat to install several. By default, install "
+            "the released R1 bundle and the residential runtime add-on."
+        ),
     )
     parser.add_argument(
         "--repo-root",
@@ -212,14 +219,20 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    manifests = tuple(args.manifest) if args.manifest else DEFAULT_MANIFESTS
+    installed_total = 0
+    matched_total = 0
     try:
-        installed, matched = install_bundle(args.manifest, args.repo_root)
+        for manifest in manifests:
+            installed, matched = install_bundle(manifest, args.repo_root)
+            installed_total += installed
+            matched_total += matched
     except (DemoDataBootstrapError, OSError, zipfile.BadZipFile) as exc:
         print(f"Demo data installation failed: {exc}")
         return 1
     print(
-        f"Demo data ready: {installed} files installed, "
-        f"{matched} already matched the approved bundle."
+        f"Demo data ready: {installed_total} files installed, "
+        f"{matched_total} already matched the approved bundles."
     )
     return 0
 
