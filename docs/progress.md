@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 and Block 6.1-6.3 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.4 whole-project reporting is technically complete, with owner review pending before final release validation and pull-request preparation
+**Current position:** Blocks 0-5 and Block 6.1-6.4 are complete and owner accepted on `codex/residential-zone-expansion`; the tranche 6.5 final release matrix passes, and pull-request preparation is in progress
 
-**Next action:** Review and accept the Block 6.4 Santa Clara Zoning Explorer report, then run the final release matrix and prepare the residential expansion pull request
+**Next action:** Commit and push the final release evidence, open the residential expansion pull request against the verified default branch, and monitor its exact head through CI and review readiness
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -62,7 +62,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Tranches 6.1-6.3 accepted; tranche 6.4 report technical gate complete, owner review pending | Source-complete startup, consolidated release acceptance, and clean-checkout CI are accepted. The new accessible report presents the R1 release and residential expansion as one continuous workflow, preserves the historical report, documents exact current scope and limitations, and records the proposed `v0.2.0` identity without creating a tag or release. |
+| 6. Validate and release | Tranches 6.1-6.4 accepted; tranche 6.5 final matrix complete, PR gate in progress | Source-complete startup, consolidated release acceptance, clean-checkout CI, and the accessible report are accepted. The final local matrix reproduces the bundles, closes every validator, preserves the released R1 baseline, and passes the six-test product gate plus all 354 tests; no tag or release exists before the normal PR, merge, and post-merge gates. |
 
 ## Block 0 evidence
 
@@ -635,11 +635,30 @@ Validation evidence:
 
 - every local Markdown link in the new report and updated README resolves;
 - the report's zone, use, capability, artifact-version, count, conflict, limitation, and validation statements were checked against the active plan, regulatory catalog, verification records, approved ruleset, runtime manifests, and progress ledger;
-- the Mermaid block uses the supported flowchart syntax and contains distinct preparation, runtime, and controlled-outcome paths;
+- the final Mermaid block renders on GitHub and in an isolated full-width check with 22 nodes, eight labeled decision edges, no node overlap, and no label-to-node collision;
 - the historical R1 report has no working-tree diff; and
 - `git diff --check` passes.
 
-Owner review remains the tranche 6.4 acceptance gate. After acceptance, the project can run the final release matrix and prepare the residential expansion pull request.
+The project owner accepted the final report and authorized the final release matrix and pull-request workflow on July 19, 2026.
+
+### Tranche 6.5 final release matrix and PR readiness
+
+The final local release matrix ran from clean branch head `60af6e911e17b4f0a5552430d23f30366656806f` after report acceptance. It changed no production code, ruleset, schema, contract, source snapshot, runtime package, dependency, test, interface, or release identity.
+
+Validation evidence:
+
+- two consecutive `.venv/bin/python -B scripts/bootstrap_demo_data.py` runs report all 22 runtime files already matching the selected committed bundles;
+- `.venv/bin/python -B scripts/build_residential_demo_data_bundle.py` reproduces source-complete add-on `.2` at 25,213,418 bytes and SHA-256 `17ccccba8714c3a09d85e18db3dbfedc21a4b79c701ac8f7a1a6cdd4a264d0f0`;
+- `pip check` reports no broken requirements;
+- the approved 12-zone source, schema, lineage, replay, semantic-preservation, per-record approval, and runtime-eligibility validator passes with source-file verification;
+- both eight-case residential result-contract validators pass for contracts `2.0.0` and `2.1.0`;
+- the released tag `v0.1.0-r1-prototype` is an ancestor of the branch, and its runtime archive, manifest, approved R1 ruleset, amendment audit, and rule-verification record have no branch diff;
+- the six-test residential release harness passes all live-zone, R5/R6, R1-regression, controlled-failure, provenance, offline, and cross-process determinism gates in 17.577 seconds;
+- `.venv/bin/python -B -m unittest discover -s tests -v` passes all 354 repository tests in 123.582 seconds with no failures, errors, skips, or unexpected successes;
+- the bundled Node.js runtime accepts `santa_clara_zoning/static/app.js` syntax, and `git diff --check` passes; and
+- hosted clean-checkout run `29707903970` passes every configured step on the report-polish head before this status-only release-evidence update.
+
+The branch is ready for its final status commit and pull request. Pull-request CI and review remain required, and the proposed `v0.2.0` tag and GitHub release remain post-merge actions only.
 
 ## Blocks 0-1 validation evidence
 
@@ -722,3 +741,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-19 | Use one read-only Python 3.9 CI job before considering broader version matrices or deployment automation. | The immediate release risk is clean-checkout reproducibility on the supported baseline; extra runtime matrices and deployment systems would expand scope without strengthening the current regulatory acceptance contract. |
 | 2026-07-19 | Accept Block 6.3 and proceed to residential release reporting. | Both the workflow implementation head and the final documentation head passed the complete hosted Python 3.9 clean-checkout gate, so the release claims can now be assembled for a general audience. |
 | 2026-07-19 | Preserve the R1 prototype report and create a separate Santa Clara Zoning Explorer whole-project report. | The historical report accurately records the first release, while the new report can tell the complete R1-to-residential story and update the architecture diagram without rewriting release provenance. |
+| 2026-07-19 | Accept Block 6.4 and proceed through the final release matrix and pull-request workflow. | The owner accepted the accessible whole-project report after its vertical-flow and visual-routing refinements; release readiness can now be proved against the exact branch. |
+| 2026-07-19 | Treat the passing tranche 6.5 matrix as PR readiness, not as a release or landing decision. | Local and hosted evidence closes the agreed acceptance scope, while PR CI, review, explicit landing confirmation, merge verification, and post-merge tag gates remain separate safeguards. |
