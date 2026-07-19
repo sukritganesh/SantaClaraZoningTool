@@ -8,6 +8,7 @@ The development application covers the selected citywide and Patrick Henry resid
 
 - [Residential expansion plan](docs/residential-expansion-plan.md) — active scope, architecture, migration strategy, implementation blocks, and completion criteria.
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
+- [Santa Clara Zoning Explorer report](docs/santa-clara-zoning-explorer-report.md) — the accessible, whole-project account from the first R1 release through the residential expansion and its validation.
 - [Manual testing addresses](docs/manual-testing-addresses.md) — concise live-address and controlled-outcome checks for the local application.
 - [Residential rule verification](docs/residential-rule-verification.md) — active source trace, candidate dispositions, GIS acquisition contract, and approval gate for the expanded zones.
 - [Future improvements](docs/future-improvements.md) — the cross-cutting enhancement burndown; active execution remains tracked in the progress ledger.
@@ -438,6 +439,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   └── residential-result-contract-2.1.0.schema.json  Runtime-ready successor
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
+│   ├── santa-clara-zoning-explorer-report.md Accessible whole-project report
 │   ├── future-improvements.md        Deferred enhancement burndown
 │   ├── residential-expansion-plan.md Active residential expansion specification
 │   ├── patrick-henry-rule-verification-supplement.md Patrick Henry source and PH-R5 decision gate

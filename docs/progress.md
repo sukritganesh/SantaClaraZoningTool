@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 and Block 6.1-6.2 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.3 clean-checkout CI implementation and its first GitHub-hosted run are complete, with owner acceptance pending before release reporting
+**Current position:** Blocks 0-5 and Block 6.1-6.3 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.4 whole-project reporting is technically complete, with owner review pending before final release validation and pull-request preparation
 
-**Next action:** Review and accept Block 6.3, then begin Block 6.4 residential expansion release reporting and final release-identity preparation
+**Next action:** Review and accept the Block 6.4 Santa Clara Zoning Explorer report, then run the final release matrix and prepare the residential expansion pull request
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -47,6 +47,7 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Preserved residential GIS-only add-on manifest: `demo-data/residential-bundle-manifest.json`
 - Source-complete residential runtime add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.2.zip`
 - Source-complete residential add-on manifest: `demo-data/residential-bundle-manifest-2026-07-19.2.json`
+- Whole-project report: `docs/santa-clara-zoning-explorer-report.md`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
 
 The released R1 artifacts remain the immutable inherited baseline. The Patrick Henry and residential GIS snapshots are Block 1 expansion artifacts and must likewise remain immutable.
@@ -61,7 +62,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Tranche 6.3 technical gate complete; owner acceptance pending | Accepted tranches 6.1-6.2 repair source packaging and consolidate release acceptance. The minimal read-only GitHub Actions workflow reproduces bundle bootstrap and generation, all regulatory and result validators, the release harness, the 354-test complete suite, JavaScript syntax, and whitespace integrity; hosted run `29706880910` passed every step on Python 3.9. |
+| 6. Validate and release | Tranches 6.1-6.3 accepted; tranche 6.4 report technical gate complete, owner review pending | Source-complete startup, consolidated release acceptance, and clean-checkout CI are accepted. The new accessible report presents the R1 release and residential expansion as one continuous workflow, preserves the historical report, documents exact current scope and limitations, and records the proposed `v0.2.0` identity without creating a tag or release. |
 
 ## Block 0 evidence
 
@@ -609,9 +610,36 @@ Validation evidence:
 - push commit `7dc9c0b5d53195276f43ca27517256d2e38095a6` triggered **Residential release validation** run `29706880910` on July 19, 2026;
 - hosted job `88245280734`, **Python 3.9 clean-checkout gate**, completed successfully in 4 minutes 51 seconds;
 - every substantive step passed: checkout, Python setup, dependency installation and `pip check`, two bootstrap passes, byte-identical residential bundle reproduction, the approved residential validator, both result-contract validators, the six-test release harness, the complete 354-test repository suite, JavaScript syntax, and whitespace integrity; and
-- the successful run is recorded at `https://github.com/sukritganesh/SantaClaraZoningTool/actions/runs/29706880910`.
+- the successful implementation-head run is recorded at `https://github.com/sukritganesh/SantaClaraZoningTool/actions/runs/29706880910`;
+- final-head commit `7448a7ccca2582413f235a7adb7bbb11a5565ceb` then triggered run `29707062838`, whose Python 3.9 job `88245745563` passed every step in 4 minutes 1 second; and
+- the project owner accepted tranche 6.3 and authorized release reporting on July 19, 2026.
 
 No CI step has write authority or an allowed-failure path. Tranche 6.3 changes automation and status evidence only; it does not change dependencies, production code, regulatory data, source snapshots, runtime archives, contracts, presentation, or user-visible behavior.
+
+### Tranche 6.4 accessible whole-project report
+
+The owner accepted tranche 6.3 and requested one accessible report covering the first R1 release and the residential expansion as a continuous workflow. `docs/santa-clara-zoning-explorer-report.md` is the current whole-project account. It:
+
+- begins with the ordinary user question and current product experience rather than implementation internals;
+- explains the exact 12-designation scope, single-family/two-family/multifamily treatment, supported standard families, and the distinction between ten live GIS designations and synthetic-only R5/R6 rule coverage;
+- retains the historical report's evidence-preparation versus deterministic-runtime structure while updating its Mermaid diagram for the approved residential path;
+- presents the R1 release, source expansion, contract generalization, regulatory authoring, runtime integration, interface work, and release hardening as one staged project;
+- explains versioning, conflicts, fail-closed behavior, AI's candidate-only role, and nonnumeric outcomes in plain language;
+- records the 67,243-address snapshot, paired 18,677-feature residential layers, approved 196-rule/two-pathway package, 354-test suite, clean-checkout bundle, and hosted CI evidence;
+- states the proposed `v0.2.0` release identity without creating a tag or GitHub release; and
+- retains a prominent boundary against complete entitlement, buildability, legal, or planning conclusions.
+
+The historical `docs/prototype-report.md` remains unchanged as the report for released baseline `v0.1.0-r1-prototype`. README navigation now identifies both reports and makes their roles explicit. No production code, dependency, ruleset, schema, source snapshot, runtime package, test, interface, tag, or release changed in tranche 6.4.
+
+Validation evidence:
+
+- every local Markdown link in the new report and updated README resolves;
+- the report's zone, use, capability, artifact-version, count, conflict, limitation, and validation statements were checked against the active plan, regulatory catalog, verification records, approved ruleset, runtime manifests, and progress ledger;
+- the Mermaid block uses the supported flowchart syntax and contains distinct preparation, runtime, and controlled-outcome paths;
+- the historical R1 report has no working-tree diff; and
+- `git diff --check` passes.
+
+Owner review remains the tranche 6.4 acceptance gate. After acceptance, the project can run the final release matrix and prepare the residential expansion pull request.
 
 ## Blocks 0-1 validation evidence
 
@@ -692,3 +720,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-19 | Keep Block 6.2 test-only and consolidate release evidence without replacing focused tests. | Focused suites remain better diagnostics, while one product-level gate makes the complete offline, regression, provenance, failure, and determinism claim directly executable. |
 | 2026-07-19 | Accept Block 6.2 and proceed to clean-checkout CI. | The consolidated gate passes in working and committed-only trees and makes the release claims executable without changing product behavior. |
 | 2026-07-19 | Use one read-only Python 3.9 CI job before considering broader version matrices or deployment automation. | The immediate release risk is clean-checkout reproducibility on the supported baseline; extra runtime matrices and deployment systems would expand scope without strengthening the current regulatory acceptance contract. |
+| 2026-07-19 | Accept Block 6.3 and proceed to residential release reporting. | Both the workflow implementation head and the final documentation head passed the complete hosted Python 3.9 clean-checkout gate, so the release claims can now be assembled for a general audience. |
+| 2026-07-19 | Preserve the R1 prototype report and create a separate Santa Clara Zoning Explorer whole-project report. | The historical report accurately records the first release, while the new report can tell the complete R1-to-residential story and update the architecture diagram without rewriting release provenance. |
