@@ -29,6 +29,47 @@ The larger product vision is a repeatable workflow that can:
 
 Santa Clara's R1 zones gave us a practical place to test that vision without trying to solve every land-use question at once.
 
+## From source material to a user-facing answer
+
+The prototype separates preparation from runtime. Geographic and regulatory sources are collected, checked, and versioned before they can support a property result. At runtime, the application follows a deterministic path and withholds regulatory conclusions whenever the evidence does not support one.
+
+```mermaid
+flowchart LR
+    subgraph preparation["Prepare and approve the evidence"]
+        direction TB
+        gis["Santa Clara ArcGIS services"] --> download["Complete, validated downloads"]
+        download --> snapshots["Immutable GIS snapshots<br/>with manifests and checksums"]
+
+        code["Zoning code and amendment record"] --> candidates["Candidate structured rules"]
+        code -.-> ai["Optional AI-assisted extraction"]
+        ai -.-> candidates
+        candidates --> review["Source review and human approval"]
+        review --> gates["Schema, provenance and migration gates"]
+        gates --> ruleset["Approved, versioned R1 ruleset"]
+    end
+
+    subgraph runtime["Deterministic offline runtime"]
+        direction TB
+        user["User enters an address"] --> address["Normalize and exact-match address"]
+        address --> parcel["Find address point, parcel and APN"]
+        parcel --> zoning["Cross-check parcel and current zoning"]
+        zoning --> rules["Retrieve exact-zone approved rules"]
+        rules --> result["Versioned result<br/>with citations and limitations"]
+        result --> presenter["Deterministic presentation layer"]
+        presenter --> interface["Local web interface"]
+    end
+
+    snapshots --> address
+    ruleset --> rules
+
+    address -->|No match or multiple matches| safe["Controlled non-regulatory outcome"]
+    zoning -->|Unsupported or conflicting evidence| safe
+    gates -->|Integrity gate fails| safe
+    safe --> interface
+```
+
+The dashed path shows where AI can assist during preparation without becoming the authority for a live result. The solid runtime path uses only validated local artifacts. Citations, limitations, and version identities remain attached through the final interface.
+
 ## Why we started small
 
 Zoning systems become complicated quickly. A city may have dozens of base zones, overlays, specific plans, historic restrictions, special approvals, and state-law interactions. Attempting to automate all of that in the first version would make it difficult to tell whether the basic workflow was sound.
