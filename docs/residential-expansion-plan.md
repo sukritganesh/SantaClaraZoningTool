@@ -202,7 +202,7 @@ Refactoring should follow behavior boundaries rather than a repository-wide text
 
 **Status:** Design approved by the project owner on July 19, 2026.
 
-**Proposal status:** Ready for project-owner review; no schema, validator, migration, ruleset, runtime, presentation, or interface implementation is authorized by this section alone.
+**Implementation status:** Complete and project-owner accepted; the immutable approved successor is residential ruleset `2026-07-19.5`.
 
 ### 10.1 Contract audit findings
 
@@ -411,7 +411,97 @@ Block 2 does not author R2-R6 or Patrick Henry numeric data, load the residentia
 
 Schema and domain validation deliberately distinguish a **partial candidate** from a **runtime-eligible ruleset**. A partial candidate may contain a nonempty subset of the exact target zones so the approved R1 rules can prove migration and contract behavior during Block 2. Runtime eligibility remains fail-closed and requires all 12 exact target designations, every approved use-permission matrix cell, every required ordinary profile or special pathway, project approval, and all source and conflict gates. Partial candidates must never be loadable by the production runtime.
 
-## 11. Implementation blocks
+## 11. Block 4 lookup and retrieval design
+
+**Status:** Read-only audit and implementation proposal ready for project-owner review. This section does not authorize runtime, schema, presentation, or interface changes by itself.
+
+### 11.1 Audit findings
+
+The released R1 runtime has good deterministic boundaries, but each public component is intentionally closed over the old two-zone, single-selection contract. Block 4 should extend those boundaries alongside the released path instead of changing every layer at once.
+
+| Surface | Reusable foundation | Blocking R1 or pre-runtime assumption | Block 4 direction |
+|---|---|---|---|
+| Ruleset loader | JSON artifact loading, source checks, fail-closed errors, recursive freezing, and defensive copies | `ApprovedR1Ruleset` loads the v2 artifact set, validates only the v1-to-v2 migration, and counts `zones[*].regulations` | Add an approved residential loader that validates `.5` and its complete lineage before exposing the v3 zone/use/profile/pathway hierarchy |
+| GIS lookup | Address normalization, exact matching, immutable manifest and checksum loading, spatial indexes, point-in-polygon logic, and parcel/current-zoning agreement | `LocalR1Lookup`, the snapshot paths, accepted designations, status names, count keys, and messages are R1-specific | Add exact residential lookup over the July 18 snapshot, with the 12-zone ruleset as the supported identity set and explicit validation of complete manifest counts, zero-count R5/R6, and cross-layer agreement |
+| Standards retrieval | Exact case-sensitive keys, approval checks, reference closure, deterministic ordering, and no partial results | Retrieval accepts only a zone, expects the v2 flat rule map, and recognizes only the v2 requirement kinds | Split pure selection listing from exact selection retrieval; return one zone-owned use rule plus either one ordinary profile or one special pathway and its transitive evidence |
+| Pipeline | One loaded lookup and ruleset, controlled failures, version attachment, result consistency checks, and deterministic replay | `R1StandardsPipeline.analyze_address(address)` immediately attaches the only profile and emits contract `1.0.0` | Add an address-first residential pipeline accepting an optional exact `selection_id`; no selection lists choices, while a valid selection retrieves only its approved branch |
+| Result contract fixtures | Eight controlled statuses, profile/pathway separation, structured topics, conflict maps, and source closure | The executable fixtures use candidate `.1`, expect nine profile regulations, omit the now-approved density rule, and are explicitly nonruntime | Preserve `2.0.0` as the accepted Block 2 checkpoint and create a narrow runtime successor against approved `.5` |
+| Presentation and web | Known-integrity-error boundary and the released R1 regression oracle | Presentation accepts only pipeline `1.0.0`, numeric R1 requirement shapes, one implicit selection, and R1 copy | Do not change these components in Block 4; the default web application remains on the released R1 path until Block 5 |
+
+The result-contract audit found three mismatches that must be corrected before production data is wired:
+
+1. Every approved `.5` ordinary profile contains ten regulations because gross residential density was added after the `.1` fixture was created; the current fixture validator hardcodes the earlier nine-capability set.
+2. `outside_supported_residential_snapshot` currently requires a parcel ID and exact non-target zone. The intentionally filtered residential snapshot can prove that an address point has no matching target parcel or zoning feature, but it cannot identify the excluded zone or parcel.
+3. A successful selection names its legal-use capability but does not carry the selected zone-owned use-permission rule or its provenance, despite the approved design requiring the selected use and profile standards together.
+
+These are representation/runtime mismatches, not new zoning capabilities. Fixing them must not add a status, regulation family, inferred permission, alias, parcel calculation, or proposal evaluation.
+
+### 11.2 Proposed runtime boundaries
+
+The production-independent Block 4 path should have four explicit components:
+
+```text
+approved residential .5 lineage ──> ApprovedResidentialRuleset ──┐
+                                                                 ├─> ResidentialStandardsPipeline
+address + residential GIS ────────> LocalResidentialLookup ──────┘
+                                              │
+                                              └─> exact zone -> available selections
+                                                                   │
+                                                                   └─> one selected branch + evidence
+```
+
+1. **`ApprovedResidentialRuleset`** loads the canonical `.5` ruleset, schema, approval crosswalk, `.4` candidate, and every checksum-pinned predecessor needed by the complete approved-v2-to-v3.2 validator. It must run source, lineage, replay, semantic-preservation, per-record approval, and runtime-eligibility gates before freezing the ruleset. Candidate `.4` and a self-consistent but semantically changed `.5` must both fail.
+2. **`LocalResidentialLookup`** reuses the address and geometry primitives but loads `parcels_residential.geojson` and `current_zoning_residential.geojson`. Default construction must validate the address and residential manifests, output checksums and counts, exact requested designation set, per-zone counts, explicit R5/R6 zeroes, observed positive-count designations, and parcel/current-zoning agreement. It must never normalize `R1-6LHT`, `R2-7L`, or `R2HT` to a target zone.
+3. **Pure residential selection retrieval** exposes deterministic `available_selections(zone, ruleset)` and `retrieve_residential_selection(zone, selection_id, ruleset)` behavior. Profile order is single-family, two-family, then multifamily; special pathways follow in ruleset order. Callers supply one exact selection ID rather than independently supplied use, workflow, and structure fields. The retriever validates the zone-owned permission, profile/pathway binding, approval flags, complete capability set, transitive topics, conflicts, citations, exception families, and source documents.
+4. **`ResidentialStandardsPipeline`** owns result-contract mapping. `analyze_address(address, selection_id=None)` returns `residential_zone_found` with choices when no selection is provided; an available profile returns `residential_standards_found`; the R1 pathway returns `analysis_not_evaluated`; a known but unavailable profile returns `selection_not_available`; lookup ambiguity, absence, outside-snapshot results, and spatial disagreement remain controlled no-regulations outcomes. Integrity errors remain exceptions for the later safe web boundary and are never recast as parcel-specific review.
+
+The new components may share private loaders and immutable-copy helpers with the R1 implementation, but the released public classes, contract `1.0.0`, default Flask application, templates, static assets, and R1 tests remain operational until Block 5 deliberately switches consumers.
+
+### 11.3 Runtime result-contract successor
+
+Create an immutable contract successor, proposed as **`2.1.0`**, rather than rewriting accepted `2.0.0`. It retains the same eight statuses and selection identities and makes only these runtime corrections:
+
+- use approved ruleset `.5` and require the exact ten-capability profile selected from that ruleset instead of validating against the earlier nine-capability fixture expectation;
+- add the selected zone-owned `use_permission` record to successful ordinary-profile and special-pathway results, and the relevant `not_listed` permission to known unavailable-profile results;
+- include use-permission sources in the transitive regulatory closure;
+- allow the outside-snapshot property evidence to contain the matched address with null parcel and zone identities, without guessing the excluded zoning designation;
+- allow an empty entered address to produce the controlled `address_not_found` result rather than an invalid result envelope; and
+- preserve independent address, residential-GIS, ruleset, schema, and result-contract versions on every normal pipeline outcome.
+
+No independently supplied workflow family, legal-use capability, or structure type is accepted. Those fields always come from the selected approved profile or pathway. Unknown or malformed selection IDs fail closed; they do not trigger fuzzy matching or the nearest available profile.
+
+### 11.4 Gated implementation sequence
+
+Block 4 should proceed in five reviewable tranches:
+
+1. **Contract correction and runtime fixtures:** add contract `2.1.0`, its validator, and approved-`.5` fixtures for all eight statuses; preserve the `2.0.0` checkpoint and tests.
+2. **Approved residential loader:** expose a callable complete-lineage validator, add the frozen runtime loader, and mutation-test candidate, checksum, lineage, semantic, approval, missing-artifact, and defensive-copy failures.
+3. **Residential GIS lookup:** implement exact snapshot loading and the ten real-address fixtures; add synthetic R5/R6 and excluded-designation coverage plus ambiguity, no-match, mismatch, overlap, checksum, count, and manifest failures.
+4. **Selection retrieval and pipeline:** implement deterministic choice listing, exact profile/pathway retrieval, complete provenance closure, all controlled outcomes, and cross-process repeatability without touching presentation or Flask.
+5. **Block 4 acceptance:** run the full zone/selection matrix, requirement-shape and conflict cases, released R1 regressions, approved ruleset validator, focused runtime suites, and complete repository suite; record evidence before Block 5 begins.
+
+Each tranche must leave the default application on the released R1 pipeline. Block 4 is complete only when the backend contract is accepted and all gates pass; file existence or one successful multifamily address is insufficient.
+
+### 11.5 Acceptance matrix
+
+| Boundary | Required evidence |
+|---|---|
+| Approved artifacts | Canonical `.5` loads; `.4`, unapproved records, checksum changes, lineage drift, semantic mutations, missing files, and unsupported identities fail closed |
+| Real residential lookup | One verified address succeeds for each live designation: `R1-6L`, `R1-8L`, `R2`, `R3`, `R4`, `PH-R5`, `UV`, `VR`, `UC`, and `HDF` |
+| Zero and excluded GIS scope | R5/R6 work through synthetic retrieval fixtures only; `R1-6LHT`, `R2-7L`, and `R2HT` remain exact unsupported designations and never become target zones |
+| Selection matrix | R1 single-family and special pathway; all three R2 profiles; R3/R4 two-family and multifamily; R5/R6 and Patrick Henry multifamily; every source-verified unavailable profile |
+| Requirement shapes | Numeric maximum, quantity range, lot-area-tiered maximum, no maximum listed, FAA-controlled, numeric setback, paired setback, and plan-dependent setback all survive retrieval unchanged |
+| Conflicts and limitations | R1-8L, R5, R6, and PH-R5 conflicts retain selected and competing assertions; applicable structured topics and prerequisites are complete |
+| Controlled outcomes | Selection required, standards found, special pathway not evaluated, selection unavailable, outside snapshot, address not found, address ambiguous, and review required never leak partial regulations |
+| Regression and determinism | Released R1 loader/lookup/pipeline/presentation/web tests remain green; repeated and cross-process residential results are byte-equivalent for identical inputs |
+
+### 11.6 Block 4 file and scope policy
+
+Expected implementation surfaces are the runtime loader, lookup, standards retrieval, pipeline, result-contract successor and validator, focused fixtures/tests, README commands if a new runnable entry point is added, this plan if the approved design changes, and `docs/progress.md` for execution evidence.
+
+Block 4 does **not** change regulatory values, schemas `3.0.0` through `3.2.0`, approved ruleset `.5`, source snapshots, the capability catalog, presentation contract, templates, CSS, JavaScript, or active page copy. It does not add a database, live GIS call, fuzzy address or zone matching, commercial use, density bonus, unit-yield calculation, proposal compliance, or a new regulation family.
+
+## 12. Implementation blocks
 
 | Block | Objective | Exit conditions |
 |---|---|---|
@@ -425,7 +515,7 @@ Schema and domain validation deliberately distinguish a **partial candidate** fr
 
 Implementation should stop at each source, contract, data-approval, and release gate for project-owner review.
 
-## 12. Block 0 file policy
+## 13. Block 0 file policy
 
 This documentation transition intentionally changes only:
 
@@ -437,7 +527,7 @@ This documentation transition intentionally changes only:
 
 `README.md`, the capability catalog, authoring guide, source-verification documents, schemas, rulesets, application code, scripts, tests, and user-interface copy remain unchanged in Block 0. Each will be updated in its owning later block when its actual contract or behavior changes.
 
-## 13. Expansion completion criteria
+## 14. Expansion completion criteria
 
 The phase is complete when the product can:
 

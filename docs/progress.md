@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 3 is complete and project-owner accepted on `codex/residential-zone-expansion`; immutable residential ruleset `2026-07-19.5` is approved and runtime-eligible for all 12 target zones, while production still loads the released R1 v2 artifact until Block 4 deliberately integrates the new lookup and retrieval path
+**Current position:** Block 3 is complete and project-owner accepted on `codex/residential-zone-expansion`; the read-only Block 4 runtime audit and implementation proposal are complete and awaiting project-owner approval, while production remains unchanged on the released R1 v2 path
 
-**Next action:** Begin Block 4 by auditing and then generalizing the production ruleset loader, residential GIS lookup, and exact zone/use/structure retrieval boundary against approved ruleset `2026-07-19.5`; preserve all current R1 runtime behavior until the expanded integration passes its focused gates
+**Next action:** Review and approve the Block 4 design in Section 11 of `docs/residential-expansion-plan.md`, including the narrow result-contract `2.1.0` successor needed to reconcile approved density, selected use-permission evidence, and filtered-snapshot outside outcomes; after approval, begin tranche 4.1 without changing presentation or the default Flask application
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -54,7 +54,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
-| 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
+| 4. Expand lookup and retrieval | Audit and proposal complete; awaiting owner approval | The runtime audit identifies reusable R1 foundations, three pre-runtime result-contract mismatches, a five-tranche implementation sequence, and the complete lookup/selection acceptance matrix; no runtime code has changed. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
 
@@ -316,6 +316,37 @@ Validation evidence:
 
 Block 3 is complete and project-owner accepted. Block 4 may now integrate the approved residential artifact through the production loader and exact lookup/retrieval boundaries, but no user-visible expansion is claimed yet.
 
+## Block 4 read-only runtime audit and proposal
+
+The audit inspected the released R1 runtime and its focused regression boundaries without changing application behavior:
+
+- `santa_clara_zoning/ruleset.py` and `tests/test_ruleset_loader.py` for artifact loading, v1-to-v2 replay, runtime eligibility, recursive freezing, mutation rejection, and defensive copies;
+- `santa_clara_zoning/lookup.py`, the July 16 address manifest, the July 18 residential manifest, `tests/test_local_lookup.py`, and `tests/fixtures/residential_gis_fixture_inventory.json` for exact matching, manifest/checksum loading, spatial outcomes, all ten live target fixtures, R5/R6 zero counts, and excluded designations;
+- `santa_clara_zoning/standards.py` and `tests/test_zone_standards.py` for exact-zone retrieval, approved-record checks, requirement-source traversal, and transitive provenance closure;
+- `santa_clara_zoning/pipeline.py` and `tests/test_standards_pipeline.py` for orchestration, controlled failures, integrity exceptions, versioning, defensive output, and determinism;
+- result contract `2.0.0`, its nonruntime `.1` fixture builder, eight fixture cases, and mutation tests; and
+- the presentation, Flask, and vertical-slice boundaries to identify what Block 4 must leave unchanged until Block 5.
+
+The detailed proposal is Section 11 of `docs/residential-expansion-plan.md`. Its principal conclusions are:
+
+- add approved residential loader, lookup, selection-retrieval, and pipeline components alongside the released R1 public path;
+- validate the complete `.5` lineage at load time rather than treating schema validity or the final approval flag as sufficient;
+- use the ruleset's exact 12-zone identities to validate the filtered residential snapshot, while retaining synthetic-only R5/R6 retrieval coverage and never normalizing the three excluded designations;
+- accept one exact selection ID and derive legal use, workflow family, and structure identity from the approved profile or pathway rather than accepting contradictory independent fields;
+- preserve the eight approved result statuses and introduce a narrow immutable `2.1.0` contract successor before runtime wiring; and
+- keep presentation, templates, frontend assets, and the default Flask application on the released R1 pipeline throughout Block 4.
+
+The contract successor is necessary because the Block 2 fixtures deliberately use candidate `.1` and nine regulations, while approved `.5` profiles contain ten after density; the `2.0.0` outside-snapshot shape requires non-target parcel/zone facts absent from the filtered snapshot; and successful results currently omit the selected use-permission rule and its evidence. These corrections do not add a regulation, status, GIS source, or evaluation capability.
+
+Read-only validation evidence:
+
+- `.venv/bin/python -B -m unittest tests.test_ruleset_loader tests.test_local_lookup tests.test_zone_standards tests.test_standards_pipeline tests.test_residential_result_contract -q` passes all 47 focused current-runtime and contract tests; and
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 255 repository tests;
+- `git diff --check` passes; and
+- no application, ruleset, schema, contract, source snapshot, fixture, test, README, dependency, or user-visible file changed during the audit.
+
+The proposal is awaiting project-owner approval. Implementation must begin with the contract-successor tranche and stop before Block 5 presentation work.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -378,3 +409,4 @@ None currently recorded.
 | 2026-07-19 | Reuse schema `3.2.0` for Patrick Henry candidate `2026-07-19.4` and keep all new records nonapproved. | Existing typed requirements already express numeric, range, no-maximum-listed, FAA-controlled, and plan-dependent outcomes; the tranche adds data and provenance, not schema or runtime authority. |
 | 2026-07-19 | Approve complete residential candidate `2026-07-19.4` as the Block 3 regulatory content. | The exact 12-zone matrix, supported regulation families, retained conflicts, source pins, deterministic lineage, and technical validation passed project-owner review. |
 | 2026-07-19 | Preserve `.4` and promote it without regulatory-semantic change into immutable runtime-eligible version `2026-07-19.5`. | A separate lifecycle successor records approval transparently, enables all 196 rules and two pathways, and keeps the reviewed candidate and every prior checkpoint reproducible. |
+| 2026-07-19 | Complete a read-only Block 4 runtime audit and implementation proposal before changing production code. | The released R1 path remains the regression oracle while loader, filtered-GIS, selection, result-contract, and provenance mismatches are resolved explicitly rather than discovered during coupled implementation. |
