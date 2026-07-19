@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 1 in progress on `codex/residential-zone-expansion`; the source matrix and Patrick Henry source snapshot are established, while the residential GIS snapshot and runtime implementation remain pending
+**Current position:** Block 1 technical evidence is complete on `codex/residential-zone-expansion`; the source matrix, Patrick Henry source, residential GIS snapshot, and fixture inventory are ready for project-owner approval, while new-zone runtime implementation remains intentionally pending
 
-**Next action:** Implement and run the exact residential GIS acquisition contract, verify reachable-zone fixtures, and submit the completed source matrix and candidate dispositions for owner approval
+**Next action:** Obtain project-owner approval of the completed source matrix, the explicit HDF crosswalk, and the Patrick Henry rear-setback disposition; then begin Block 2 contract design without authoring runtime rules prematurely
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -18,24 +18,25 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Target regulations: the existing use, approval, height, stories, coverage, and four setback families, with only the minimum additional dispositions needed for no maximum listed, FAA-controlled, plan-dependent, not evaluated, and review-required results.
 - Commercial analysis and additional regulation families remain outside the phase.
 
-## Inherited canonical artifacts
+## Canonical artifacts
 
 - Citywide address snapshot: `data/raw/2026-07-16/santa_clara_address_points/manifest.json`
 - Released R1 parcel and zoning snapshot: `data/raw/2026-07-14/santa_clara_r1_gis/manifest.json`
+- Residential parcel and zoning snapshot: `data/raw/2026-07-18/santa_clara_residential_gis/manifest.json`
 - Released zoning-code and amendment snapshot: `data/raw/2026-07-16/santa_clara_zoning_code/manifest.json`
 - Adopted Patrick Henry plan snapshot: `data/raw/2026-07-18/patrick_henry_drive_specific_plan/manifest.json`
 - Approved R1 ruleset: `rulesets/santa_clara/r1/2026-07-17.2/ruleset.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
 
-These artifacts remain the immutable inherited baseline until a later block creates and validates an explicit successor.
+The released R1 artifacts remain the immutable inherited baseline. The Patrick Henry and residential GIS snapshots are Block 1 expansion artifacts and must likewise remain immutable.
 
 ## Milestone tracker
 
 | Block | Status | Exit evidence or next result |
 |---|---|---|
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
-| 1. Verify sources and acquire residential GIS | In progress | `docs/residential-rule-verification.md` records the checked source matrix, candidate dispositions, live GIS preflight, acquisition requirements, remaining evidence, and approval gate. The Patrick Henry source is preserved; the immutable residential GIS snapshot and fixtures are still required. |
+| 1. Verify sources and acquire residential GIS | Ready for owner approval | The checked source matrix, Patrick Henry source, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory pass their technical gates. The HDF crosswalk, Patrick Henry rear disposition, and full verification record still require explicit owner approval. |
 | 2. Generalize the data and result contracts | Not started | New schema, applicability/disposition semantics, crosswalk, and contract versions are approved and mutation-tested. |
 | 3. Author and approve residential rules | Not started | All target zone/use/structure cells receive explicit verified dispositions and the new ruleset becomes runtime-eligible. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
@@ -63,7 +64,7 @@ Documentation validation:
 - active instructions and status references resolve to the residential expansion documents; and
 - `git diff --check` passes.
 
-## Block 1 work in progress
+## Block 1 evidence ready for approval
 
 Created and reviewed:
 
@@ -85,15 +86,31 @@ Source work performed:
 - verified Chapter 18.24 and the Title 18 dwelling, primary-structure, and structure-coverage definitions, including the distinction between one two-family structure and the R1 pathway's attached-or-detached two-home configurations; and
 - queried both official ArcGIS zoning-bearing layers with the exact proposed residential filter.
 
-July 18 ArcGIS preflight evidence:
+Implemented and preserved:
+
+- `scripts/download_residential_gis.py`, a new non-overwriting multi-zone acquisition path that leaves the released R1 downloader intact;
+- `tests/test_residential_gis_downloader.py`, covering exact scope, GET batch bounds, complete evidence, duplicate and unexpected data, cross-layer disagreement, failure manifests, overwrite refusal, and fixture closure;
+- `data/raw/2026-07-18/santa_clara_residential_gis/manifest.json`, the ignored immutable raw snapshot with 18,677 validated features in each source layer;
+- `tests/fixtures/residential_gis_fixture_inventory.json`, with one source- and geometry-verified real address for every live target designation, synthetic zero-count R5/R6 fixtures, and synthetic negative fixtures for the three excluded exact codes; and
+- README commands and repository orientation for the residential downloader, while retaining the historical R1 downloader and released runtime instructions.
+
+July 18 immutable ArcGIS evidence:
 
 - both layers returned 18,677 target features and identical per-zone counts;
 - exact counts included `R1-6L: 15,757`, `R1-8L: 436`, `R2: 752`, `R3: 1,685`, `R4: 2`, `PH-R5: 2`, `UV: 9`, `VR: 27`, `UC: 2`, and `HDF: 5`;
 - exact `R5` and `R6` counts were zero in both layers; they remain legal and synthetic rule targets, not real-address fixtures;
 - deliberately excluded exact designations were also observed in both layers: `R1-6LHT: 14`, `R2-7L: 1`, and `R2HT: 2`; and
-- these are preflight observations, not hardcoded future acceptance values. The immutable acquisition must preserve and validate whatever the official source returns at retrieval time.
+- the matching preflight observations were not used as hardcoded acceptance values; the immutable acquisition independently preserved and validated the source results returned at retrieval time.
 
-The source checks did not change application code, schemas, rulesets, dependencies, or runtime behavior. New-zone assertions remain candidate data until the Block 1 evidence and dispositions receive owner approval.
+The completed snapshot reproduced those observations exactly. It preserved 187 GET feature batches per layer plus metadata, object-ID responses, and 15 per-designation count responses per layer. Independent post-download verification re-read all 410 recorded evidence files and found no size or checksum mismatch. Canonical outputs are:
+
+- `parcels_residential.geojson`: 14,191,101 bytes; SHA-256 `e31ce5afb81c717ddcbd639c17b57a4625bcf257175a14cc03a09bfc90f5ecc3`;
+- `current_zoning_residential.geojson`: 16,554,895 bytes; SHA-256 `cb18cf0a8f7b2ebc8754334285b0f73e3160ca7d7f3fc64eeb6df3963b23f862`; and
+- `manifest.json`: SHA-256 `f71138d11eabdff773cb3f8fe156a41d0940b1adde72370f9bbab74a397aeb38`.
+
+Selected real-address fixtures are 636 Barto Street (`R1-6L`), 108 Brookside Avenue (`R1-8L`), 1240 White Drive (`R2`), 1577 Pomeroy Avenue (`R3`), 1400 Coleman Avenue (`R4`), 3105 Patrick Henry Drive (`PH-R5`), 3200 Patrick Henry Drive (`UV`), 4701 Patrick Henry Drive (`VR`), 4650 Old Ironsides Drive (`UC`), and 4633 Old Ironsides Drive (`HDF`). Each address point intersects exactly one parcel and current-zoning feature with matching exact designations. Both R4 features and every small Patrick Henry group were inspected before selection; fixtures test routing and do not establish legal permission.
+
+The source and acquisition work added developer tooling and fixture data, but did not change application runtime code, schemas, rulesets, dependencies, or user-visible behavior. New-zone assertions remain candidate data until the Block 1 evidence and dispositions receive owner approval.
 
 Validation evidence:
 
@@ -102,13 +119,15 @@ Validation evidence:
 - the checksum-pinned `docs/title18-amendment-audit.md` has no working-tree diff;
 - the Patrick Henry manifest parses, and its recorded 21,816,482-byte size, 191-page count, and SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87` match the preserved PDF;
 - the approved R1 v2 validator still passes schema, domain, source-file, migration, and runtime-eligibility gates;
-- `.venv/bin/python -m unittest discover -s tests -v` passes all 159 baseline tests; and
+- all 410 residential snapshot evidence files match their recorded sizes and checksums;
+- the eight focused residential downloader and fixture tests pass; and
+- `.venv/bin/python -m unittest discover -s tests -q` passes all 167 tests;
 - the optional `node --check santa_clara_zoning/static/app.js` check was unavailable because Node.js is not installed; no JavaScript changed in this work.
 
 ## Current source and design observations
 
 - Google Drive residential research is available and useful as candidate input, but it is not approved runtime data.
-- The live City GIS inspection on July 18, 2026 returned exact designations for the target R1, R2, R3, R4, and Patrick Henry zones, but no exact `R5` or `R6` features. The immutable snapshot must reproduce or explicitly explain any later change in this finding.
+- The July 18 immutable City GIS snapshot contains exact target R1, R2, R3, R4, and Patrick Henry designations, but no exact `R5` or `R6` features. Future snapshots must preserve their own explicit results and trigger inspection if this changes.
 - The R1 two-family permission is a special Chapter 18.24 pathway. It must not inherit ordinary R1 single-family dimensional standards silently.
 - Two-family belongs to the multifamily workflow family but retains separate legal-use and primary-structure identities.
 - A missing maximum must be presented as no maximum listed in the controlling base table, not as unlimited.
@@ -136,3 +155,5 @@ None currently recorded.
 | 2026-07-18 | Promote structured `not evaluated` topics into expansion Block 2. | Applicable but deferred layers such as the 32-foot transition and Objective Design Standards need stable identities, reasons, citations, and prerequisites before broad presentation. |
 | 2026-07-18 | Preserve the checksum-pinned R1 amendment audit and create `docs/residential-title18-amendment-audit.md` as its active successor. | Editing the historical source correctly failed the approved ruleset's checksum gate; a new audit preserves R1 reproducibility while allowing the expansion cutoff and findings to evolve. |
 | 2026-07-18 | List the source-verified R1 Chapter 18.24 two-unit pathway but keep its dimensional result `not evaluated`. | The applicable standards branch on site eligibility, attached/detached configuration, the ordinary R1 envelope, existing setbacks, and proposal facts the current product does not collect; ordinary single-family rules cannot be applied universally. |
+| 2026-07-18 | Add a separate residential GIS downloader instead of broadening the historical R1 downloader in place. | The released acquisition remains reproducible while the new artifact can enforce the exact 12-designation scope, explicit zeroes, excluded-code preflights, polygon validation, and cross-layer count agreement. |
+| 2026-07-18 | Preserve one real fixture per live target designation and use synthetic fixtures for zero-count or deliberately excluded codes. | Routing coverage stays source-backed without inventing R5/R6 addresses or normalizing distinct legacy and combining designations. |

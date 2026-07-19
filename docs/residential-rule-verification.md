@@ -1,6 +1,6 @@
 # Santa Clara Residential Rule Verification
 
-**Status:** Block 1 source-verification draft; new-zone rules are not approved for runtime
+**Status:** Block 1 technical evidence complete and ready for project-owner approval; new-zone rules are not approved for runtime
 
 **Verified through:** July 18, 2026
 
@@ -238,7 +238,7 @@ The matter title includes rezoning properties currently designated `TN` to `R6`.
 
 ## 9. Residential GIS acquisition contract
 
-The new snapshot will reuse the validated ArcGIS acquisition primitives while creating a new non-R1 artifact. This contract must be implemented before the download begins.
+The residential snapshot reuses the validated ArcGIS acquisition primitives while creating a new non-R1 artifact. The implementation is `scripts/download_residential_gis.py`; its contract tests are in `tests/test_residential_gis_downloader.py`.
 
 ### Sources and exact filter
 
@@ -312,7 +312,34 @@ The excluded-designation preflight returned `R1-6LHT: 14`, `R2-7L: 1`, and `R2HT
 
 These counts are preflight observations, not hardcoded acceptance values. The authoritative snapshot manifest must record the source response at acquisition time. A changed count requires inspection, not automatic rejection merely because it differs from July 18.
 
-## 10. Fixture-selection contract
+### July 18, 2026 immutable acquisition result
+
+The completed source snapshot is preserved at:
+
+```text
+data/raw/2026-07-18/santa_clara_residential_gis/
+```
+
+Its authoritative `manifest.json` has SHA-256 `f71138d11eabdff773cb3f8fe156a41d0940b1adde72370f9bbab74a397aeb38`. The acquisition returned the same 18,677 features and the same per-zone and excluded-designation counts shown in the preflight table for both source layers. Those values are now snapshot evidence rather than acceptance constants.
+
+The snapshot passed all 15 requirements above:
+
+- both source object-ID responses, downloaded feature arrays, and downloaded unique-ID sets contain exactly 18,677 IDs, with exact set equality;
+- 187 GET batches per layer stayed at 100 IDs or fewer, and every batch returned exactly its requested IDs;
+- requested count responses include explicit zeroes for `R5` and `R6`, while the only observed nonzero designations are the 10 exact live keys in the table;
+- both layers independently report excluded preflight counts of `R1-6LHT: 14`, `R2-7L: 1`, and `R2HT: 2`;
+- every feature has the required identity values and valid two-dimensional polygonal geometry within EPSG:4326 bounds;
+- parcel and current-zoning counts agree for every requested and excluded designation; and
+- all 410 recorded evidence files—metadata, object-ID responses, count responses, raw chunks, and consolidated outputs—were re-read and matched their manifest sizes and checksums.
+
+Canonical consolidated outputs:
+
+| Layer | Features | Bytes | SHA-256 |
+|---|---:|---:|---|
+| `parcels_residential.geojson` | 18,677 | 14,191,101 | `e31ce5afb81c717ddcbd639c17b57a4625bcf257175a14cc03a09bfc90f5ecc3` |
+| `current_zoning_residential.geojson` | 18,677 | 16,554,895 | `cb18cf0a8f7b2ebc8754334285b0f73e3160ca7d7f3fc64eeb6df3963b23f862` |
+
+## 10. Fixture-selection contract and result
 
 After the snapshot passes integrity validation:
 
@@ -324,14 +351,31 @@ After the snapshot passes integrity validation:
 6. Preserve existing ambiguous, unmatched, unit-bearing, spatial-mismatch, and integrity-failure cases from the R1 acceptance matrix.
 7. Never infer legal-use permission from an address fixture or GIS label; fixtures test routing into independently verified rules.
 
+The committed machine-readable inventory is `tests/fixtures/residential_gis_fixture_inventory.json`. Every real fixture below has one exact address record, one intersecting residential parcel, one intersecting current-zoning feature, and matching exact designations in the preserved snapshots.
+
+| Designation | Selected address | APN | Parcel/zoning object ID |
+|---|---|---|---:|
+| `R1-6L` | 636 Barto Street | 293-16-045 | 7535 |
+| `R1-8L` | 108 Brookside Avenue | 303-22-022 | 7103 |
+| `R2` | 1240 White Drive | 290-14-206 | 589 |
+| `R3` | 1577 Pomeroy Avenue | 290-03-090 | 51 |
+| `R4` | 1400 Coleman Avenue | 230-05-021 | 2434 |
+| `PH-R5` | 3105 Patrick Henry Drive | 104-04-131 | 10467 |
+| `UV` | 3200 Patrick Henry Drive | 104-04-124 | 10134 |
+| `VR` | 4701 Patrick Henry Drive | 104-53-000 | 10070 |
+| `UC` | 4650 Old Ironsides Drive | 104-04-077 | 23092 |
+| `HDF` | 4633 Old Ironsides Drive | 104-04-141 | 11750 |
+
+Both live `R4` features were inspected. The selected 1400 Coleman Avenue feature carries `SPPLAN: SCS`; the other feature is 2250 El Camino Real, object ID 23128, with `SPPLAN: ECR`. The fixture tests exact routing only and does not erase those plan attributes or claim that the citywide base table is a complete parcel determination. All PH-R5, UV, VR, UC, and HDF polygons were likewise inspected for address-point intersections before selecting one non-unit fixture per designation.
+
+`R5` and `R6` have explicit synthetic ruleset/contract fixtures with zero source counts and no invented address. `R1-6LHT`, `R2-7L`, and `R2HT` have explicit synthetic negative-designation fixtures that require an unsupported exact-designation treatment and forbid normalization to `R1-6L` or `R2`. Existing ambiguous, unmatched, unit-bearing, spatial-mismatch, and integrity cases remain in the released R1 acceptance suite for later migration.
+
 ## 11. Remaining verification work
 
 - Obtain owner approval for the exact `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and the plan/project-review rear-setback disposition.
 - Preserve any parcel-specific PDO or development-plan material only when a selected project requires it; recreation-space and project-specific plan values remain `not evaluated` in this phase.
 - Decide the Block 2 representation for one two-family structure versus the R1 Chapter 18.24 option for two detached homes, while keeping the latter `not evaluated` in this phase.
 - Decide and document the schema representation for numeric, no-maximum-listed, FAA-controlled, plan-dependent, not-evaluated, and review-required dispositions in Block 2.
-- Implement and run the residential GIS downloader against this acquisition contract.
-- Select and verify the expanded real/synthetic fixture matrix.
 - Obtain project-owner approval of the source matrix and explicit candidate dispositions before ruleset authoring.
 
 ## 12. Block 1 approval gate
@@ -347,3 +391,5 @@ Block 1 is not complete until:
 7. reachable-zone fixtures are source- and geometry-verified;
 8. R5/R6 and excluded designations receive controlled test treatment; and
 9. the project owner approves the verification record for candidate ruleset authoring.
+
+Items 1 through 4 and 6 through 8 have passed. Items 5 and 9 remain the project-owner approval gate: approve the explicit `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and approve the Patrick Henry rear-setback treatment as no universal numeric base value listed, with plan/project review required and no zero default.

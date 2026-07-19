@@ -68,6 +68,28 @@ node --check santa_clara_zoning/static/app.js
 
 The committed bundle is the quickest and canonical way to run the released R1 baseline. The following commands are for researchers or developers who deliberately want to retrieve a new dated source snapshot from Santa Clara's live ArcGIS services; they are not part of normal setup.
 
+### Download a selected residential GIS snapshot
+
+Use the expansion downloader to retrieve the parcel and current-zoning polygons for the exact selected residential designations:
+
+```bash
+python3 scripts/download_residential_gis.py
+```
+
+Or choose a date explicitly:
+
+```bash
+python3 scripts/download_residential_gis.py --snapshot-date 2026-07-18
+```
+
+This is the multi-zone successor to the R1 research download. It does not download a second address directory: the separate citywide address-point snapshot remains the source for address matching. The residential downloader retrieves the zoning-bearing parcel and current-zoning layers for `R1-6L`, `R1-8L`, `R2` through `R6`, `PH-R5`, `UV`, `VR`, `UC`, and `HDF`.
+
+The command refuses to overwrite an existing dated destination and keeps GET feature batches at 100 IDs or fewer. It preserves metadata, complete object-ID responses, per-designation source counts, excluded-designation preflight counts, raw GeoJSON batches, consolidated EPSG:4326 files, and checksums. It rejects unexpected designations, missing or duplicate IDs, invalid polygon geometry, count drift, and parcel/current-zoning disagreement. A failed acquisition writes `manifest.failed.json`; a complete one writes `manifest.json` under:
+
+```text
+data/raw/<snapshot-date>/santa_clara_residential_gis/
+```
+
 ### Download an R1 GIS snapshot
 
 From the repository root, use the current UTC date automatically:
@@ -105,7 +127,14 @@ Use `--snapshot-date YYYY-MM-DD` to choose the dated destination. This downloade
 
 ### Inspect a snapshot
 
-Find the canonical snapshot path in [docs/progress.md](docs/progress.md). To inspect the newest dated R1 manifest currently on disk:
+Find the canonical snapshot path in [docs/progress.md](docs/progress.md). To inspect the newest dated residential manifest currently on disk:
+
+```bash
+MANIFEST="$(find data/raw -path '*/santa_clara_residential_gis/manifest.json' -print | sort | tail -n 1)"
+python3 -m json.tool "$MANIFEST"
+```
+
+To inspect the newest dated historical R1-only manifest:
 
 ```bash
 MANIFEST="$(find data/raw -path '*/santa_clara_r1_gis/manifest.json' -print | sort | tail -n 1)"
@@ -115,9 +144,10 @@ python3 -m json.tool "$MANIFEST"
 Check the downloader without contacting the City server:
 
 ```bash
+python3 scripts/download_residential_gis.py --help
 python3 scripts/download_r1_gis.py --help
 python3 scripts/download_address_points.py --help
-python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_r1_gis.py').read_text()); print('syntax ok')"
+python3 -c "import ast, pathlib; ast.parse(pathlib.Path('scripts/download_residential_gis.py').read_text()); print('syntax ok')"
 ```
 
 ## Resolve an address to an R1 parcel and zone
@@ -304,6 +334,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
 │   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
 │   ├── download_address_points.py     Citywide address-point downloader
+│   ├── download_residential_gis.py    Selected residential-zone GIS downloader
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
 │   ├── lookup_r1_zone.py              Offline address-to-zone command
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
@@ -311,6 +342,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── validate_r1_rules.py           Approved v1 ruleset validator
 │   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate
 └── tests/
+    ├── fixtures/
+    │   └── residential_gis_fixture_inventory.json  Expanded routing fixtures
     └── test_*.py                       Rule, address, geometry, and lookup tests
 ```
 
