@@ -413,7 +413,7 @@ Schema and domain validation deliberately distinguish a **partial candidate** fr
 
 ## 11. Block 4 lookup and retrieval design
 
-**Status:** Read-only audit and implementation proposal ready for project-owner review. This section does not authorize runtime, schema, presentation, or interface changes by itself.
+**Status:** Design approved by the project owner on July 19, 2026. Implementation remains gated by the five reviewable tranches below.
 
 ### 11.1 Audit findings
 

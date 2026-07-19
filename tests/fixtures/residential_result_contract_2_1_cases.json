@@ -1,0 +1,68 @@
+{
+  "fixture_contract_version": "1.0.0",
+  "result_contract_version": "2.1.0",
+  "approved_ruleset_contract_fixtures": true,
+  "production_pipeline_results": false,
+  "ruleset_path": "rulesets/santa_clara/residential/2026-07-19.5/ruleset.json",
+  "cases": [
+    {
+      "fixture_id": "zone-found-selection-required",
+      "status": "residential_zone_found",
+      "reason_code": "selection_required",
+      "zone": "R2",
+      "requested_selection_id": null
+    },
+    {
+      "fixture_id": "selected-profile-standards-found",
+      "status": "residential_standards_found",
+      "reason_code": "selected_profile_retrieved",
+      "zone": "PH-R5",
+      "requested_selection_id": "multifamily"
+    },
+    {
+      "fixture_id": "selected-special-pathway-not-evaluated",
+      "status": "analysis_not_evaluated",
+      "reason_code": "selected_special_pathway_not_evaluated",
+      "zone": "R1-6L",
+      "requested_selection_id": "r1_chapter_18_24_two_unit"
+    },
+    {
+      "fixture_id": "profile-selection-not-available",
+      "status": "selection_not_available",
+      "reason_code": "requested_selection_unavailable_for_zone",
+      "zone": "R3",
+      "requested_selection_id": "single_family"
+    },
+    {
+      "fixture_id": "outside-exact-residential-snapshot",
+      "status": "outside_supported_residential_snapshot",
+      "reason_code": "zone_outside_exact_target_snapshot",
+      "query_address": "Contract fixture: outside-exact-residential-snapshot",
+      "matched_address": "Contract fixture: outside-exact-residential-snapshot",
+      "zone": null,
+      "requested_selection_id": null
+    },
+    {
+      "fixture_id": "address-not-found",
+      "status": "address_not_found",
+      "reason_code": "no_matching_address",
+      "query_address": "",
+      "zone": null,
+      "requested_selection_id": null
+    },
+    {
+      "fixture_id": "address-ambiguous",
+      "status": "address_ambiguous",
+      "reason_code": "multiple_address_matches",
+      "zone": null,
+      "requested_selection_id": null
+    },
+    {
+      "fixture_id": "review-required",
+      "status": "review_required",
+      "reason_code": "spatial_or_regulatory_review_required",
+      "zone": null,
+      "requested_selection_id": null
+    }
+  ]
+}

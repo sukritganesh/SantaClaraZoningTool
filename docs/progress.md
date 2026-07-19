@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 3 is complete and project-owner accepted on `codex/residential-zone-expansion`; the read-only Block 4 runtime audit and implementation proposal are complete and awaiting project-owner approval, while production remains unchanged on the released R1 v2 path
+**Current position:** Block 4 tranche 4.1 is implemented on `codex/residential-zone-expansion` and awaiting project-owner acceptance; immutable result contract `2.1.0` and all eight approved-`.5` fixtures pass, while production remains unchanged on the released R1 v2 path
 
-**Next action:** Review and approve the Block 4 design in Section 11 of `docs/residential-expansion-plan.md`, including the narrow result-contract `2.1.0` successor needed to reconcile approved density, selected use-permission evidence, and filtered-snapshot outside outcomes; after approval, begin tranche 4.1 without changing presentation or the default Flask application
+**Next action:** Review and accept tranche 4.1; after acceptance, begin tranche 4.2 by exposing the complete approved-lineage validator as a callable boundary and implementing the recursively immutable `ApprovedResidentialRuleset` loader, without changing lookup, presentation, or the default Flask application
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -40,7 +40,8 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Density-candidate-to-Patrick-Henry expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.4/patrick-henry-expansion-crosswalk.json`
 - Approved runtime-eligible 12-zone v3.2 ruleset: `rulesets/santa_clara/residential/2026-07-19.5/ruleset.json`
 - Candidate-to-approved promotion crosswalk: `rulesets/santa_clara/residential/2026-07-19.5/approval-crosswalk.json`
-- Residential result contract: `contracts/residential-result-contract-2.0.0.schema.json`
+- Accepted residential result-contract checkpoint: `contracts/residential-result-contract-2.0.0.schema.json`
+- Runtime-ready residential result contract: `contracts/residential-result-contract-2.1.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
 
@@ -54,7 +55,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
-| 4. Expand lookup and retrieval | Audit and proposal complete; awaiting owner approval | The runtime audit identifies reusable R1 foundations, three pre-runtime result-contract mismatches, a five-tranche implementation sequence, and the complete lookup/selection acceptance matrix; no runtime code has changed. |
+| 4. Expand lookup and retrieval | Tranche 4.1 implemented; awaiting owner acceptance | Immutable contract `2.1.0`, an approved-`.5` fixture builder/validator, all eight statuses, selected use-permission evidence, exact ten-capability profiles, filtered-snapshot outside evidence, and mutation gates pass; the released runtime remains unchanged. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
 
@@ -345,7 +346,37 @@ Read-only validation evidence:
 - `git diff --check` passes; and
 - no application, ruleset, schema, contract, source snapshot, fixture, test, README, dependency, or user-visible file changed during the audit.
 
-The proposal is awaiting project-owner approval. Implementation must begin with the contract-successor tranche and stop before Block 5 presentation work.
+The project owner approved the proposal on July 19, 2026. Implementation began with the contract-successor tranche and remains bounded away from Block 5 presentation work.
+
+## Block 4 tranche 4.1 result-contract implementation
+
+Tranche 4.1 preserves accepted contract `2.0.0` and adds a separately versioned runtime-ready successor:
+
+- `contracts/residential-result-contract-2.1.0.schema.json` keeps the same eight statuses and exact selection identities while adding one selected `use_permission` field;
+- the successful ordinary-profile fixture uses the approved PH-R5 multifamily branch, including all ten supported capabilities, the base-zone density range, the retained density conflict, and exact transitive provenance;
+- the special-pathway fixture carries the approved R1 two-family permission and remains explicitly `analysis_not_evaluated` without ordinary standards;
+- the unavailable-profile fixture uses R3 single-family and carries the exact source-backed `not_listed` permission without treating it as a prohibition;
+- the R2 zone-found fixture lists single-family, two-family, and multifamily selections in deterministic order;
+- outside-snapshot evidence retains the matched address but leaves parcel and zone null instead of guessing facts absent from the filtered GIS snapshot;
+- an empty entered address is valid only for the controlled `address_not_found` result; and
+- every result carries non-null address-snapshot, residential-GIS, ruleset, ruleset-schema, and result-contract versions.
+
+`scripts/validate_residential_result_contract_v2_1.py` builds the eight cases directly from runtime-eligible ruleset `2026-07-19.5`, strips authoring-only approval flags from selected output, verifies exact choices and branch bindings, requires complete topics/conflicts/provenance closure, rejects unknown profile identities without fuzzy matching, and domain-checks the fixture ruleset before use. The fixtures explicitly state that they are approved-ruleset contract cases and are not production-pipeline results.
+
+Canonical tranche checksums:
+
+- result contract `2.1.0`: `212aa17543cec4059e7d3b05ceb06a81a462f4481a9cba47e967f26046d6a0d0`;
+- executable case inventory: `dd8c48666f08e5fe7f63bfe45ba7b43159190b8e834568588b3363d0d87cdcc8`.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` validates all eight `2.1.0` cases against approved ruleset `.5`;
+- `.venv/bin/python -B -m unittest tests.test_residential_result_contract tests.test_residential_result_contract_v2_1 -q` passes all 27 preserved and successor contract tests;
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete approved lineage, source, semantic-preservation, per-record approval, and runtime-eligibility gates;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 271 repository tests; and
+- `git diff --check` passes.
+
+No production module, ruleset, ruleset schema, raw source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. Tranche 4.1 is awaiting project-owner acceptance before the approved residential loader begins.
 
 ## Blocks 0-1 validation evidence
 
@@ -410,3 +441,4 @@ None currently recorded.
 | 2026-07-19 | Approve complete residential candidate `2026-07-19.4` as the Block 3 regulatory content. | The exact 12-zone matrix, supported regulation families, retained conflicts, source pins, deterministic lineage, and technical validation passed project-owner review. |
 | 2026-07-19 | Preserve `.4` and promote it without regulatory-semantic change into immutable runtime-eligible version `2026-07-19.5`. | A separate lifecycle successor records approval transparently, enables all 196 rules and two pathways, and keeps the reviewed candidate and every prior checkpoint reproducible. |
 | 2026-07-19 | Complete a read-only Block 4 runtime audit and implementation proposal before changing production code. | The released R1 path remains the regression oracle while loader, filtered-GIS, selection, result-contract, and provenance mismatches are resolved explicitly rather than discovered during coupled implementation. |
+| 2026-07-19 | Approve the Block 4 design and implement only tranche 4.1 before residential runtime wiring. | A separate `2.1.0` contract resolves the approved-density, use-permission-evidence, filtered-snapshot, empty-address, and version-identity gaps while preserving accepted `2.0.0` and the released R1 application. |

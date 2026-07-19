@@ -221,7 +221,7 @@ The original candidate can still be validated without the runtime requirement by
 
 ## Validate the residential expansion contracts
 
-Residential schemas `3.0.0`, `3.1.0`, and `3.2.0` and result contract `2.0.0` are implemented as development contracts without changing the released R1 application. The accepted v3.0 R1 migration checkpoint remains preserved at:
+Residential schemas `3.0.0`, `3.1.0`, and `3.2.0`, result-contract checkpoint `2.0.0`, and runtime-ready successor `2.1.0` are implemented without changing the released R1 application. The accepted v3.0 R1 migration checkpoint remains preserved at:
 
 ```text
 rulesets/santa_clara/residential/2026-07-19.1/ruleset.json
@@ -301,6 +301,14 @@ python3 scripts/validate_residential_result_contract.py
 ```
 
 The fixtures exercise zone-found, standards-found, special-pathway-not-evaluated, unavailable-selection, outside-snapshot, address-not-found, address-ambiguous, and review-required meanings. They do not change the production pipeline or imply that candidate v3 rules are serving users.
+
+Validate the same eight statuses against the approved `.5` ruleset and runtime-ready result contract `2.1.0`:
+
+```bash
+python3 scripts/validate_residential_result_contract_v2_1.py
+```
+
+The `2.1.0` fixtures add the selected use-permission record and its exact provenance, require all ten profile capabilities including gross residential density, preserve five independent version identities, allow address-only evidence outside the filtered residential snapshot, and permit an empty query only for `address_not_found`. They are approved-data contract fixtures, not results produced by the still-R1 production pipeline.
 
 Application code loads and validates the approved artifact once before serving lookups:
 
@@ -385,7 +393,8 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── data/
 │   └── raw/                          Ignored, installed immutable snapshots
 ├── contracts/
-│   └── residential-result-contract-2.0.0.schema.json  Expansion result contract
+│   ├── residential-result-contract-2.0.0.schema.json  Accepted expansion checkpoint
+│   └── residential-result-contract-2.1.0.schema.json  Runtime-ready successor
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── future-improvements.md        Deferred enhancement burndown
@@ -444,6 +453,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
 │   ├── promote_residential_rules_v3.py Non-overwriting residential approval promotion
 │   ├── validate_residential_result_contract.py Expansion fixture validator
+│   ├── validate_residential_result_contract_v2_1.py Approved-data result validator
 │   ├── validate_approved_residential_rules.py Approved 12-zone lineage/runtime validator
 │   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
 │   ├── validate_density_residential_rules.py Density lineage and domain validator
@@ -454,7 +464,8 @@ python3 scripts/promote_r1_rules_v2.py \
 └── tests/
     ├── fixtures/
     │   ├── residential_gis_fixture_inventory.json  Expanded routing fixtures
-    │   └── residential_result_contract_cases.json  Nonruntime result cases
+    │   ├── residential_result_contract_cases.json  Nonruntime 2.0 result cases
+    │   └── residential_result_contract_2_1_cases.json Approved-data 2.1 cases
     └── test_*.py                       Rule, address, geometry, and lookup tests
 ```
 
