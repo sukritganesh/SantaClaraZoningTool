@@ -1,0 +1,45 @@
+{
+  "archive": {
+    "file": "santa-clara-residential-runtime-data-2026-07-19.2.zip",
+    "format": "zip",
+    "sha256": "17ccccba8714c3a09d85e18db3dbfedc21a4b79c701ac8f7a1a6cdd4a264d0f0",
+    "size_bytes": 25213418
+  },
+  "bundle_id": "santa-clara-residential-runtime-data",
+  "bundle_version": "2026-07-19.2",
+  "excluded_from_runtime_bundle": [
+    "Raw ArcGIS response chunks, metadata, object-ID responses, and count responses remain in the immutable research snapshot but are excluded because the validated manifest and consolidated layers are sufficient for deterministic runtime lookup. The checksum-pinned Patrick Henry adopted plan and its snapshot manifest are included because complete approved-ruleset lineage validation requires the authoritative source."
+  ],
+  "included_files": [
+    {
+      "path": "data/raw/2026-07-18/patrick_henry_drive_specific_plan/PatrickHenryPlan.pdf",
+      "sha256": "cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87",
+      "size_bytes": 21816482
+    },
+    {
+      "path": "data/raw/2026-07-18/patrick_henry_drive_specific_plan/manifest.json",
+      "sha256": "6925f6c5a4f0c9259ad6fe2bfca42959d08e1dfdf55d038bc8ce83383ad6348a",
+      "size_bytes": 3243
+    },
+    {
+      "path": "data/raw/2026-07-18/santa_clara_residential_gis/current_zoning_residential.geojson",
+      "sha256": "cb18cf0a8f7b2ebc8754334285b0f73e3160ca7d7f3fc64eeb6df3963b23f862",
+      "size_bytes": 16554895
+    },
+    {
+      "path": "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json",
+      "sha256": "f71138d11eabdff773cb3f8fe156a41d0940b1adde72370f9bbab74a397aeb38",
+      "size_bytes": 522048
+    },
+    {
+      "path": "data/raw/2026-07-18/santa_clara_residential_gis/parcels_residential.geojson",
+      "sha256": "e31ce5afb81c717ddcbd639c17b57a4625bcf257175a14cc03a09bfc90f5ecc3",
+      "size_bytes": 14191101
+    }
+  ],
+  "install_root": ".",
+  "snapshots": {
+    "patrick_henry_drive_specific_plan": "2026-07-18",
+    "residential_gis": "2026-07-18"
+  }
+}

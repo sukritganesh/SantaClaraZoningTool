@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 are complete and owner accepted on `codex/residential-zone-expansion`; the Block 6 read-only release audit is complete and identified one clean-checkout runtime-data packaging blocker plus final acceptance-automation gaps
+**Current position:** Blocks 0-5 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.1 source-complete runtime packaging and its clean-checkout technical gates are complete, with owner acceptance pending before the consolidated release harness begins
 
-**Next action:** Obtain project-owner approval for the Block 6 implementation proposal, then repair the clean-checkout source bundle before adding the consolidated residential release harness, CI gate, release report, and proposed `v0.2.0` identity
+**Next action:** Review and accept Block 6.1, then begin Block 6.2 consolidated residential vertical-slice acceptance automation
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -43,8 +43,10 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Accepted residential result-contract checkpoint: `contracts/residential-result-contract-2.0.0.schema.json`
 - Runtime-ready residential result contract: `contracts/residential-result-contract-2.1.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
-- Reproducible residential GIS add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.1.zip`
-- Residential GIS add-on manifest: `demo-data/residential-bundle-manifest.json`
+- Preserved residential GIS-only add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.1.zip`
+- Preserved residential GIS-only add-on manifest: `demo-data/residential-bundle-manifest.json`
+- Source-complete residential runtime add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.2.zip`
+- Source-complete residential add-on manifest: `demo-data/residential-bundle-manifest-2026-07-19.2.json`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
 
 The released R1 artifacts remain the immutable inherited baseline. The Patrick Henry and residential GIS snapshots are Block 1 expansion artifacts and must likewise remain immutable.
@@ -59,7 +61,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Read-only audit complete; implementation awaiting approval | The working checkout passes all 346 tests and the regulatory validators, but a bootstrapped committed-only archive fails closed because the Patrick Henry adopted-plan PDF is absent from both runtime bundles. Final expanded-product acceptance automation, CI, release reporting, and release identity also remain to be completed. |
+| 6. Validate and release | Tranche 6.1 technical gate complete; owner acceptance pending | A nonoverwriting source-complete residential bundle successor repairs committed-only startup without weakening lineage validation or modifying prior archives. Its staged clean checkout bootstraps 22 files, starts the default application, passes the approved 12-zone validator, and passes all 348 tests; consolidated release automation, CI, reporting, and release identity remain. |
 
 ## Block 0 evidence
 
@@ -534,6 +536,35 @@ The proposed Block 6 implementation is deliberately release-only:
 
 Block 6 does not add a regulation, zoning designation, regulatory value, live GIS source, selection screen, commercial analysis, proposal-level compliance logic, or deployment system. Existing immutable source snapshots and released artifacts remain unchanged; any corrected runtime package is a new versioned successor.
 
+### Tranche 6.1 source-complete runtime package
+
+The project owner approved the Block 6 proposal and authorized implementation on July 19, 2026. Tranche 6.1 fixes only the clean-checkout source-packaging defect:
+
+- `scripts/build_residential_demo_data_bundle.py` now builds successor version `2026-07-19.2` with a version-specific external manifest rather than overwriting the accepted `.1` manifest;
+- the successor contains the same three immutable residential GIS runtime artifacts plus the checksum-pinned Patrick Henry adopted-plan PDF and its immutable snapshot manifest;
+- the released R1 archive, its manifest, residential GIS-only archive `.1`, and the accepted `.1` manifest remain byte-for-byte unchanged and separately regression-tested;
+- `scripts/bootstrap_demo_data.py` selects the released R1 manifest and source-complete residential `.2` manifest by default, installing 17 plus five files without loading the redundant `.1` archive;
+- bootstrap retains archive and entry size/checksum checks, safe-path validation, complete manifest/archive agreement, atomic staging, conflict refusal, and repeatable already-matching behavior; and
+- README fresh-clone setup and repository orientation now identify the selected successor and its storage requirement.
+
+Canonical successor evidence:
+
+- archive: 25,213,418 bytes; SHA-256 `17ccccba8714c3a09d85e18db3dbfedc21a4b79c701ac8f7a1a6cdd4a264d0f0`;
+- external manifest: 2,011 bytes; SHA-256 `b797305b8af79f777d97334cf087d1fd3cac4ee6d232ef2158f122dff63dbb33`;
+- Patrick Henry plan entry: 21,816,482 bytes; SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87`; and
+- preserved GIS-only `.1` archive: 4,186,509 bytes; SHA-256 `bbe2274b00b2687d4a540484e7fcf8cbdc7a8038a063cb4973b169038bb3e098`.
+
+Validation evidence:
+
+- two consecutive builder runs produce the same successor byte count and SHA-256;
+- the 11 focused bundle/bootstrap tests pass, including exact successor contents, empty-repository install, default-manifest closure, unsafe and conflicting archive rejection, idempotence, and predecessor checksum preservation;
+- a temporary archive of the staged committed-only tree installs all 22 selected bundle files into an empty `data/raw/` tree, then reports all 22 already matching on a second run;
+- the clean-checkout approved residential validator passes complete source, schema, lineage, deterministic replay, semantic-preservation, per-record approval, and runtime-eligibility validation;
+- the clean-checkout default Flask application starts without a startup error and renders the verified R2 result for 1240 White Drive; and
+- `.venv/bin/python -B -m unittest discover -s tests -q` in the clean checkout passes all 348 tests with no failures, errors, or skips.
+
+No ruleset, schema, result contract, source snapshot, approved regulation, lookup behavior, presentation behavior, template, CSS, JavaScript, or released artifact changed in tranche 6.1.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -561,7 +592,7 @@ Block 6 does not add a regulation, zoning designation, regulatory value, live GI
 
 ## Blockers
 
-- Block 6 release gate: a bootstrapped committed-only checkout lacks the checksum-pinned Patrick Henry adopted-plan PDF, so approved residential rules fail complete-lineage validation and the default application correctly refuses to start. The proposed fix is a new versioned runtime add-on, not weaker validation or an edit to an existing bundle.
+None currently recorded. The clean-checkout source-packaging blocker found by the Block 6 audit is resolved by the staged `.2` successor and remains subject to owner acceptance.
 
 ## Decision log
 
@@ -607,3 +638,5 @@ Block 6 does not add a regulation, zoning designation, regulatory value, live GI
 | 2026-07-19 | Present verified common zone standards without a mandatory structure selector and retain exact profile selection as backend and future infrastructure. | Current R2, R3, and R4 ordinary profiles have identical supported regulation semantics; allowed uses and profile-specific limitations can be disclosed separately, while any future standards divergence fails closed and triggers backlog item `UX-001`. |
 | 2026-07-19 | Add a separate residential GIS runtime add-on rather than modifying the released R1 demo archive. | The new default application needs the broader filtered snapshot, while the published R1 bundle must remain checksum-reproducible as historical release evidence. |
 | 2026-07-19 | Accept the complete Block 5 presentation and interface and authorize a read-only Block 6 release audit. | The owner completed local functional and responsive review, accepted the final interface refinements, and confirmed that the generalized residential product works as intended. |
+| 2026-07-19 | Approve the Block 6 release-only implementation proposal and begin with the clean-checkout package repair. | Source-complete startup must pass before additional acceptance automation can provide a trustworthy release gate. |
+| 2026-07-19 | Preserve residential GIS-only add-on `.1` and its manifest, and create source-complete successor `.2` with a separate version-specific manifest. | The accepted predecessor remains reproducible while fresh clones receive the Patrick Henry authoritative source required by the unchanged complete-lineage validator. |

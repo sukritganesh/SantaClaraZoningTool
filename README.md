@@ -29,7 +29,7 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local application uses pinned Flask with server-rendered Jinja templates.
 
 - Python 3.9 or newer
-- Approximately 175 MB of free space for the committed ZIPs and their extracted runtime data
+- Approximately 225 MB of free space for the committed ZIPs and their extracted runtime data
 
 From the repository root, create the environment, install the pinned dependencies, and restore the canonical runtime data:
 
@@ -50,7 +50,7 @@ python -m flask --app santa_clara_zoning.web run
 
 Open [http://127.0.0.1:5000](http://127.0.0.1:5000). The [manual testing address sheet](docs/manual-testing-addresses.md) lists one verified address for every live supported designation plus useful controlled-failure cases.
 
-The repository preserves the 35,499,787-byte released R1 bundle and adds a 4,186,509-byte residential GIS runtime add-on. The bootstrap command verifies both archives and every included file against their manifests, installs the approved snapshots under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
+The repository preserves the 35,499,787-byte released R1 bundle and the initial 4,186,509-byte residential GIS-only add-on. Fresh-clone bootstrap uses the R1 bundle plus the source-complete 25,213,418-byte residential successor, which contains the same three GIS artifacts and the checksum-pinned Patrick Henry adopted-plan snapshot required by approved-ruleset validation. The command verifies both selected archives and all 22 included files against their manifests, installs them under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
 
 No database, API key, runtime AI service, or live City GIS request is required to run the application. Internet access is needed only to install Python dependencies if they are not already cached.
 
@@ -426,9 +426,11 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── requirements.txt                  Pinned Python validation dependency
 ├── demo-data/
 │   ├── bundle-manifest.json          Released R1 bundle inventory and checksums
-│   ├── residential-bundle-manifest.json Residential add-on inventory and checksums
+│   ├── residential-bundle-manifest.json Preserved GIS-only add-on inventory
+│   ├── residential-bundle-manifest-2026-07-19.2.json Source-complete successor inventory
 │   ├── santa-clara-r1-runtime-…zip   Preserved released runtime data
-│   └── santa-clara-residential-runtime-…zip Expanded GIS runtime add-on
+│   ├── santa-clara-residential-runtime-…19.1.zip Preserved GIS-only add-on
+│   └── santa-clara-residential-runtime-…19.2.zip Default source-complete add-on
 ├── data/
 │   └── raw/                          Ignored, installed immutable snapshots
 ├── contracts/

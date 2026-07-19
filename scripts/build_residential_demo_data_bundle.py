@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the deterministic residential GIS runtime add-on and manifest."""
+"""Build the deterministic residential runtime-data successor and manifest."""
 
 from __future__ import annotations
 
@@ -14,18 +14,20 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-BUNDLE_VERSION = "2026-07-19.1"
+BUNDLE_VERSION = "2026-07-19.2"
 BUNDLE_ID = "santa-clara-residential-runtime-data"
 ARCHIVE_NAME = f"{BUNDLE_ID}-{BUNDLE_VERSION}.zip"
 BUNDLE_DIRECTORY = REPO_ROOT / "demo-data"
 ARCHIVE_PATH = BUNDLE_DIRECTORY / ARCHIVE_NAME
-MANIFEST_PATH = BUNDLE_DIRECTORY / "residential-bundle-manifest.json"
+MANIFEST_PATH = BUNDLE_DIRECTORY / f"residential-bundle-manifest-{BUNDLE_VERSION}.json"
 FIXED_ZIP_TIMESTAMP = (2026, 7, 19, 0, 0, 0)
 
 BUNDLE_FILES = (
     "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json",
     "data/raw/2026-07-18/santa_clara_residential_gis/parcels_residential.geojson",
     "data/raw/2026-07-18/santa_clara_residential_gis/current_zoning_residential.geojson",
+    "data/raw/2026-07-18/patrick_henry_drive_specific_plan/manifest.json",
+    "data/raw/2026-07-18/patrick_henry_drive_specific_plan/PatrickHenryPlan.pdf",
 )
 
 
@@ -79,7 +81,10 @@ def build_bundle() -> dict[str, Any]:
             "sha256": sha256_file(ARCHIVE_PATH),
         },
         "install_root": ".",
-        "snapshots": {"residential_gis": "2026-07-18"},
+        "snapshots": {
+            "patrick_henry_drive_specific_plan": "2026-07-18",
+            "residential_gis": "2026-07-18",
+        },
         "included_files": [
             {
                 "path": relative,
@@ -92,7 +97,9 @@ def build_bundle() -> dict[str, Any]:
             "Raw ArcGIS response chunks, metadata, object-ID responses, and count "
             "responses remain in the immutable research snapshot but are excluded "
             "because the validated manifest and consolidated layers are sufficient "
-            "for deterministic runtime lookup."
+            "for deterministic runtime lookup. The checksum-pinned Patrick Henry "
+            "adopted plan and its snapshot manifest are included because complete "
+            "approved-ruleset lineage validation requires the authoritative source."
         ],
     }
     temporary_manifest = MANIFEST_PATH.with_suffix(".json.tmp")

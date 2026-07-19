@@ -19,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = REPO_ROOT / "demo-data/bundle-manifest.json"
 DEFAULT_MANIFESTS = (
     DEFAULT_MANIFEST,
-    REPO_ROOT / "demo-data/residential-bundle-manifest.json",
+    REPO_ROOT / "demo-data/residential-bundle-manifest-2026-07-19.2.json",
 )
 ALLOWED_PREFIX = PurePosixPath("data/raw")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
