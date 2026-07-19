@@ -68,6 +68,10 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
         landing = self.client.get("/").get_data(as_text=True)
         self.assertIn("Santa Clara Zoning Explorer", landing)
         self.assertIn("Selected residential zoning standards by address", landing)
+        self.assertIn(
+            '<span class="hero-easter-egg" aria-hidden="true">YIMBY</span>',
+            landing,
+        )
         self.assertNotIn("prototype", landing.lower())
         self.assertNotIn('name="selection_id"', landing)
 
