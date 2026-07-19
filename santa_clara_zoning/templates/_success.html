@@ -30,9 +30,12 @@
     <h2 id="permissions-heading">What base zoning permits</h2>
     {% for permission in view.use_permissions %}
       <article class="permission-card" data-capability-id="{{ permission.capability_id }}" data-rule-id="{{ permission.rule_id }}">
-        <h3>{{ permission.label }}{{ source_refs(permission.citation_ids, permission.rule_id) }}</h3>
+        <h3 class="rule-title">
+          <span class="rule-title-text">{{ permission.label }}</span>
+          {{ source_refs(permission.citation_ids, permission.rule_id) }}
+        </h3>
         <p class="status-label status-label--supported">{{ permission.status_label }}</p>
-        {{ conditions(permission.conditions) }}
+        {{ conditions(permission.conditions, true) }}
       </article>
     {% endfor %}
   </section>
@@ -43,10 +46,13 @@
       {% for approval in view.approvals %}
         <li class="approval-card" data-capability-id="{{ approval.capability_id }}" data-rule-id="{{ approval.rule_id }}">
           <div class="approval-heading">
-            <strong>{{ approval.label }}</strong>{{ source_refs(approval.citation_ids, approval.rule_id) }}
+            <span class="rule-title approval-title">
+              <strong class="rule-title-text">{{ approval.label }}</strong>
+              {{ source_refs(approval.citation_ids, approval.rule_id) }}
+            </span>
             <span class="status-label">{{ approval.status_label }}</span>
           </div>
-          {{ conditions(approval.conditions) }}
+          {{ conditions(approval.conditions, true) }}
         </li>
       {% endfor %}
     </ul>
@@ -57,11 +63,13 @@
     <dl class="standards-grid">
       {% for standard in view.key_standards %}
         <div class="standard-card" data-capability-id="{{ standard.capability_id }}" data-rule-id="{{ standard.rule_id }}">
-          <dt>{{ standard.label }}{{ source_refs(standard.citation_ids, standard.rule_id) }}</dt>
+          <dt class="rule-title">
+            <span class="rule-title-text">{{ standard.label }}</span>
+            {{ source_refs(standard.citation_ids, standard.rule_id) }}
+          </dt>
           <dd>
             <strong class="metric-value">{{ quantity(standard.value) }}</strong>
-            <span class="metric-qualifier">{{ standard.qualifier }}</span>
-            {{ conditions(standard.conditions) }}
+            {{ conditions(standard.conditions, true) }}
           </dd>
         </div>
       {% endfor %}
@@ -85,7 +93,12 @@
         <tbody>
           {% for setback in view.setbacks %}
             <tr data-capability-id="{{ setback.capability_id }}" data-rule-id="{{ setback.rule_id }}">
-              <th scope="row">{{ setback.label }}{{ source_refs(setback.citation_ids, setback.rule_id) }}</th>
+              <th scope="row">
+                <span class="rule-title">
+                  <span class="rule-title-text">{{ setback.label }}</span>
+                  {{ source_refs(setback.citation_ids, setback.rule_id) }}
+                </span>
+              </th>
               <td><strong>{{ setback_value(setback.base.value) }}</strong></td>
               <td>
                 {% if setback.adjustments %}

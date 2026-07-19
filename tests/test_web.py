@@ -146,6 +146,10 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('href="/static/app.css"', body)
         self.assertIn('src="/static/app.js"', body)
         self.assertIn('class="lookup-panel"', body)
+        self.assertIn("Search a Santa Clara address", body)
+        self.assertIn('class="visually-hidden" for="address"', body)
+        self.assertNotIn("Look up a property", body)
+        self.assertNotIn("Enter one street address within the City of Santa Clara.", body)
         self.assertNotIn("data-result-kind", body)
         self.pipeline.analyze_address.assert_not_called()
 
@@ -371,6 +375,10 @@ class WebShellIntegrationTest(unittest.TestCase):
                 self.assertIn('class="source-popover-list"', row)
         self.assertIn("Santa Clara Zoning Code, Title 18", setback_rows[0])
         self.assertIn("Section 18.10.030, Table 2-3", setback_rows[0])
+        self.assertNotIn('class="metric-qualifier"', body)
+        self.assertNotIn(">Base-zone maximum<", body)
+        self.assertIn('class="rule-title approval-title"', body)
+        self.assertIn('class="item-notes"', body)
 
         view = self.barto_view
         for value in view["property"].values():

@@ -1,7 +1,7 @@
 {% macro source_refs(citation_ids, marker_id) -%}
   {% if citation_ids %}
     {% set popover_id = ("source-popup-" ~ marker_id) | replace(".", "-") | replace(":", "-") | replace("/", "-") %}
-    <sup class="source-popover-trigger">
+    <span class="source-popover-trigger">
       <button
         class="source-marker"
         type="button"
@@ -10,7 +10,7 @@
         aria-expanded="false"
         aria-label="View {{ citation_ids | length }} source{% if citation_ids | length != 1 %}s{% endif %}"
       >i</button>
-    </sup>
+    </span>
     <span
       id="{{ popover_id }}"
       class="source-popover"
@@ -52,10 +52,16 @@
   {% endif %}
 {%- endmacro %}
 
-{% macro conditions(items) -%}
+{% macro conditions(items, compact=false) -%}
   {% if items %}
-    <ul class="item-conditions">
-      {% for condition in items %}<li>{{ condition }}</li>{% endfor %}
-    </ul>
+    {% if compact %}
+      <div class="item-notes">
+        {% for condition in items %}<p>{{ condition }}</p>{% endfor %}
+      </div>
+    {% else %}
+      <ul class="item-conditions">
+        {% for condition in items %}<li>{{ condition }}</li>{% endfor %}
+      </ul>
+    {% endif %}
   {% endif %}
 {%- endmacro %}

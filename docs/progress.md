@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 7.5c complete — accessibility interaction and keyboard-support validation passes
+**Current position:** Blocks 7.5d–7.5e complete — visual hierarchy review, confirmed polish fixes, and regression validation pass
 
-**Next action:** Run Block 7.5d visual hierarchy and regulatory-wording review
+**Next action:** Run Block 7.5f evidence audit and close Block 7 if every exit condition remains satisfied
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract, interface, startup, responsive-state, and accessibility interaction checks pass; Block 7.5d visual and wording review remains. |
+| 7. Present a simple result | In progress | Contract, interface, startup, responsive, accessibility, visual-wording, and post-fix regression checks pass; Block 7.5f closeout remains. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -422,6 +422,28 @@ git diff --check
 passed
 ```
 
+Blocks 7.5d and 7.5e were completed on July 18, 2026 after the project-owner visual review identified three presentation defects: source markers could wrap onto isolated lines or drift between approval titles and status badges; the address form repeated the same instruction three times; and standards cards repeated the section's base-zone context while rendering single qualifications as visually heavy bullet lists.
+
+The confirmed corrections are presentation-only. Regulation labels and their 24-by-24-pixel source controls now form one flex group, while approval status badges remain separately right-aligned. The search panel now uses one visible instruction, `Search a Santa Clara address`, retains a programmatically associated visually hidden label, and removes the redundant helper sentence. Standards cards no longer render the repeated `Base-zone maximum` qualifier; consequential height, story-counting, and coverage qualifications remain visible as compact unbulleted notes. The presentation contract, ruleset, regulatory values, citations, controlled outcomes, and approved disclaimer were unchanged.
+
+Real-browser validation covered the canonical Barto result at 1280 by 720 CSS pixels and the Brookside result at 390 by 844. The desktop and mobile pages had no document-level horizontal overflow. Approval markers remained inside their title groups and their title/status top edges aligned within two CSS pixels; long standards titles wrapped while their markers stayed anchored at the title's top edge. Scalar and paired setbacks, corner-only street-side labeling, the R1-8L conflict warning, limitations, and source behavior retained their accepted wording and visibility. Browser diagnostics reported no warnings or errors from the application.
+
+Blocks 7.5d–7.5e validation evidence:
+
+```text
+.venv/bin/python -B -m unittest tests.test_web -v
+20 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+143 passed, 0 failed, 0 skipped
+
+node --check santa_clara_zoning/static/app.js
+passed
+
+git diff --check
+passed
+```
+
 Implementation sequence:
 
 | Substep | Status | Intended result |
@@ -430,7 +452,7 @@ Implementation sequence:
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
-| 7.5 Validate and close Block 7 | In progress | Startup, responsive browser-state, and accessibility interaction validation pass; visual wording and final regression validation remain. |
+| 7.5 Validate and close Block 7 | In progress | Startup, responsive, accessibility, visual-wording, and post-fix regression validation pass; final evidence audit and milestone closeout remain. |
 
 Planning boundaries:
 
