@@ -149,7 +149,26 @@ The prototype now includes:
 - a responsive local web interface with visible limitations and inspectable sources; and
 - a complete acceptance matrix covering successes, unsupported properties, unit addresses, ambiguity, missing addresses, geographic disagreement, and integrity failures.
 
-The final validation run passed all 151 automated tests without skips. The application also produced the same rendered results across different request orders and independent processes, and it continued to work when outbound network connections were blocked. This confirmed that the finished prototype operates from its approved local sources rather than quietly relying on a live external service.
+## How we validated it
+
+Testing was a substantial part of the project because a zoning tool must do more than produce the right-looking answer for one address. It also has to reject incomplete evidence, preserve uncertainty, and behave consistently when its inputs are reordered or damaged.
+
+The test suite grew alongside the prototype. It checks that:
+
+- downloaded GIS records are complete and match their manifests and checksums;
+- address normalization, duplicate records, parcel geometry, and zoning agreement behave as intended;
+- malformed, incomplete, unapproved, or modified regulatory data is rejected;
+- every supported rule retains its required citations, conditions, exceptions, and conflict references;
+- unsuccessful address and spatial outcomes never acquire unsupported regulations;
+- the presentation does not hard-code zoning values or silently omit an unfamiliar rule;
+- the web interface preserves the approved result, source receipts, qualifications, and safe error states; and
+- representative R1-6L and R1-8L addresses work through the complete production path.
+
+Some tests deliberately mutate otherwise valid data—for example, changing a regulatory value, removing a required capability, breaking a citation, altering a source checksum, or creating inconsistent zoning evidence. These tests demonstrate that the system fails visibly and safely rather than returning a polished but unsupported answer.
+
+The final validation run passed all 151 automated tests without skips. The application produced identical results across different request orders and independent processes, and it continued to work when outbound network connections were blocked. We also reviewed the interface at desktop, tablet, and mobile widths and checked its primary keyboard, disclosure, source, and error interactions.
+
+Together, this testing confirmed not only that the successful examples work, but also that the prototype respects its boundaries when it cannot safely answer.
 
 ## What the prototype does not do
 
