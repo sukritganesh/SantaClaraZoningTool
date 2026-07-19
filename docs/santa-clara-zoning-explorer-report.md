@@ -67,40 +67,51 @@ The product separates evidence preparation from the live address lookup. Geograp
 
 ```mermaid
 flowchart TB
-    subgraph preparation["Prepare and approve the evidence"]
-        direction TB
-        gis["Santa Clara address, parcel, and zoning services"] --> download["Complete, validated downloads"]
-        download --> snapshots["Versioned local snapshots<br/>with manifests and checksums"]
+    prepare["1. Prepare and approve the evidence"]
 
-        sources["Title 18, amendments, and the Patrick Henry plan"] --> candidates["Candidate structured residential rules"]
-        sources -.-> ai["Optional AI-assisted research"]
-        ai -.-> candidates
-        candidates --> review["Source review and project-owner approval"]
-        review --> gates["Schema, provenance, conflict, and migration checks"]
-        gates --> ruleset["Approved 12-zone residential ruleset"]
-    end
+    prepare --> gis["Santa Clara address, parcel,<br/>and zoning services"]
+    gis --> snapshots["Complete, versioned local snapshots<br/>with manifests and checksums"]
 
-    subgraph runtime["Deterministic local application"]
-        direction TB
-        user["User enters a Santa Clara address"] --> address["Normalize and exact-match the address"]
-        address --> parcel["Find the parcel and Assessor's Parcel Number"]
-        parcel --> zoning["Cross-check parcel and current zoning"]
-        zoning --> rules["Retrieve the exact approved zone rules"]
-        rules --> summary["Confirm common residential standards"]
-        summary --> result["Readable result with sources and limitations"]
-    end
+    prepare --> sources["Title 18, amendments,<br/>and the Patrick Henry plan"]
+    sources --> candidates["Candidate structured<br/>residential rules"]
+    sources -.-> ai["Optional AI-assisted research"]
+    ai -.-> candidates
+    candidates --> review["Source review and<br/>project-owner approval"]
+    review --> gates{"Do all source, schema, provenance,<br/>conflict, and migration checks pass?"}
+    gates -->|Yes| ruleset["Approved 12-zone<br/>residential ruleset"]
+    gates -->|No| blocked["Block runtime use"]
 
-    snapshots --> address
-    ruleset --> rules
+    snapshots --> ready["Validated local evidence is ready"]
+    ruleset --> ready
 
-    address -->|No match or multiple matches| safe["Controlled result with no regulations"]
-    zoning -->|Mismatch or unsupported designation| safe
-    gates -->|Integrity check fails| safe
-    summary -->|Profiles differ| safe
-    safe --> result
+    ready --> runtime["2. Produce a deterministic address result"]
+    runtime --> user["User enters a Santa Clara address"]
+    user --> address{"Is there one exact<br/>address match?"}
+    address -->|Yes| parcel["Find the parcel and<br/>Assessor's Parcel Number"]
+    address -->|No| safe["Controlled result<br/>with no regulations"]
+    parcel --> zoning{"Do parcel and current zoning agree<br/>on one supported designation?"}
+    zoning -->|Yes| rules["Retrieve the exact<br/>approved zone rules"]
+    zoning -->|No| safe
+    rules --> compare["Compare every ordinary<br/>residential profile"]
+    compare --> summary{"Do the supported<br/>standards agree?"}
+    summary -->|Yes| standards["Standards result with<br/>sources and limitations"]
+    summary -->|No| safe
+
+    standards --> page["Readable local web page"]
+    safe --> page
+
+    classDef phase fill:#dcefe4,stroke:#1f5d3f,stroke-width:2px,color:#173b2a;
+    classDef decision fill:#fff7dc,stroke:#8a6811,stroke-width:1.5px,color:#493a12;
+    classDef success fill:#e9f5ed,stroke:#28734b,stroke-width:1.5px,color:#173b2a;
+    classDef stop fill:#f9e7e5,stroke:#9d443d,stroke-width:1.5px,color:#55211d;
+
+    class prepare,runtime phase;
+    class gates,address,zoning,summary decision;
+    class ready,ruleset,standards,page success;
+    class blocked,safe stop;
 ```
 
-The dashed path shows where AI may assist with research or candidate extraction. It does not approve rules or generate numeric zoning standards for a live result. The solid runtime path uses only checked, versioned inputs.
+The two numbered headers separate preparation from runtime without requiring long cross-diagram arrows. Decision diamonds make each fail-closed branch explicit. The dashed path shows where AI may assist with research or candidate extraction; it does not approve rules or generate numeric zoning standards for a live result.
 
 ## One project, developed in stages
 
