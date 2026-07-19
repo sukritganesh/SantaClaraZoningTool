@@ -1,4 +1,4 @@
-"""Deterministic lookup and regulatory-data components for the prototype."""
+"""Deterministic lookup and regulatory-data components for Santa Clara zoning."""
 
 from .lookup import LocalR1Lookup
 from .pipeline import (
@@ -12,7 +12,12 @@ from .presentation import (
     present_integrity_error,
     present_pipeline_result,
 )
-from .ruleset import ApprovedR1Ruleset, RulesetLoadError
+from .ruleset import (
+    ApprovedR1Ruleset,
+    ApprovedResidentialRuleset,
+    ResidentialRulesetArtifacts,
+    RulesetLoadError,
+)
 from .standards import (
     StandardsRetrievalError,
     UnsupportedZoneError,
@@ -21,12 +26,14 @@ from .standards import (
 
 __all__ = [
     "ApprovedR1Ruleset",
+    "ApprovedResidentialRuleset",
     "CONTRACT_VERSION",
     "LocalR1Lookup",
     "PRESENTATION_CONTRACT_VERSION",
     "PipelineIntegrityError",
     "PresentationIntegrityError",
     "R1StandardsPipeline",
+    "ResidentialRulesetArtifacts",
     "RulesetLoadError",
     "StandardsRetrievalError",
     "UnsupportedZoneError",

@@ -310,13 +310,21 @@ python3 scripts/validate_residential_result_contract_v2_1.py
 
 The `2.1.0` fixtures add the selected use-permission record and its exact provenance, require all ten profile capabilities including gross residential density, preserve five independent version identities, allow address-only evidence outside the filtered residential snapshot, and permit an empty query only for `address_not_found`. They are approved-data contract fixtures, not results produced by the still-R1 production pipeline.
 
-Application code loads and validates the approved artifact once before serving lookups:
+Load the approved residential artifact through its standalone Block 4 backend boundary:
+
+```bash
+python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset; r = ApprovedResidentialRuleset.load(); print(r.version, r.schema_version, r.supported_zones, r.regulation_count)'
+```
+
+`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. This loader does not yet perform residential GIS lookup or selection retrieval and is not used by the default Flask application.
+
+The released R1 application continues to load its separately approved v2 artifact before serving lookups:
 
 ```bash
 python3 -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Ruleset.load(); print(r.version, r.supported_zones, r.regulation_count)'
 ```
 
-`ApprovedR1Ruleset.load()` runs the schema, domain, source-checksum, migration-replay, and runtime-eligibility gates. It retains a recursively read-only in-memory representation and returns defensive copies through `as_dict()`. Address orchestration is handled by `R1StandardsPipeline`.
+`ApprovedR1Ruleset.load()` runs the schema, domain, source-checksum, migration-replay, and runtime-eligibility gates. It retains a recursively read-only in-memory representation and returns defensive copies through `as_dict()`. Released address orchestration remains handled by `R1StandardsPipeline`.
 
 Retrieve the complete approved regulations and referenced provenance for one exact zone:
 
@@ -433,7 +441,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── lookup.py                      Snapshot loading and lookup outcomes
 │   ├── pipeline.py                    Versioned address-to-standards orchestration
 │   ├── presentation.py                UI-neutral deterministic presentation model
-│   ├── ruleset.py                     Approved v2 runtime ruleset loader
+│   ├── ruleset.py                     Approved v2 and residential v3 loaders
 │   ├── standards.py                   Pure exact-zone regulation retrieval
 │   ├── templates/                     Server-rendered web templates
 │   └── web.py                         Flask application factory and route boundary
@@ -454,7 +462,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── promote_residential_rules_v3.py Non-overwriting residential approval promotion
 │   ├── validate_residential_result_contract.py Expansion fixture validator
 │   ├── validate_residential_result_contract_v2_1.py Approved-data result validator
-│   ├── validate_approved_residential_rules.py Approved 12-zone lineage/runtime validator
+│   ├── validate_approved_residential_rules.py Callable approved-lineage/runtime validator
 │   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
 │   ├── validate_density_residential_rules.py Density lineage and domain validator
 │   ├── validate_patrick_henry_residential_rules.py Complete 12-zone lineage validator

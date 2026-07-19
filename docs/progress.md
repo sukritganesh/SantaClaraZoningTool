@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 4 tranche 4.1 is implemented on `codex/residential-zone-expansion` and awaiting project-owner acceptance; immutable result contract `2.1.0` and all eight approved-`.5` fixtures pass, while production remains unchanged on the released R1 v2 path
+**Current position:** Block 4 tranche 4.2 is implemented on `codex/residential-zone-expansion` and awaiting project-owner acceptance; result-contract tranche 4.1 is owner accepted, the standalone approved residential loader passes its complete-lineage and mutation gates, and the default application remains unchanged on the released R1 v2 path
 
-**Next action:** Review and accept tranche 4.1; after acceptance, begin tranche 4.2 by exposing the complete approved-lineage validator as a callable boundary and implementing the recursively immutable `ApprovedResidentialRuleset` loader, without changing lookup, presentation, or the default Flask application
+**Next action:** Review and accept tranche 4.2; after acceptance, begin tranche 4.3 by implementing `LocalResidentialLookup` against the immutable July 18 filtered snapshot and the exact ruleset-owned 12-zone identity set, without adding selection retrieval, presentation, or Flask wiring
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -55,7 +55,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
-| 4. Expand lookup and retrieval | Tranche 4.1 implemented; awaiting owner acceptance | Immutable contract `2.1.0`, an approved-`.5` fixture builder/validator, all eight statuses, selected use-permission evidence, exact ten-capability profiles, filtered-snapshot outside evidence, and mutation gates pass; the released runtime remains unchanged. |
+| 4. Expand lookup and retrieval | Tranche 4.2 implemented; awaiting owner acceptance | Tranche 4.1 is accepted; the callable complete-lineage validator and recursively immutable `ApprovedResidentialRuleset` loader accept only approved `.5`, reject candidate/checksum/semantic/approval/lineage failures, and leave lookup and the default application unchanged. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
 
@@ -376,7 +376,29 @@ Validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 271 repository tests; and
 - `git diff --check` passes.
 
-No production module, ruleset, ruleset schema, raw source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. Tranche 4.1 is awaiting project-owner acceptance before the approved residential loader begins.
+No production module, ruleset, ruleset schema, raw source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. The project owner accepted tranche 4.1 and authorized the approved residential loader on July 19, 2026.
+
+## Block 4 tranche 4.2 approved residential loader implementation
+
+Tranche 4.2 adds a production-independent, fail-closed loader alongside the released R1 path:
+
+- `scripts/validate_approved_residential_rules.py` now exposes `ResidentialRulesetArtifacts`, one exact loaded-lineage snapshot, and `validate_complete_approved_lineage()`; the existing CLI delegates to that same callable gate;
+- the callable validates the approved R1 v2 input, migrated R1 v3.0 checkpoint, citywide v3.1 expansion, density v3.2 expansion, complete Patrick Henry candidate, `.4`-to-`.5` approval promotion, source files, GIS-fixture contract, deterministic replays, regulatory-semantic preservation, per-record approval, and runtime eligibility;
+- dependent replay checks run only after their source and target artifacts pass schema/domain validation, so malformed or candidate targets fail with controlled evidence instead of crashing a later replay helper;
+- `ApprovedResidentialRuleset.load()` reads all 16 required artifacts once, validates that loaded graph, recursively freezes the exact `.5` target that passed, and exposes only defensive mutable copies through `as_dict()`;
+- the public loader reports exact identity and summary metadata: 12 supported zones in ruleset order, schema `3.2.0`, 196 use/profile rule records, 16 ordinary profiles, and two special pathways; and
+- residential load failures reuse `RulesetLoadError` with explicit `artifact loading`, `complete lineage validation`, or `internal representation` stages and never fall back to candidate or partially validated data.
+
+Focused mutation coverage rejects the complete `.4` candidate, an altered source checksum, byte-changed target checksum, changed regulatory condition, unapproved profile rule, broken citywide crosswalk, altered approval crosswalk, missing density predecessor, and an unexpected validator exception. Separate tests prove recursive tuple/mapping immutability, defensive-copy isolation, repeatable independent loads, public package exports, and preservation of all released R1 loader behavior.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the callable complete source, lineage, replay, semantic-preservation, GIS-fixture, approval, and runtime gates;
+- `.venv/bin/python -B -m unittest tests.test_ruleset_loader tests.test_residential_ruleset_loader tests.test_residential_rules_v3_approval -q` passes all 33 released-R1, residential-loader, and approval tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 285 repository tests; and
+- `git diff --check` passes.
+
+No GIS lookup class, standards retriever, pipeline, result fixture, ruleset, ruleset schema, source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. Tranche 4.2 is awaiting project-owner acceptance before residential GIS lookup begins.
 
 ## Blocks 0-1 validation evidence
 
@@ -442,3 +464,4 @@ None currently recorded.
 | 2026-07-19 | Preserve `.4` and promote it without regulatory-semantic change into immutable runtime-eligible version `2026-07-19.5`. | A separate lifecycle successor records approval transparently, enables all 196 rules and two pathways, and keeps the reviewed candidate and every prior checkpoint reproducible. |
 | 2026-07-19 | Complete a read-only Block 4 runtime audit and implementation proposal before changing production code. | The released R1 path remains the regression oracle while loader, filtered-GIS, selection, result-contract, and provenance mismatches are resolved explicitly rather than discovered during coupled implementation. |
 | 2026-07-19 | Approve the Block 4 design and implement only tranche 4.1 before residential runtime wiring. | A separate `2.1.0` contract resolves the approved-density, use-permission-evidence, filtered-snapshot, empty-address, and version-identity gaps while preserving accepted `2.0.0` and the released R1 application. |
+| 2026-07-19 | Accept result-contract tranche 4.1 and authorize only the approved residential loader tranche 4.2. | The accepted runtime-ready result boundary can now be paired with an exact `.5` loader, while GIS lookup, selection retrieval, pipeline orchestration, and presentation remain independently gated. |

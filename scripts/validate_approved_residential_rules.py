@@ -5,21 +5,20 @@ from __future__ import annotations
 
 import argparse
 import sys
+from dataclasses import dataclass, fields
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.author_citywide_residential_rules import (  # noqa: E402
-    DEFAULT_SCHEMA as CITYWIDE_SCHEMA,
     DEFAULT_SOURCE as R1_V3_CANDIDATE,
     DEFAULT_SOURCE_SCHEMA as R1_V3_SCHEMA,
     validate_expansion as validate_citywide_expansion,
 )
 from scripts.author_density_residential_rules import (  # noqa: E402
-    DEFAULT_SCHEMA as DENSITY_SCHEMA,
     DEFAULT_SOURCE as CITYWIDE_CANDIDATE,
     DEFAULT_SOURCE_SCHEMA as CITYWIDE_PREDECESSOR_SCHEMA,
     validate_expansion as validate_density_expansion,
@@ -58,6 +57,216 @@ DEFAULT_CITYWIDE_CROSSWALK = (
 DEFAULT_R1_MIGRATION_CROSSWALK = (
     R1_V3_CANDIDATE.parent / "migration-crosswalk.json"
 )
+
+
+@dataclass(frozen=True)
+class ResidentialRulesetArtifacts:
+    """Every immutable artifact required to prove approved v3 runtime lineage."""
+
+    ruleset: Path
+    schema: Path
+    approval_crosswalk: Path
+    candidate: Path
+    candidate_crosswalk: Path
+    density_predecessor: Path
+    density_predecessor_schema: Path
+    density_crosswalk: Path
+    citywide_predecessor: Path
+    citywide_predecessor_schema: Path
+    citywide_crosswalk: Path
+    r1_v3_candidate: Path
+    r1_v3_schema: Path
+    r1_migration_crosswalk: Path
+    approved_r1_v2: Path
+    gis_fixtures: Path
+
+    def resolved(self) -> "ResidentialRulesetArtifacts":
+        """Return an equivalent artifact set with absolute normalized paths."""
+
+        return ResidentialRulesetArtifacts(
+            **{
+                item.name: getattr(self, item.name).resolve()
+                for item in fields(self)
+            }
+        )
+
+
+DEFAULT_APPROVED_RESIDENTIAL_ARTIFACTS = ResidentialRulesetArtifacts(
+    ruleset=DEFAULT_RULESET,
+    schema=DEFAULT_SCHEMA,
+    approval_crosswalk=DEFAULT_APPROVAL_CROSSWALK,
+    candidate=DEFAULT_CANDIDATE,
+    candidate_crosswalk=DEFAULT_CANDIDATE_CROSSWALK,
+    density_predecessor=DENSITY_CANDIDATE,
+    density_predecessor_schema=DENSITY_PREDECESSOR_SCHEMA,
+    density_crosswalk=DEFAULT_DENSITY_CROSSWALK,
+    citywide_predecessor=CITYWIDE_CANDIDATE,
+    citywide_predecessor_schema=CITYWIDE_PREDECESSOR_SCHEMA,
+    citywide_crosswalk=DEFAULT_CITYWIDE_CROSSWALK,
+    r1_v3_candidate=R1_V3_CANDIDATE,
+    r1_v3_schema=R1_V3_SCHEMA,
+    r1_migration_crosswalk=DEFAULT_R1_MIGRATION_CROSSWALK,
+    approved_r1_v2=APPROVED_R1_V2,
+    gis_fixtures=DEFAULT_GIS_FIXTURES,
+)
+
+
+@dataclass(frozen=True)
+class LoadedApprovedResidentialLineage:
+    """One in-memory snapshot of the complete approved residential lineage."""
+
+    artifacts: ResidentialRulesetArtifacts
+    ruleset: dict[str, Any]
+    schema: dict[str, Any]
+    approval_crosswalk: dict[str, Any]
+    candidate: dict[str, Any]
+    candidate_crosswalk: dict[str, Any]
+    density_predecessor: dict[str, Any]
+    density_predecessor_schema: dict[str, Any]
+    density_crosswalk: dict[str, Any]
+    citywide_predecessor: dict[str, Any]
+    citywide_predecessor_schema: dict[str, Any]
+    citywide_crosswalk: dict[str, Any]
+    r1_v3_candidate: dict[str, Any]
+    r1_v3_schema: dict[str, Any]
+    r1_migration_crosswalk: dict[str, Any]
+    approved_r1_v2: dict[str, Any]
+    gis_fixtures: dict[str, Any]
+
+
+def load_approved_residential_lineage(
+    artifacts: ResidentialRulesetArtifacts = DEFAULT_APPROVED_RESIDENTIAL_ARTIFACTS,
+) -> LoadedApprovedResidentialLineage:
+    """Load every lineage artifact exactly once without validating it."""
+
+    paths = artifacts.resolved()
+    return LoadedApprovedResidentialLineage(
+        artifacts=paths,
+        ruleset=load_json(paths.ruleset),
+        schema=load_json(paths.schema),
+        approval_crosswalk=load_json(paths.approval_crosswalk),
+        candidate=load_json(paths.candidate),
+        candidate_crosswalk=load_json(paths.candidate_crosswalk),
+        density_predecessor=load_json(paths.density_predecessor),
+        density_predecessor_schema=load_json(paths.density_predecessor_schema),
+        density_crosswalk=load_json(paths.density_crosswalk),
+        citywide_predecessor=load_json(paths.citywide_predecessor),
+        citywide_predecessor_schema=load_json(paths.citywide_predecessor_schema),
+        citywide_crosswalk=load_json(paths.citywide_crosswalk),
+        r1_v3_candidate=load_json(paths.r1_v3_candidate),
+        r1_v3_schema=load_json(paths.r1_v3_schema),
+        r1_migration_crosswalk=load_json(paths.r1_migration_crosswalk),
+        approved_r1_v2=load_json(paths.approved_r1_v2),
+        gis_fixtures=load_json(paths.gis_fixtures),
+    )
+
+
+def validate_complete_approved_lineage(
+    lineage: LoadedApprovedResidentialLineage,
+    *,
+    repo_root: Path = REPO_ROOT,
+    verify_source_files: bool = False,
+) -> list[str]:
+    """Return all source, replay, approval, and runtime-lineage errors."""
+
+    paths = lineage.artifacts
+    r1_errors = validate_ruleset(
+        lineage.r1_v3_candidate,
+        schema=lineage.r1_v3_schema,
+        repo_root=repo_root,
+        verify_source_files=verify_source_files,
+    )
+    errors = list(r1_errors)
+    if not r1_errors:
+        errors.extend(
+            validate_migration(
+                lineage.approved_r1_v2,
+                lineage.r1_v3_candidate,
+                lineage.r1_migration_crosswalk,
+                source_path=paths.approved_r1_v2,
+                target_path=paths.r1_v3_candidate,
+                schema_path=paths.r1_v3_schema,
+            )
+        )
+
+    citywide_errors = validate_ruleset(
+        lineage.citywide_predecessor,
+        schema=lineage.citywide_predecessor_schema,
+        repo_root=repo_root,
+        verify_source_files=verify_source_files,
+    )
+    errors.extend(citywide_errors)
+    if not r1_errors and not citywide_errors:
+        errors.extend(
+            validate_citywide_expansion(
+                lineage.r1_v3_candidate,
+                lineage.citywide_predecessor,
+                lineage.citywide_crosswalk,
+                source_path=paths.r1_v3_candidate,
+                target_path=paths.citywide_predecessor,
+                schema_path=paths.citywide_predecessor_schema,
+            )
+        )
+
+    density_errors = validate_ruleset(
+        lineage.density_predecessor,
+        schema=lineage.density_predecessor_schema,
+        repo_root=repo_root,
+        verify_source_files=verify_source_files,
+    )
+    errors.extend(density_errors)
+    if not citywide_errors and not density_errors:
+        errors.extend(
+            validate_density_expansion(
+                lineage.citywide_predecessor,
+                lineage.density_predecessor,
+                lineage.density_crosswalk,
+                source_path=paths.citywide_predecessor,
+                target_path=paths.density_predecessor,
+                schema_path=paths.density_predecessor_schema,
+            )
+        )
+
+    candidate_errors = validate_ruleset(
+        lineage.candidate,
+        schema=lineage.schema,
+        repo_root=repo_root,
+        verify_source_files=verify_source_files,
+    )
+    errors.extend(candidate_errors)
+    if not density_errors and not candidate_errors:
+        errors.extend(
+            validate_patrick_henry_expansion(
+                lineage.density_predecessor,
+                lineage.candidate,
+                lineage.candidate_crosswalk,
+                source_path=paths.density_predecessor,
+                target_path=paths.candidate,
+                schema_path=paths.schema,
+            )
+        )
+
+    target_errors = validate_ruleset(
+        lineage.ruleset,
+        schema=lineage.schema,
+        repo_root=repo_root,
+        verify_source_files=verify_source_files,
+        require_runtime_eligible=True,
+    )
+    errors.extend(target_errors)
+    if not candidate_errors and not target_errors:
+        errors.extend(
+            validate_promotion(
+                lineage.candidate,
+                lineage.ruleset,
+                lineage.approval_crosswalk,
+                candidate_path=paths.candidate,
+                target_path=paths.ruleset,
+                schema_path=paths.schema,
+            )
+        )
+    errors.extend(validate_gis_fixture_contract(lineage.gis_fixtures))
+    return errors
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -107,109 +316,29 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--verify-source-files", action="store_true")
     args = parser.parse_args(argv)
 
-    target_path = args.ruleset.resolve()
-    schema_path = args.schema.resolve()
-    candidate_path = args.candidate.resolve()
-    density_path = args.density_predecessor.resolve()
-    density_schema_path = args.density_predecessor_schema.resolve()
-    citywide_path = args.citywide_predecessor.resolve()
-    citywide_schema_path = args.citywide_predecessor_schema.resolve()
-    r1_v3_path = args.r1_v3_candidate.resolve()
-    r1_v3_schema_path = args.r1_v3_schema.resolve()
-    approved_r1_v2_path = args.approved_r1_v2.resolve()
-
-    target = load_json(target_path)
-    candidate = load_json(candidate_path)
-    density = load_json(density_path)
-    citywide = load_json(citywide_path)
-    r1_v3 = load_json(r1_v3_path)
-    schema = load_json(schema_path)
-
-    errors = validate_ruleset(
-        r1_v3,
-        schema=load_json(r1_v3_schema_path),
+    artifacts = ResidentialRulesetArtifacts(
+        ruleset=args.ruleset,
+        schema=args.schema,
+        approval_crosswalk=args.approval_crosswalk,
+        candidate=args.candidate,
+        candidate_crosswalk=args.candidate_crosswalk,
+        density_predecessor=args.density_predecessor,
+        density_predecessor_schema=args.density_predecessor_schema,
+        density_crosswalk=args.density_crosswalk,
+        citywide_predecessor=args.citywide_predecessor,
+        citywide_predecessor_schema=args.citywide_predecessor_schema,
+        citywide_crosswalk=args.citywide_crosswalk,
+        r1_v3_candidate=args.r1_v3_candidate,
+        r1_v3_schema=args.r1_v3_schema,
+        r1_migration_crosswalk=args.r1_migration_crosswalk,
+        approved_r1_v2=args.approved_r1_v2,
+        gis_fixtures=args.gis_fixtures,
+    )
+    lineage = load_approved_residential_lineage(artifacts)
+    errors = validate_complete_approved_lineage(
+        lineage,
         verify_source_files=args.verify_source_files,
     )
-    errors.extend(
-        validate_migration(
-            load_json(approved_r1_v2_path),
-            r1_v3,
-            load_json(args.r1_migration_crosswalk),
-            source_path=approved_r1_v2_path,
-            target_path=r1_v3_path,
-            schema_path=r1_v3_schema_path,
-        )
-    )
-    errors.extend(
-        validate_ruleset(
-            citywide,
-            schema=load_json(citywide_schema_path),
-            verify_source_files=args.verify_source_files,
-        )
-    )
-    errors.extend(
-        validate_citywide_expansion(
-            r1_v3,
-            citywide,
-            load_json(args.citywide_crosswalk),
-            source_path=r1_v3_path,
-            target_path=citywide_path,
-            schema_path=CITYWIDE_SCHEMA,
-        )
-    )
-    errors.extend(
-        validate_ruleset(
-            density,
-            schema=load_json(density_schema_path),
-            verify_source_files=args.verify_source_files,
-        )
-    )
-    errors.extend(
-        validate_density_expansion(
-            citywide,
-            density,
-            load_json(args.density_crosswalk),
-            source_path=citywide_path,
-            target_path=density_path,
-            schema_path=DENSITY_SCHEMA,
-        )
-    )
-    errors.extend(
-        validate_ruleset(
-            candidate,
-            schema=schema,
-            verify_source_files=args.verify_source_files,
-        )
-    )
-    errors.extend(
-        validate_patrick_henry_expansion(
-            density,
-            candidate,
-            load_json(args.candidate_crosswalk),
-            source_path=density_path,
-            target_path=candidate_path,
-            schema_path=schema_path,
-        )
-    )
-    errors.extend(
-        validate_ruleset(
-            target,
-            schema=schema,
-            verify_source_files=args.verify_source_files,
-            require_runtime_eligible=True,
-        )
-    )
-    errors.extend(
-        validate_promotion(
-            candidate,
-            target,
-            load_json(args.approval_crosswalk),
-            candidate_path=candidate_path,
-            target_path=target_path,
-            schema_path=schema_path,
-        )
-    )
-    errors.extend(validate_gis_fixture_contract(load_json(args.gis_fixtures)))
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)
