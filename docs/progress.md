@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Blocks 7.5d–7.5e complete — visual hierarchy review, confirmed polish fixes, and regression validation pass
+**Current position:** Block 7 complete — the deterministic local presentation milestone passes every approved exit condition
 
-**Next action:** Run Block 7.5f evidence audit and close Block 7 if every exit condition remains satisfied
+**Next action:** Plan Block 8 validation of the complete address-to-presentation vertical slice
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -19,7 +19,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | In progress | Contract, interface, startup, responsive, accessibility, visual-wording, and post-fix regression checks pass; Block 7.5f closeout remains. |
+| 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
 | 8. Validate the vertical slice | Not started | Requires expected fixtures, failure cases, and repeatability evidence. |
 
 ## Completed-block evidence
@@ -444,6 +444,10 @@ git diff --check
 passed
 ```
 
+Block 7.5f closed Block 7 on July 18, 2026. The final evidence audit found a recorded passing result for each of the nine Block 7.5 acceptance conditions and each of the nine Block 7 exit conditions. The accepted matrix includes canonical R1-6L and R1-8L success results; paired setbacks and the preserved R1-8L conflict; corner-only street-side applicability without parcel classification; non-R1, ambiguous, unmatched, and review-required outcomes without regulatory conclusions; source and version closure; mutation isolation; unknown-shape integrity failures; repeatable rendering; documented local startup; responsive and accessibility checks; and the project-owner visual review.
+
+No final code, ruleset, regulatory-data, README, or prototype-plan correction was required. A fresh closeout run again passed 20 focused web tests, all 143 repository tests, the JavaScript syntax check, and `git diff --check`. Block 7 is therefore complete; exhaustive multi-browser or screen-reader certification, deployment, security and performance testing, live-GIS validation, and the broader end-to-end fixture audit remain outside this milestone.
+
 Implementation sequence:
 
 | Substep | Status | Intended result |
@@ -452,7 +456,7 @@ Implementation sequence:
 | 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
 | 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
-| 7.5 Validate and close Block 7 | In progress | Startup, responsive, accessibility, visual-wording, and post-fix regression validation pass; final evidence audit and milestone closeout remain. |
+| 7.5 Validate and close Block 7 | Complete | Every approved browser, accessibility, wording, provenance, deterministic-rendering, setup, and regression acceptance condition has reproducible evidence. |
 
 Planning boundaries:
 
