@@ -66,7 +66,7 @@ This is a meaningful set of common standards, but it is deliberately not every r
 The product separates evidence preparation from the live address lookup. Geographic and regulatory sources are collected, checked, versioned, and approved before they can support a result. The running application uses those validated local artifacts and withholds regulations when the evidence does not safely support them.
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph preparation["Prepare and approve the evidence"]
         direction TB
         gis["Santa Clara address, parcel, and zoning services"] --> download["Complete, validated downloads"]
