@@ -3,7 +3,15 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import socket
+import subprocess
+import sys
 import unittest
+from unittest.mock import patch
 from typing import Any
 
 from santa_clara_zoning import (
@@ -54,6 +62,66 @@ EXPECTED_NOT_EVALUATED = {
     "Buildable-envelope geometry",
     "Historic, specific-plan, and other overlay review",
 }
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    with path.open(encoding="utf-8") as source:
+        value = json.load(source)
+    if not isinstance(value, dict):
+        raise AssertionError(f"Expected a JSON object at {path}")
+    return value
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _render_digests_in_process(
+    addresses: tuple[str, ...], *, hash_seed: str
+) -> dict[str, str]:
+    script = """
+import hashlib
+import json
+import os
+
+from santa_clara_zoning.web import create_app
+
+app = create_app()
+if app.extensions["r1_startup_error"] is not None:
+    raise RuntimeError("Default application startup failed")
+app.config.update(TESTING=True)
+client = app.test_client()
+digests = {}
+for address in json.loads(os.environ["R1_ACCEPTANCE_ADDRESSES"]):
+    response = client.get("/", query_string={"address": address})
+    if response.status_code != 200:
+        raise RuntimeError(f"Unexpected response for {address}: {response.status_code}")
+    digests[address] = hashlib.sha256(response.data).hexdigest()
+print(json.dumps(digests, sort_keys=True, separators=(",", ":")))
+"""
+    environment = os.environ.copy()
+    environment.update(
+        PYTHONHASHSEED=hash_seed,
+        R1_ACCEPTANCE_ADDRESSES=json.dumps(addresses),
+    )
+    completed = subprocess.run(
+        [sys.executable, "-B", "-c", script],
+        cwd=REPO_ROOT,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    value = json.loads(completed.stdout)
+    if not isinstance(value, dict):
+        raise AssertionError("Independent process did not return a digest object")
+    return {str(key): str(item) for key, item in value.items()}
 
 
 class _StaticLookup:
@@ -399,6 +467,112 @@ class VerticalSliceAcceptanceTest(unittest.TestCase):
         self.assertNotIn("data-capability-id", body)
         self.assertNotIn("Regulatory sources", body)
         self.assertNotIn("<dt>Ruleset</dt>", body)
+
+    def test_default_application_succeeds_with_outbound_sockets_blocked(self) -> None:
+        def reject_connection(*args: Any, **kwargs: Any) -> None:
+            raise AssertionError("The offline runtime attempted an outbound connection")
+
+        with (
+            patch.object(socket, "create_connection", side_effect=reject_connection),
+            patch.object(socket.socket, "connect", side_effect=reject_connection),
+            patch.object(socket.socket, "connect_ex", side_effect=reject_connection),
+        ):
+            app = create_app()
+            app.config.update(TESTING=True)
+            self.assertIsNone(app.extensions["r1_startup_error"])
+            client = app.test_client()
+            for address, expected_apn, expected_zone in (
+                ("636 Barto Street", "293-16-045", "R1-6L"),
+                ("108 Brookside Avenue", "303-22-022", "R1-8L"),
+            ):
+                with self.subTest(address=address):
+                    response = client.get("/", query_string={"address": address})
+                    body = response.get_data(as_text=True)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertIn('data-result-kind="success"', body)
+                    self.assertIn(expected_apn, body)
+                    self.assertIn(expected_zone, body)
+
+    def test_displayed_provenance_closes_to_loaded_canonical_artifacts(self) -> None:
+        address_manifest = _read_json(DEFAULT_ADDRESS_SNAPSHOT / "manifest.json")
+        r1_manifest = _read_json(DEFAULT_R1_SNAPSHOT / "manifest.json")
+        ruleset_data = self.pipeline.ruleset.as_dict()
+
+        address_layer = address_manifest["layer"]
+        r1_layers = {layer["slug"]: layer for layer in r1_manifest["layers"]}
+        expected_lookup_sources = {
+            "address_layer": address_layer["source_layer_url"],
+            "parcel_layer": r1_layers["parcels"]["source_layer_url"],
+            "zoning_layer": r1_layers["current_zoning"]["source_layer_url"],
+        }
+        expected_loaded_versions = {
+            "address_snapshot": address_manifest["snapshot_date"],
+            "r1_gis_snapshot": r1_manifest["snapshot_date"],
+            "ruleset": ruleset_data["version"],
+        }
+
+        self.assertEqual(self.pipeline.lookup_engine.sources, expected_lookup_sources)
+        self.assertEqual(self.pipeline.lookup_engine.versions, {
+            key: expected_loaded_versions[key]
+            for key in ("address_snapshot", "r1_gis_snapshot")
+        })
+        self.assertEqual(self.pipeline.ruleset.version, ruleset_data["version"])
+        self.assertEqual(ruleset_data["status"], "approved_for_prototype")
+        self.assertTrue(ruleset_data["approved_on"])
+
+        for manifest_root, layer in (
+            (DEFAULT_ADDRESS_SNAPSHOT, address_layer),
+            (DEFAULT_R1_SNAPSHOT, r1_layers["parcels"]),
+            (DEFAULT_R1_SNAPSHOT, r1_layers["current_zoning"]),
+        ):
+            self.assertEqual(
+                _sha256(manifest_root / layer["output_file"]),
+                layer["output_sha256"],
+            )
+        for document in ruleset_data["shared"]["source_documents"].values():
+            self.assertEqual(
+                _sha256(REPO_ROOT / document["local_path"]),
+                document["sha256"],
+            )
+
+        result = self.pipeline.analyze_address("636 Barto Street")
+        view = present_pipeline_result(result)
+        body = self.client.get(
+            "/", query_string={"address": "636 Barto Street"}
+        ).get_data(as_text=True)
+        self.assertEqual(result["versions"], expected_loaded_versions)
+        self.assertEqual(result["sources"], expected_lookup_sources)
+        self.assertEqual(
+            view["versions"],
+            {"pipeline_contract": CONTRACT_VERSION, **expected_loaded_versions},
+        )
+        self.assertEqual(
+            {
+                source["source_id"]: source["url"]
+                for source in view["sources"]
+                if source["kind"] == "gis_layer"
+            },
+            expected_lookup_sources,
+        )
+        for version in expected_loaded_versions.values():
+            self.assertIn(version, body)
+        for source_url in expected_lookup_sources.values():
+            self.assertIn(source_url, body)
+
+    def test_rendered_output_is_stable_across_order_and_processes(self) -> None:
+        addresses = (
+            "636 Barto Street",
+            "108 Brookside Avenue",
+            "1500 Warburton Avenue",
+        )
+        forward = _render_digests_in_process(addresses, hash_seed="1")
+        reverse = _render_digests_in_process(
+            tuple(reversed(addresses)), hash_seed="987654"
+        )
+
+        self.assertEqual(forward, reverse)
+        self.assertEqual(set(forward), set(addresses))
+        self.assertTrue(all(len(digest) == 64 for digest in forward.values()))
 
 
 if __name__ == "__main__":

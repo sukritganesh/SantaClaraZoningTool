@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 8.2 complete — the approved complete-path fixture matrix passes
+**Current position:** Block 8.3 complete — offline operation, provenance closure, fail-closed integrity, and cross-process rendering are proven
 
-**Next action:** Plan and execute Block 8.3 offline, provenance, integrity, and cross-process determinism proof
+**Next action:** Execute Block 8.4's final validation matrix
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -20,7 +20,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
 | 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
-| 8. Validate the vertical slice | In progress | Block 8.1 is approved and all five Block 8.2 complete-path acceptance tests pass; offline and independent-process proof remain. |
+| 8. Validate the vertical slice | In progress | Blocks 8.1–8.3 pass: the complete path, offline boundary, provenance closure, safe integrity behavior, and independent-process rendering are proven. |
 
 ## Completed-block evidence
 
@@ -464,7 +464,7 @@ The Block 8 acceptance plan is recorded in `docs/r1-prototype-plan.md`. It treat
 
 The project owner approved the acceptance contract, fixture matrix, and exclusions on July 18, 2026. Block 8.2 is implemented in `tests/test_vertical_slice.py`. The module constructs the real default Flask application and validated pipeline from canonical artifacts, then follows the production pipeline, presenter, and rendered-route boundaries rather than reproducing their algorithms.
 
-Five acceptance tests cover both supported successes; Warburton, the Pomeroy unit address, Los Padres ambiguity, unmatched and empty input; normalized Barto variants; a synthetic parcel/zoning disagreement; and a synthetic integrity failure. They verify the exact ten-capability closure, APNs, zones, selected standards, typed scalar and paired setbacks, corner-only applicability, the R1-8L conflict, source and version closure, not-evaluated topics, safe non-regulatory outcomes, and final HTML markers.
+Eight acceptance tests cover both supported successes; Warburton, the Pomeroy unit address, Los Padres ambiguity, unmatched and empty input; normalized Barto variants; a synthetic parcel/zoning disagreement; and a synthetic integrity failure. They verify the exact ten-capability closure, APNs, zones, selected standards, typed scalar and paired setbacks, corner-only applicability, the R1-8L conflict, source and version closure, not-evaluated topics, safe non-regulatory outcomes, and final HTML markers.
 
 The first focused run found an overly narrow acceptance assertion rather than a production defect: the street-side rule correctly retained both `lot_context: corner` and its structure-type applicability. The oracle was corrected to assert the required corner condition without discarding the additional authoritative field. No production, ruleset, source-data, template, README, or prototype-plan change was required.
 
@@ -484,11 +484,35 @@ git diff --check
 passed
 ```
 
+Block 8.3 adds three system-boundary proofs without changing production behavior:
+
+- Outbound socket connection methods are blocked before constructing the default application. Barto and Brookside still load through the real pipeline and render their expected APNs and zones, proving that the runtime path uses only local artifacts.
+- The acceptance test reads both canonical GIS manifests and the approved ruleset actually loaded by the application. It independently verifies all three GeoJSON SHA-256 values and both regulatory source-document SHA-256 values, then confirms that emitted and rendered dates, ruleset version, and GIS source URLs close back to those artifacts.
+- Two independent Python processes use different `PYTHONHASHSEED` values and opposite request orders. SHA-256 digests of the final Barto, Brookside, and Warburton HTML are identical per address.
+
+Block 8.3 validation evidence:
+
+```text
+.venv/bin/python -B -m unittest tests.test_vertical_slice -v
+8 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+151 passed, 0 failed, 0 skipped
+
+node --check santa_clara_zoning/static/app.js
+passed
+
+git diff --check
+passed
+```
+
+Detailed corrupt-source and candidate-ruleset mutations remain owned by the focused lookup and loader suites. The vertical-slice module proves the final application boundary: an integrity failure renders a safe non-regulatory system-error view with no internal detail, capability cards, regulatory receipts, or ruleset version.
+
 | Substep | Status | Intended result |
 |---|---|---|
 | 8.1 Approve the acceptance contract and fixture matrix | Complete | The project owner approved the final system boundary, fixtures, evidence requirements, and exclusions. |
 | 8.2 Implement complete-path acceptance tests | Complete | Five dedicated tests exercise the approved matrix through real production composition and canonical artifacts without duplicating internal algorithms. |
-| 8.3 Prove offline, integrity, provenance, and determinism boundaries | Pending | Demonstrate no undeclared runtime service, complete version closure, fail-closed behavior, and cross-process rendered repeatability. |
+| 8.3 Prove offline, integrity, provenance, and determinism boundaries | Complete | Blocked-socket startup and requests, canonical checksum/version closure, safe integrity adaptation, and opposite-order hash-seeded process render digests all pass. |
 | 8.4 Run the final validation matrix | Pending | Run the dedicated suite, approved ruleset validator, focused web tests, and complete repository suite. |
 | 8.5 Record evidence and close Block 8 | Pending | Record exact artifacts, commands, fixture outcomes, counts, and limitations before final milestone disposition. |
 
