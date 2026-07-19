@@ -161,11 +161,13 @@ Block 1 must establish and preserve:
 - `docs/residential-title18-amendment-audit.md`, covering later adopted or pending amendments relevant to the target zones through a stated cutoff without mutating the checksum-pinned R1 audit;
 - the Patrick Henry Drive Specific Plan provisions and maps;
 - Objective Design Standards applicability and the unresolved Chapter 18.27 source issue;
-- exact City GIS designations, counts, source object IDs, filters, and checksums in a new immutable snapshot; and
-- `docs/residential-rule-verification.md`, which separates source assertions, candidate interpretations, approved dispositions, conflicts, and unresolved questions.
-- checksum-pinned capability supplements when adding a capability after a predecessor already pins the active verification and audit documents; the gross-density supplements are `docs/residential-density-rule-verification.md` and `docs/residential-density-title18-amendment-audit.md`.
+- exact City GIS designations, counts, source object IDs, filters, and checksums in a new immutable snapshot;
+- `docs/residential-rule-verification.md`, which separates source assertions, candidate interpretations, approved dispositions, conflicts, and unresolved questions;
+- checksum-pinned capability supplements when adding a capability after a predecessor already pins the active verification and audit documents; the gross-density supplements are `docs/residential-density-rule-verification.md` and `docs/residential-density-title18-amendment-audit.md`;
+- `docs/patrick-henry-rule-verification-supplement.md`, which checksum-pins the final plan/code reconciliation and accepted PH-R5 density resolution without modifying predecessor-pinned evidence; and
+- consequential values, use permissions, structure applicability, and nonnumeric dispositions require human approval before runtime use.
 
-Consequential values, use permissions, structure applicability, and nonnumeric dispositions require human approval before runtime use. Previously approved R1 rules remain approved only within their existing scope and immutable version.
+Previously approved R1 rules remain approved only within their existing scope and immutable version.
 
 ## 8. Versioning and migration strategy
 
@@ -227,6 +229,8 @@ The implemented base representation is **ruleset schema `3.0.0`** in a new resid
 The R2-R6 authoring tranche requires one additive **schema `3.1.0`** refinement: a closed lot-area-tiered maximum shape within the existing structure-coverage capability. This preserves the two Table 2-3 lot-area outcomes for R3 and R4 without flattening either tier, inventing an unlimited value, or introducing a new regulation family. Schema `3.0.0` and candidate `2026-07-19.1` remain unchanged as the direct predecessor checkpoint.
 
 The approved Block 3 gross-density addition requires additive **schema `3.2.0`**: a closed minimum-to-maximum quantity range plus the same range shape for conflict assertions. Candidate `2026-07-19.3` adds that capability to the 11 R1-R6 ordinary profiles while preserving schemas `3.0.0` and `3.1.0` and candidates `2026-07-19.1` and `.2` as immutable checkpoints.
+
+The Patrick Henry tranche reuses **schema `3.2.0`** in candidate `2026-07-19.4`. Numeric maxima, quantity ranges, no-maximum-listed results, FAA-controlled values, and plan-dependent rear setbacks already have approved typed shapes, so adding the five plan designations is a data/provenance successor rather than a schema expansion.
 
 The new artifacts should be introduced alongside, not in place of:
 

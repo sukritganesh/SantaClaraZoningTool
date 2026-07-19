@@ -30,6 +30,7 @@ Each project document has one job:
 - `docs/r1-rule-verification.md` is the historical source trace and approval gate for the released machine-readable R1 rules. Preserve it except when correcting or re-verifying its own R1 conclusions.
 - `docs/residential-rule-verification.md` is the active source trace and approval gate for new-zone use permissions, structure applicability, definitions, exceptions, conflicts, and rule dispositions.
 - `docs/residential-density-rule-verification.md` is the checksum-pinned source trace and project-decision record for the gross residential density capability added after candidate `2026-07-19.2`.
+- `docs/patrick-henry-rule-verification-supplement.md` is the checksum-pinned final source reconciliation and PH-R5 density decision record for the Patrick Henry successor to candidate `2026-07-19.3`.
 - Each raw snapshot's `manifest.json` is the authoritative record of that download's sources, filters, counts, files, and checksums.
 
 When something changes, update only its owning document unless the change genuinely affects another document's role. In particular, a milestone change normally updates `docs/progress.md` only.
@@ -41,15 +42,16 @@ When something changes, update only its owning document unless the change genuin
 3. Read `docs/residential-rule-verification.md` before approving, authoring, or implementing a new residential-zone rule or disposition.
 4. Read `docs/residential-title18-amendment-audit.md` before making a current-law or later-legislation conclusion for the expansion.
 5. Read the density-specific verification and audit supplements before changing gross residential density data or its conflict resolutions.
-6. Read the relevant portions of `docs/r1-prototype-plan.md` when changing, migrating, or testing a contract inherited from the R1 baseline.
-7. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
-8. Read `docs/regulations/ruleset-authoring-guide.md` before changing or migrating the released R1/v2 contract.
-9. Read `docs/regulations/residential-ruleset-authoring-guide.md` before changing residential ruleset v3 schemas, authoring v3 rule data, or building v3 extraction workflows.
-10. Read `contracts/residential-result-contract-2.0.0.schema.json` before changing expansion pipeline or presentation result shapes.
-11. Read `README.md` when running, changing, or documenting repository commands or dependencies.
-12. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
-13. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
-14. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
+6. Read the Patrick Henry verification supplement before authoring, approving, or changing Patrick Henry rule data or its PH-R5 conflict resolution.
+7. Read the relevant portions of `docs/r1-prototype-plan.md` when changing, migrating, or testing a contract inherited from the R1 baseline.
+8. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
+9. Read `docs/regulations/ruleset-authoring-guide.md` before changing or migrating the released R1/v2 contract.
+10. Read `docs/regulations/residential-ruleset-authoring-guide.md` before changing residential ruleset v3 schemas, authoring v3 rule data, or building v3 extraction workflows.
+11. Read `contracts/residential-result-contract-2.0.0.schema.json` before changing expansion pipeline or presentation result shapes.
+12. Read `README.md` when running, changing, or documenting repository commands or dependencies.
+13. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
+14. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
+15. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
 
 ## Preserve authoritative inputs
 

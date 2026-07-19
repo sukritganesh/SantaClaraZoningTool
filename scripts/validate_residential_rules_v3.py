@@ -149,6 +149,11 @@ DENSITY_RANGES = {
     "R4": (37, 50),
     "R5": (51, 100),
     "R6": (60, 350),
+    "PH-R5": (51, 100),
+    "UV": (100, 149),
+    "VR": (60, 149),
+    "UC": (120, 250),
+    "HDF": (60, 149),
 }
 MAXIMUM_UNITS = {
     "standard.maximum_primary_structure_height": "ft",

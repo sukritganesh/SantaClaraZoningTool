@@ -2,7 +2,7 @@
 
 **Contract:** Santa Clara residential ruleset schema `3.2.0`; accepted predecessors preserved under `3.0.0` and `3.1.0`
 
-**Status:** Block 2 representation accepted; additive citywide and density authoring contracts implemented for Block 3
+**Status:** Block 2 representation accepted; complete citywide, density, and Patrick Henry authoring contracts implemented for Block 3
 
 **Last updated:** July 19, 2026
 
@@ -12,7 +12,7 @@ This guide is the human- and AI-facing representation contract for the residenti
 
 It does not contain Santa Clara's numeric values and does not authorize candidate data for runtime use. The capability meanings live in `supported-regulations.md`; zone-specific source conclusions live in `docs/residential-rule-verification.md` and checksum-pinned capability supplements such as `docs/residential-density-rule-verification.md`; active status and validation evidence live in `docs/progress.md`.
 
-The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Candidate `2026-07-19.2` and schema `3.1.0` remain the R1-R6 citywide checkpoint. Schema `3.2.0` adds the minimum closed range and conflict-assertion shapes needed for gross residential density.
+The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Candidate `2026-07-19.2` and schema `3.1.0` remain the R1-R6 citywide checkpoint. Schema `3.2.0` adds the minimum closed range and conflict-assertion shapes needed for gross residential density. Complete candidate `2026-07-19.4` reuses schema `3.2.0` because the existing typed dispositions already represent every supported Patrick Henry result.
 
 ## Non-negotiable semantics
 
@@ -350,6 +350,19 @@ The density authoring successor consumes candidate `2026-07-19.2` directly and e
 - prove byte-identical target and crosswalk replay from the checksum-pinned predecessor.
 
 The additive density schema does not authorize changing schema `3.1.0` or candidate `2026-07-19.2` in place.
+
+The Patrick Henry authoring successor consumes accepted candidate `2026-07-19.3` directly and emits candidate `2026-07-19.4` plus a separate expansion crosswalk. It must:
+
+- preserve every predecessor zone, permission, profile, rule, conflict, topic, and shared record exactly;
+- add exactly `PH-R5`, `UV`, `VR`, `UC`, and `HDF`, with three explicit use permissions and one ordinary multifamily profile per zone;
+- add exactly the same ten supported capabilities to each new profile, without adding commercial analysis or a regulation family;
+- preserve no-maximum-listed coverage, FAA-controlled UC height and stories, and plan-dependent rear setbacks without numeric substitutes;
+- preserve all five PH-R5 density assertions and select Table 1-1's 51-100 DU/AC range only through the project-owner-approved resolution;
+- pin the adopted plan and the Patrick Henry verification supplement, while preserving predecessor-pinned source documents byte-for-byte;
+- disclose the 32-foot transition, recreation space, encroachments, design/project review, Objective Design Standards, UC community-benefits path, HDF office option, and density adjustments as profile-specific `not_evaluated` topics; and
+- keep every new record nonapproved and prove byte-identical target and crosswalk replay.
+
+No schema `3.3.0` is warranted for this tranche. Candidate `2026-07-19.4` remains nonruntime until complete-candidate approval is expressed through a separately versioned artifact with every record approved.
 
 ## Authoring workflow
 

@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 3 remains in progress on `codex/residential-zone-expansion`; the R1-R6 citywide tranche plus gross residential density is implemented and technically validated in nonruntime candidate `2026-07-19.3`, while owner acceptance of the completed density successor, Patrick Henry authoring, complete ruleset approval, runtime integration, and user-visible changes remain pending
+**Current position:** Block 3 remains in progress on `codex/residential-zone-expansion`; the project owner accepted density candidate `2026-07-19.3`, and all five Patrick Henry designations are implemented and technically validated in complete nonruntime candidate `2026-07-19.4`, while complete-candidate approval, runtime promotion, application integration, and user-visible changes remain pending
 
-**Next action:** Obtain project-owner acceptance of candidate `2026-07-19.3`, then author the five Patrick Henry designations in a new successor candidate and run the complete 12-zone approval gate; do not load any residential v3 candidate in production
+**Next action:** Obtain project-owner review and approval of complete candidate `2026-07-19.4`; after approval, produce a separately versioned runtime-approved artifact and pass the runtime-eligibility gate before Block 4 changes any production loader or lookup code
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -35,6 +35,9 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - R1-candidate-to-citywide expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.2/citywide-expansion-crosswalk.json`
 - Nonruntime R1-R6 v3.2 density candidate: `rulesets/santa_clara/residential/2026-07-19.3/ruleset.json`
 - Citywide-candidate-to-density expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.3/density-expansion-crosswalk.json`
+- Patrick Henry source and decision supplement: `docs/patrick-henry-rule-verification-supplement.md`
+- Complete nonruntime 12-zone v3.2 candidate: `rulesets/santa_clara/residential/2026-07-19.4/ruleset.json`
+- Density-candidate-to-Patrick-Henry expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.4/patrick-henry-expansion-crosswalk.json`
 - Residential result contract: `contracts/residential-result-contract-2.0.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
@@ -48,7 +51,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
-| 3. Author and approve residential rules | In progress; citywide and density tranches implemented | Candidate `2026-07-19.3` preserves all predecessor rules and adds 11 verified gross-density ranges with retained R5/R6 conflicts; owner acceptance is the gate before Patrick Henry authoring and final approval. |
+| 3. Author and approve residential rules | In progress; complete 12-zone candidate implemented | Candidate `2026-07-19.4` preserves all accepted predecessor data, adds the five Patrick Henry multifamily profiles, and passes the complete technical gate; owner approval and a separately versioned runtime promotion remain. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
@@ -247,7 +250,41 @@ Validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 231 tests; and
 - `git diff --check` passes.
 
-This evidence makes candidate `2026-07-19.3` ready for project-owner review, not runtime use. Block 3 remains open for that acceptance, Patrick Henry authoring, complete-source review, per-record approval, and final runtime eligibility.
+The project owner accepted candidate `2026-07-19.3` on July 19, 2026 and authorized Patrick Henry authoring using the same conflict-preservation and Table 1-1 selection policy for PH-R5. The checkpoint remains nonruntime and immutable.
+
+## Block 3 Patrick Henry authoring evidence
+
+The Patrick Henry tranche preserves accepted density candidate `2026-07-19.3` and creates a direct schema-`3.2.0` successor without adding a regulation family:
+
+- `docs/patrick-henry-rule-verification-supplement.md` checksum-pins the final visual reconciliation of Title 18 and the adopted plan, records the accepted PH-R5 density policy, and keeps commercial and office analysis outside the tranche;
+- `scripts/author_patrick_henry_residential_rules.py` deterministically consumes immutable candidate `2026-07-19.3` and emits nonoverwriting candidate `2026-07-19.4` plus its expansion crosswalk;
+- `scripts/validate_patrick_henry_residential_rules.py` validates the complete approved-v2-to-v3.0-to-v3.1-to-v3.2 lineage, both v3.2 successors, source checksums, deterministic replay, exact predecessor preservation, the full 12-zone matrix, and GIS fixtures;
+- candidate `2026-07-19.4` contains 12 zones, 36 use permissions, 16 ordinary profiles, two R1 special pathways, 160 profile regulations, and 196 total permission/regulation records;
+- each of `PH-R5`, `UV`, `VR`, `UC`, and `HDF` contains only one multifamily profile and the same ten supported regulation capabilities already used by the predecessor;
+- all five zones record single-family and two-family as `not_listed` and multifamily as `permitted_by_right`, while keeping use status separate from Zoning Clearance, Architectural Review, hearing, and plan-conformance requirements;
+- PH-R5 uses 135 feet, 10 stories, no coverage maximum listed, 10-foot front/street-side/interior-side setbacks from back of walk, a plan-dependent rear setback, and project-selected density of 51-100 DU/AC;
+- UV uses 160 feet, 12 stories, and 100-149 DU/AC; VR uses 160 feet, 12 stories, and 60-149 DU/AC; UC preserves literal FAA-controlled height and stories with 120-250 DU/AC; and HDF uses 160 feet, 12 stories, and 60-149 DU/AC;
+- the PH-R5 conflict separately retains Title 18 Table 1-1's 51-100 assertion and four 51-99 assertions from the zone-purpose text, Title 18 Table 2-4, Specific Plan Section 4.3.2, and Specific Plan Table 4.2, with the Table 1-1 range selected only by explicit project policy;
+- every Patrick Henry rear setback remains `plan_dependent`, never zero, and every coverage result remains `no_maximum_listed`, never unlimited;
+- the 32-foot transition, recreation space, detailed encroachments, plan design/project review, Objective Design Standards, UC above-250 community-benefits path, HDF office option, and density adjustments remain structured `not evaluated` qualifications rather than new rules; and
+- the production loader, GIS lookup, retrieval, pipeline, presentation, templates, and frontend remain unchanged.
+
+Canonical Patrick Henry tranche checksums:
+
+- preserved schema v3.2: `186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef`;
+- Patrick Henry verification supplement: `7aab62cc482fe462c5430006556e383fe7cb54fe70b05499661f326c7ca3659f`;
+- complete 12-zone candidate: `7e4261277aeb527cd479249a6f580cb6006f5e186c911106c9d4ab9f9ce734b7`; and
+- Patrick Henry expansion crosswalk: `e6f789acf82d79ff3ab9dfff462d05779349bab19c3286d1b60a926708fbefea`.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_patrick_henry_residential_rules.py --verify-source-files` passes the complete schema, domain, source-checksum, conflict, chained-lineage, deterministic-replay, preservation, 12-zone, and GIS-fixture gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because the complete artifact remains a candidate with null approval and unapproved rules and pathways, not because any target zone is missing;
+- `.venv/bin/python -B -m unittest tests.test_patrick_henry_residential_rules -v` passes 14 new matrix, source, conflict, nonnumeric-disposition, limitation, mutation, preservation, checksum, runtime-boundary, and replay tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 245 tests; and
+- `git diff --check` passes.
+
+This evidence makes candidate `2026-07-19.4` ready for project-owner review, not runtime use. Block 3 remains open for complete-candidate approval, per-record promotion in a separate artifact, and final runtime eligibility.
 
 ## Blocks 0-1 validation evidence
 
@@ -270,7 +307,8 @@ This evidence makes candidate `2026-07-19.3` ready for project-owner review, not
 - A missing maximum must be presented as no maximum listed in the controlling base table, not as unlimited.
 - An FAA-controlled height and a plan-dependent Patrick Henry rear setback require explicit nonnumeric dispositions within the existing regulation families.
 - Patrick Henry rear setback must not default to zero without an affirmative verified source value.
-- Candidate `2026-07-19.3` discloses Objective Design Standards on multifamily profiles and the applicable 32-foot R1/R2 proximity transition without evaluating them; Patrick Henry recreation-space rules remain for the next tranche and will likewise stay outside the evaluated regulation map.
+- Candidate `2026-07-19.4` discloses Objective Design Standards, the applicable 32-foot R1/R2 proximity transition, Patrick Henry recreation space and encroachments, plan/project review, the UC community-benefits path, and the HDF office option without adding them to the evaluated regulation map.
+- PH-R5 has a retained 51-100 versus 51-99 gross-density conflict; the candidate uses Table 1-1 only through explicit project-owner policy and does not claim a City correction.
 - Base-zone gross residential density is now a supported candidate capability, but parcel yield, plan reconciliation, density bonus, affordability, development agreements, and state-law adjustments remain not evaluated.
 
 ## Blockers
@@ -305,3 +343,6 @@ None currently recorded.
 | 2026-07-19 | Add `standard.gross_residential_density` as a typed minimum-to-maximum base-zone range while keeping unit yield and density adjustments out of scope. | The base density range is a key zone standard that can be retrieved deterministically without expanding into acreage, proposal, bonus, affordability, plan, or state-law evaluation. |
 | 2026-07-19 | Retain all R5/R6 density assertions and select Table 1-1 values of 51-100 and 60-350 DU/AC through explicit project resolutions. | The project owner supplied a deterministic policy choice; preserving the competing purpose and Table 2-3 values prevents that local choice from being mistaken for an official City correction. |
 | 2026-07-19 | Preserve candidate `2026-07-19.2` and its pinned verification sources, then create density-specific source supplements and successor `2026-07-19.3`. | Editing checksum-pinned predecessor evidence or rule data in place would break reproducibility; additive documents, schema, rules, and crosswalk retain an inspectable lineage. |
+| 2026-07-19 | Accept nonruntime density candidate `2026-07-19.3` and authorize the Patrick Henry tranche. | Its 11 ranges, R5/R6 conflict records, deterministic lineage, source pins, and mutation tests passed; Patrick Henry can be added without editing the checkpoint. |
+| 2026-07-19 | Apply the R5 conflict policy to PH-R5: preserve all 51-100 and 51-99 assertions and select Table 1-1's 51-100 DU/AC range. | The project owner supplied the policy explicitly; retaining the four competing 51-99 assertions prevents the project choice from appearing to be an official correction. |
+| 2026-07-19 | Reuse schema `3.2.0` for Patrick Henry candidate `2026-07-19.4` and keep all new records nonapproved. | Existing typed requirements already express numeric, range, no-maximum-listed, FAA-controlled, and plan-dependent outcomes; the tranche adds data and provenance, not schema or runtime authority. |

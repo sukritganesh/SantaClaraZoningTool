@@ -264,6 +264,21 @@ python3 scripts/validate_density_residential_rules.py --verify-source-files
 
 Candidate `2026-07-19.3` also remains nonruntime and nonapproved. It retrieves base-zone gross density ranges only; it does not calculate unit yield or evaluate applicable plans, density bonus, affordability, development agreements, or state-law adjustments.
 
+The Patrick Henry successor preserves candidate `2026-07-19.3` and adds the five exact plan designations with one multifamily profile apiece. It reuses schema `3.2.0` and the same ten supported capabilities; no commercial or office analysis is added. UC height and stories remain FAA-controlled, every Patrick Henry rear setback remains plan-dependent rather than zero, and structure coverage remains no-maximum-listed rather than unlimited. PH-R5 retains all 51-100 and 51-99 density assertions while using the project-owner-selected Table 1-1 range:
+
+```text
+rulesets/santa_clara/residential/2026-07-19.4/ruleset.json
+rulesets/santa_clara/residential/2026-07-19.4/patrick-henry-expansion-crosswalk.json
+```
+
+Validate the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 lineage, source checksums, conflict consistency, exact predecessor preservation, deterministic replay, and GIS fixture contract:
+
+```bash
+python3 scripts/validate_patrick_henry_residential_rules.py --verify-source-files
+```
+
+Candidate `2026-07-19.4` contains the complete target-zone matrix but remains nonruntime and nonapproved. Supplying `--require-runtime-eligible` must still fail closed because the artifact is a candidate, `approved_on` is null, and every v3 record remains unapproved. Production continues to load only the released R1 v2 ruleset.
+
 Validate all eight nonruntime result-contract fixtures:
 
 ```bash
@@ -360,6 +375,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── future-improvements.md        Deferred enhancement burndown
 │   ├── residential-expansion-plan.md Active residential expansion specification
+│   ├── patrick-henry-rule-verification-supplement.md Patrick Henry source and PH-R5 decision gate
 │   ├── residential-density-rule-verification.md Density source matrix and conflict decisions
 │   ├── residential-density-title18-amendment-audit.md Density amendment-audit supplement
 │   ├── residential-rule-verification.md Active residential source and rule gate
@@ -381,6 +397,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │       ├── residential/2026-07-19.1/  Nonruntime migrated R1 v3 candidate
 │       ├── residential/2026-07-19.2/  Nonruntime R1-R6 v3.1 candidate
 │       ├── residential/2026-07-19.3/  Nonruntime R1-R6 density v3.2 candidate
+│       ├── residential/2026-07-19.4/  Complete nonruntime 12-zone v3.2 candidate
 │       └── r1/
 │           ├── 2026-07-16/            Versioned approved v1 R1 rules
 │           ├── 2026-07-17/            Preserved reviewed v2 candidate
@@ -399,6 +416,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
 │   ├── author_citywide_residential_rules.py Non-overwriting R2-R6 authoring replay
 │   ├── author_density_residential_rules.py Non-overwriting gross-density authoring replay
+│   ├── author_patrick_henry_residential_rules.py Non-overwriting Patrick Henry authoring replay
 │   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
 │   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
 │   ├── download_address_points.py     Citywide address-point downloader
@@ -411,6 +429,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── validate_residential_result_contract.py Expansion fixture validator
 │   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
 │   ├── validate_density_residential_rules.py Density lineage and domain validator
+│   ├── validate_patrick_henry_residential_rules.py Complete 12-zone lineage validator
 │   ├── validate_residential_rules_v3.py Residential domain and runtime gate
 │   ├── validate_r1_rules.py           Approved v1 ruleset validator
 │   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate
