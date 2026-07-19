@@ -2,7 +2,7 @@
 
 **Status:** Active implementation plan
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
 **Development branch:** `codex/residential-zone-expansion`
 
@@ -193,21 +193,219 @@ Historical filenames that accurately describe the released prototype—such as `
 
 Refactoring should follow behavior boundaries rather than a repository-wide text replacement. Names that are public contracts, historical artifacts, or source identities need explicit migration decisions.
 
-## 10. Implementation blocks
+## 10. Block 2 contract design proposal
+
+**Proposal status:** Ready for project-owner review; no schema, validator, migration, ruleset, runtime, presentation, or interface implementation is authorized by this section alone.
+
+### 10.1 Contract audit findings
+
+The released vertical slice has a sound deterministic core, but its contracts close over the prototype scope at several different layers. Generalization must preserve the good boundaries instead of replacing them with a loose all-purpose record shape.
+
+| Surface | Released contract | Residential requirement |
+|---|---|---|
+| Ruleset schema | Zone-first `zones[zone].regulations[capability]`; one regulation per capability in each zone | Retain zone ownership while allowing explicit legal-use availability and multiple structure-owned regulation profiles in one zone |
+| Domain validator | Exactly `R1-6L` and `R1-8L`, one structure type, ten capabilities, numeric maxima, and numeric setbacks | Validate the exact residential zone/use/structure matrix, profile completeness, nonnumeric dispositions, and special-pathway closure |
+| Runtime eligibility | `candidate` or `approved_for_prototype`; approved v2 must replay the v1 R1 migration exactly | Use a new residential lineage and runtime approval state while retaining full source, schema, domain, migration, and per-rule approval gates |
+| Ruleset loader | `ApprovedR1Ruleset` loads one hardcoded v2 ruleset, schema, crosswalk, and v1 source | Load a separately approved residential artifact set without mutating or weakening the released R1 gate |
+| Standards retrieval | Exact zone key returns exactly ten approved records | Exact zone plus an available analysis profile returns the selected use rule, profile-owned standards, qualifications, and provenance closure |
+| Pipeline result | `analyze_address(address)` attaches rules immediately after `r1_zone_found` | Address resolution first exposes valid selections; standards attach only after an exact available selection is supplied |
+| Presentation | Fixed ten-capability registry, numeric maxima, one single-family overview, global string limitations, and R1 statuses | Dispatch the same regulation families for the selected profile, render typed dispositions, and preserve structured profile-specific limitations |
+| Web boundary | One address input and one implicit building type | Address-first flow followed by an explicit available single-family, two-family, multifamily, or special-pathway selection |
+| Acceptance tests | Two R1 successes and R1-specific status, scope, version, and copy assertions | Preserve the R1 matrix and add real or synthetic coverage for every reachable or explicitly unavailable residential selection |
+
+The address normalizer, geometry primitives, immutable-source discipline, shared provenance model, conflict preservation, defensive-copy behavior, and deterministic ordering do not require conceptual redesign.
+
+### 10.2 Version and artifact boundary
+
+The recommended representation is **ruleset schema `3.0.0`** in a new residential lineage. A major version is appropriate because one zone can now contain several legal-use and structure selections, requirement records can carry nonnumeric dispositions, and global string limitations become structured and profile-specific.
+
+The new artifacts should be introduced alongside, not in place of:
+
+- `rulesets/schema/ruleset-v2.schema.json`;
+- `rulesets/santa_clara/r1/2026-07-17.2/`;
+- the v1-to-v2 migration and crosswalk; and
+- the released R1 validator, loader, pipeline, presenter, and acceptance tests until residential replacement gates pass.
+
+The proposed residential ruleset ID is `santa-clara-residential-zoning`. Candidate artifacts use `status: candidate`; an approved artifact uses `status: approved_for_runtime`. Approval still requires a valid `approved_on` date and every selected rule to be individually approved. The first version number remains undecided until candidate data is generated; it must continue the existing `YYYY-MM-DD.revision` publication convention.
+
+### 10.3 Proposed zone hierarchy
+
+The ruleset remains zone-first, with exact GIS designations as keys:
+
+```text
+ruleset
+├── metadata and jurisdiction
+├── shared sources, citations, definitions, and exception families
+├── zones
+│   └── <exact GIS designation>
+│       ├── use_permissions
+│       ├── analysis_profiles
+│       └── special_pathways
+├── conflicts
+├── not_evaluated_topics
+└── disclaimer
+```
+
+Each zone has three separate responsibilities:
+
+1. `use_permissions` explicitly records the source-table treatment of single-family, two-family, and multifamily dwelling uses. The allowed codes in this phase are `permitted_by_right` and `not_listed`. `not_listed` must never be presented as `prohibited` without separate authority, and special-pathway analysis status must not overwrite the source's permission category.
+2. `analysis_profiles` contains only ordinary selectable combinations that can return the supported standards. Each profile binds one stable profile ID to one workflow family, one legal-use capability, and one primary-structure type.
+3. `special_pathways` discloses a source-backed route whose dimensional analysis is unavailable under the current inputs. It must not inherit the nearest ordinary profile.
+
+The standard profile IDs are:
+
+| Profile ID | Workflow family | Legal-use capability | Primary-structure type |
+|---|---|---|---|
+| `single_family` | `single_family` | `use.single_family_dwelling` | `single_family_primary_structure` |
+| `two_family` | `multifamily` | `use.two_family_dwelling` | `two_family_primary_structure` |
+| `multifamily` | `multifamily` | `use.multifamily_dwelling` | `multifamily_primary_structure` |
+
+Profiles exist only where the approved use matrix provides an ordinary analyzable combination. Every zone still carries all three `use_permissions` records so that absence, availability, and special treatment are explicit rather than inferred from missing data.
+
+The R1 two-family use-permission record remains `permitted_by_right` with its Chapter 18.24 condition and special-pathway reference. The pathway itself belongs under `special_pathways`, not under an ordinary `two_family` profile. Its record should identify the multifamily workflow, the two-family legal-use capability, the attached-or-detached configuration boundary, exact source references, and a `not_evaluated` analysis disposition. This avoids falsely describing two detached homes as one two-family primary structure and prevents ordinary R1 single-family standards from being attached automatically.
+
+### 10.4 Rule ownership and identity
+
+Use-permission rules remain zone-owned. Approval and dimensional rules become analysis-profile-owned because the same capability can appear more than once within a zone with different structure applicability.
+
+The proposed rule-ID conventions are:
+
+```text
+us.ca.santa_clara.<zone-slug>.<use-capability-id>
+us.ca.santa_clara.<zone-slug>.<profile-id>.<capability-id>
+```
+
+Profile-owned IDs deliberately include the profile. This prevents an existing rule identity from changing meaning when another structure is later added to the same zone. Equal values across profiles or zones remain independent rules; shared citations and exception records may be reused by reference.
+
+Because this is a major contract migration, existing R1 approval and dimensional rule IDs receive explicit predecessor-to-successor mappings rather than being ambiguously reused. The legal value, conditions, provenance, conflicts, and approval evidence remain continuous even when the v3 identity adds a profile component.
+
+### 10.5 Requirement kinds and dispositions
+
+The existing `status`, `maximum_quantity`, and `setback` payloads remain the typed numeric and permission representations. Schema v3 adds only the minimum nonnumeric requirement kinds needed by the approved scope:
+
+| Requirement kind | Meaning | Allowed use in this phase |
+|---|---|---|
+| `status` | Source-backed use or approval category | Use permissions, Zoning Clearance, and Architectural Review |
+| `maximum_quantity` | Ordinary numeric maximum with explicit unit | Height, stories, and structure coverage |
+| `setback` | Ordinary base minimum with supported typed adjustments | Front, rear, interior-side, and street-side setbacks |
+| `no_maximum_listed` | The controlling base table supplies no maximum | A maximum capability only; never rendered as unlimited |
+| `faa_controlled` | The source supplies `FAA` instead of an ordinary number | Patrick Henry `UC` height and stories only in this phase |
+| `plan_dependent` | No universal base value is supplied; a controlling plan or project record is required | Patrick Henry rear setback in this phase; never a zero fallback |
+| `not_evaluated` | A relevant rule or special pathway cannot be evaluated with current facts or capabilities | R1 Chapter 18.24 dimensions and other approved deferrals |
+| `review_required` | Approved evidence cannot support one deterministic value | Unresolved conflicts or insufficient evidence; no guessed operational value. A separately approved project resolution may instead retain a typed value plus its conflict warning. |
+
+Every nonnumeric requirement must contain exact `source_refs`, a controlled reason code, and a concise source-backed explanation. `plan_dependent`, `not_evaluated`, and `review_required` may also identify the missing plan, facts, or evaluator prerequisites. They must not contain a placeholder numeric value.
+
+Capability-specific domain validation remains strict. For example, `faa_controlled` is not a generic escape hatch for coverage, and `no_maximum_listed` cannot be used for a minimum setback.
+
+### 10.6 Structured not-evaluated topics
+
+The v2 top-level list of prose strings cannot express that Objective Design Standards apply to multifamily profiles but not to every result. Schema v3 should replace it with `not_evaluated_topics`, an object keyed by stable topic ID. Each topic record contains:
+
+- a controlled label and reason code;
+- exact source references;
+- the missing facts, source layer, or evaluator capability where known; and
+- a concise explanation that does not imply prohibition or satisfaction.
+
+Each analysis profile and special pathway references only its applicable topic IDs. This structure implements promoted backlog item `DATA-004` without adding the 32-foot transition, recreation space, or Objective Design Standards as evaluated regulation families.
+
+### 10.7 Selection and result contracts
+
+The recommended pipeline result contract is a new major version, **`2.0.0`**. Address and spatial resolution remain separate from regulatory selection:
+
+1. Resolve the address to one exact supported residential zone.
+2. Return that zone's available analysis profiles and disclosed special pathways without attaching standards when no selection was supplied.
+3. Accept one exact profile or special-pathway ID; do not accept independently supplied workflow, use, and structure fields that could contradict one another.
+4. Retrieve standards only for an available ordinary profile.
+5. Return a controlled no-regulations outcome for an unavailable selection or a special pathway whose analysis is `not_evaluated`.
+
+The proposed controlled statuses are:
+
+| Status | Meaning | Regulatory content |
+|---|---|---|
+| `residential_zone_found` | Exact zone found; selection still required | Available profiles and special pathways only |
+| `residential_standards_found` | Exact available profile selected and approved standards retrieved | Complete selected use, profile regulations, dispositions, qualifications, and provenance |
+| `analysis_not_evaluated` | An approved special pathway was selected but its standards require unsupported facts or logic | Pathway evidence and structured limitations; no ordinary dimensional standards |
+| `selection_not_available` | The requested profile is not listed or available for the exact zone | Availability evidence only; no standards |
+| `outside_supported_residential_snapshot` | Address found outside the exact selected residential snapshot | No regulations |
+| `address_not_found`, `address_ambiguous`, `review_required` | Existing controlled lookup meanings | No regulations unless a later approved contract explicitly says otherwise |
+
+A successful `2.0.0` result includes a `selection` object containing `profile_id`, `workflow_family`, `legal_use_capability_id`, and `primary_structure_type`. It also retains the exact zone, selected rule records, transitive provenance closure, structured not-evaluated topics, disclaimer, and independent address, residential GIS, ruleset, and contract versions.
+
+The presentation contract should likewise move to `2.0.0` during Block 5. Block 2 defines its input meanings but does not implement or restyle the interface.
+
+### 10.8 R1 migration and equivalence crosswalk
+
+The v3 migration must consume the immutable approved v2 artifact, not the older v1 source directly. Its crosswalk must account for every approved v2 component:
+
+| Approved v2 component | Residential v3 destination |
+|---|---|
+| Ruleset identity and scope | New residential identity and expanded scope, with predecessor metadata retaining the v2 artifact identity and checksum |
+| R1 zone keys | Same exact `R1-6L` and `R1-8L` keys |
+| `use.single_family_dwelling` | Zone-owned single-family use-permission rule and the `single_family` profile reference |
+| Two approval rules per zone | Independent `single_family` profile-owned approval rules |
+| Three maximum rules per zone | Independent `single_family` profile-owned rules with unchanged quantities, units, conditions, and references |
+| Four setback rules per zone | Independent `single_family` profile-owned rules with unchanged base values, paired semantics, adjustments, and references |
+| R1-8L source conflict | Preserved conflict assertions and resolution, with affected rule ID mapped to its v3 successor |
+| Shared documents, citations, definitions, and exception families | Retained by stable ID unless an explicit collision or source update requires a documented successor |
+| Global `not_evaluated` strings | Stable structured topic records referenced by both migrated R1 single-family profiles as applicable |
+| Disclaimer | Product wording with the same legal limitation and no active prototype label |
+
+Migration acceptance is semantic, not merely a file-count comparison. A canonical R1 projection must prove that both migrated profiles retain every approved permission, value, unit, adjustment, condition, exception reference, citation, conflict assertion, selected resolution, source document, verification date, and limitation. The only permitted differences before separate approval are the new contract versions, residential identity, profile containment, successor rule IDs, structured limitation shape, and removal of active prototype wording.
+
+The released R1 runtime remains the comparison oracle until the residential acceptance suite passes. A migration difference outside the approved list is a blocking error, not an automatic modernization.
+
+### 10.9 Validator and mutation-test contract
+
+Schema validation should enforce local tagged shapes. A residential domain validator must additionally enforce:
+
+- the exact 12 target zone keys and explicit `HDF` identity;
+- one explicit use-permission record for each of the three residential use capabilities in every zone;
+- the approved `permitted_by_right` or `not_listed` source-table treatment for every cell, plus the required special-pathway reference for the R1 two-family use;
+- profile ID, workflow, legal-use, and structure correspondence, including the multifamily workflow for `two_family`;
+- absence of ordinary profiles for `not_listed` uses;
+- no ordinary R1 `two_family` profile and one complete Chapter 18.24 special-pathway record;
+- the required approval and dimensional capability set for every ordinary profile, even when a requirement has a nonnumeric disposition;
+- independent, convention-compliant rule IDs for every zone and profile;
+- capability-compatible requirement kinds, units, setback shapes, and disposition codes;
+- complete source, exception, conflict, topic, profile, and special-pathway references;
+- two-level runtime approval and no candidate records in an approved artifact;
+- complete v2-to-v3 crosswalk coverage and deterministic R1 semantic replay;
+- explicit zero-count fixture treatment for `R5` and `R6`; and
+- rejection of excluded exact designations and any attempt to normalize them to a target zone.
+
+Mutation tests must break each invariant independently: matrix completeness, profile identity, use/structure correspondence, unsupported requirement kinds, illegal disposition/capability pairs, missing sources, unresolved conflicts, approval gates, crosswalk entries, R1 replay, zero-count treatment, and excluded-designation handling.
+
+### 10.10 Block 2 implementation sequence after proposal approval
+
+If this proposal is approved, Block 2 implementation should proceed in these gated steps:
+
+1. Update the capability catalog for the two new legal-use capabilities and the approved disposition/support boundaries, while leaving additional regulation families deferred.
+2. Update the ruleset authoring guide with the v3 hierarchy, identity rules, payload mappings, special-pathway contract, and structured not-evaluated representation while preserving the approved v2 contract as historical compatibility evidence.
+3. Add the new schema and schema-level mutation tests without changing runtime loading.
+4. Add the residential domain validator and its invariant/mutation suite.
+5. Add the deterministic approved-v2-to-candidate-v3 migrator and exhaustive crosswalk.
+6. Validate the migrated R1 profiles against the released oracle and document any intentionally changed identity or wording.
+7. Specify executable fixtures for result contract `2.0.0` and invalid selections without wiring the production lookup or interface.
+8. Obtain project-owner approval of the implemented contracts before Block 3 authors any new-zone rule records.
+
+Block 2 does not author R2-R6 or Patrick Henry numeric data, load the residential GIS at runtime, modify the production pipeline, or change user-visible presentation.
+
+## 11. Implementation blocks
 
 | Block | Objective | Exit conditions |
 |---|---|---|
 | 0. Establish the transition contract | Archive the completed R1 ledger, create this plan and a new active ledger, and update durable repository instructions. | Historical links resolve, active scope is unambiguous, no code or runtime data changes occur, and documentation validation passes. |
 | 1. Verify sources and acquire residential GIS | Verify the zone/use/structure matrix and selected standards, audit amendments, and preserve a complete residential GIS snapshot. | New manifests prove exact filters, IDs, counts, checksums, and designations; a residential source-verification record is ready for owner review. |
 | 2. Generalize the data and result contracts | Design the new ruleset schema, applicability model, dispositions, migration crosswalk, validators, and result contracts. | Contracts are documented, mutation-tested, owner-approved, and can replay the approved R1 data without loss. |
-| 3. Author and approve residential rules | Encode independent zone- and structure-owned candidate rules with provenance and conflicts. | Every matrix cell has an explicit approved, prohibited, special-pathway, plan-dependent, not-evaluated, or review-required treatment; runtime eligibility passes. |
+| 3. Author and approve residential rules | Encode independent zone- and structure-owned candidate rules with provenance and conflicts. | Every matrix cell has an explicit approved, `not_listed`, special-pathway, plan-dependent, not-evaluated, or review-required treatment; runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Load the residential GIS and ruleset, determine exact zones, and retrieve standards only for valid use/structure combinations. | Real and synthetic fixtures cover supported, unsupported, ambiguous, mismatch, missing-data, and integrity outcomes deterministically. |
 | 5. Generalize presentation and interface | Remove active R1/prototype assumptions, add residential structure selection, and present all supported dispositions and qualifications. | Desktop and mobile states are accessible, source-linked, deterministic, and cannot display regulatory content after a failed or unsupported selection. |
 | 6. Validate and release | Run the complete acceptance matrix, protect the R1 baseline, document limitations, and assign the next release identity. | Source, migration, regression, offline, determinism, interface, and complete-suite gates pass with no unexplained skips. |
 
 Implementation should stop at each source, contract, data-approval, and release gate for project-owner review.
 
-## 11. Block 0 file policy
+## 12. Block 0 file policy
 
 This documentation transition intentionally changes only:
 
@@ -219,7 +417,7 @@ This documentation transition intentionally changes only:
 
 `README.md`, the capability catalog, authoring guide, source-verification documents, schemas, rulesets, application code, scripts, tests, and user-interface copy remain unchanged in Block 0. Each will be updated in its owning later block when its actual contract or behavior changes.
 
-## 12. Expansion completion criteria
+## 13. Expansion completion criteria
 
 The phase is complete when the product can:
 

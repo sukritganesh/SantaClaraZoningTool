@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 1 is complete and project-owner approved on `codex/residential-zone-expansion`; the verified source matrix, explicit `HDF` crosswalk, Patrick Henry rear-setback disposition, residential GIS snapshot, and fixture inventory are authorized inputs to Block 2 contract design, while new-zone runtime implementation remains intentionally pending
+**Current position:** Block 2 contract design is in progress on `codex/residential-zone-expansion`; the released R1 data, runtime, presentation, and test contracts have been audited and a proposed residential schema/result design is ready for project-owner review, while schema and runtime implementation remain intentionally pending
 
-**Next action:** Begin Block 2 contract design: define the residential zone/use/structure applicability model, typed nonnumeric dispositions, R1 migration crosswalk, validators, and new result-contract versions without authoring runtime rules prematurely
+**Next action:** Review and approve or revise the Block 2 proposal in `docs/residential-expansion-plan.md`; after approval, update the capability and authoring contracts before implementing schema `3.0.0`, validators, the v2-to-v3 R1 migration, and executable result-contract fixtures
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -37,7 +37,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 |---|---|---|
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
-| 2. Generalize the data and result contracts | Not started | New schema, applicability/disposition semantics, crosswalk, and contract versions are approved and mutation-tested. |
+| 2. Generalize the data and result contracts | Design proposal ready for owner review | The current contracts were audited across schema, validator, loader, retrieval, pipeline, presentation, web, and tests. The proposed v3 hierarchy, dispositions, selection/result contract, R1 crosswalk, and validation gates are documented; implementation has not begun. |
 | 3. Author and approve residential rules | Not started | All target zone/use/structure cells receive explicit verified dispositions and the new ruleset becomes runtime-eligible. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
@@ -110,9 +110,41 @@ The completed snapshot reproduced those observations exactly. It preserved 187 G
 
 Selected real-address fixtures are 636 Barto Street (`R1-6L`), 108 Brookside Avenue (`R1-8L`), 1240 White Drive (`R2`), 1577 Pomeroy Avenue (`R3`), 1400 Coleman Avenue (`R4`), 3105 Patrick Henry Drive (`PH-R5`), 3200 Patrick Henry Drive (`UV`), 4701 Patrick Henry Drive (`VR`), 4650 Old Ironsides Drive (`UC`), and 4633 Old Ironsides Drive (`HDF`). Each address point intersects exactly one parcel and current-zoning feature with matching exact designations. Both R4 features and every small Patrick Henry group were inspected before selection; fixtures test routing and do not establish legal permission.
 
-The source and acquisition work added developer tooling and fixture data, but did not change application runtime code, schemas, rulesets, dependencies, or user-visible behavior. New-zone assertions remain candidate data until the Block 1 evidence and dispositions receive owner approval.
+The source and acquisition work added developer tooling and fixture data, but did not change application runtime code, schemas, rulesets, dependencies, or user-visible behavior. The Block 1 evidence is project-owner approved as input to contract design; new-zone assertions remain non-runtime candidate data until the later representation, validation, rule-authoring, and approval gates pass.
 
-Validation evidence:
+## Block 2 contract audit and design proposal
+
+The read-only audit covered:
+
+- `rulesets/schema/ruleset-v2.schema.json` and the immutable approved R1 v2 ruleset and crosswalk;
+- `scripts/migrate_r1_rules_v2.py` and `scripts/validate_r1_rules_v2.py`;
+- the approved capability catalog and ruleset authoring guide;
+- runtime ruleset loading, exact-zone retrieval, lookup orchestration, pipeline result contract, deterministic presenter, Flask boundary, and rendered templates; and
+- schema, domain, migration, loader, retrieval, pipeline, presentation, web, and vertical-slice tests.
+
+The audit found that the reusable v2 foundations are zone ownership, independent rule identities, shared provenance, typed setbacks, conflict preservation, runtime eligibility, immutable loading, defensive copies, and fail-closed behavior. The expansion pressure comes from closed assumptions around exactly two zones, one structure type, ten rules per zone, numeric maximums and setbacks, immediate retrieval after address lookup, fixed R1 statuses, a single-family presentation summary, and global prose-only limitations.
+
+The proposed design is recorded in Section 10 of `docs/residential-expansion-plan.md`. It recommends:
+
+- a separate residential ruleset/schema `3.0.0` lineage, preserving v1, v2, and the approved R1 artifact;
+- exact zone-owned `use_permissions`, ordinary `analysis_profiles`, and separate `special_pathways`;
+- one explicit `permitted_by_right` or `not_listed` use-permission treatment for every single-family, two-family, and multifamily matrix cell, with special pathways represented separately from permission status;
+- independent profile-owned approvals and dimensional rules selected through one exact profile ID;
+- typed no-maximum-listed, FAA-controlled, plan-dependent, not-evaluated, and review-required requirement kinds within the existing regulation families;
+- structured, profile-specific not-evaluated topics without promoting deferred standards into evaluated capabilities;
+- pipeline result contract `2.0.0`, separating address/zone resolution from an explicit analysis selection; and
+- an exhaustive approved-v2-to-v3 R1 crosswalk and semantic equivalence gate.
+
+No application code, schema, validator, ruleset, migration, source snapshot, dependency, command, test behavior, or user-visible output changed during this audit and proposal step.
+
+Proposal validation evidence:
+
+- `git diff --check` passes;
+- `.venv/bin/python -m unittest discover -s tests -q` passes all 167 tests;
+- `.venv/bin/python scripts/validate_r1_rules_v2.py --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json --verify-source-files --require-runtime-eligible` confirms all 20 approved R1 regulations, the preserved conflict, complete migration crosswalk, source checksums, and runtime eligibility; and
+- focused stale-state scans find no remaining claim in the active plan or ledger that Block 2 is unstarted, Block 1 still awaits approval, `special_pathway` is a use-permission status, or a source-table `not_listed` cell means prohibited.
+
+## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
 - the archived R1 ledger matches the corresponding body of the former active ledger exactly;
