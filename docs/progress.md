@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 4 is complete and owner accepted; Block 5 implementation and automated technical gates are complete on `codex/residential-zone-expansion`, and owner manual review is underway with mobile visual review and final acceptance pending
+**Current position:** Blocks 0-5 are complete and owner accepted on `codex/residential-zone-expansion`; the Block 6 read-only release audit is complete and identified one clean-checkout runtime-data packaging blocker plus final acceptance-automation gaps
 
-**Next action:** Review the generalized residential interface in a browser at desktop and mobile sizes, record owner acceptance, and then begin Block 6 release validation
+**Next action:** Obtain project-owner approval for the Block 6 implementation proposal, then repair the clean-checkout source bundle before adding the consolidated residential release harness, CI gate, release report, and proposed `v0.2.0` identity
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -58,8 +58,8 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
-| 5. Generalize presentation and interface | Automated technical gate complete; manual review underway | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review produced small approved refinements to source receipts, the manual test sheet, and a faint responsive `YIMBY` hero easter egg; mobile visual review and final Block 5 acceptance remain pending. |
-| 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
+| 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
+| 6. Validate and release | Read-only audit complete; implementation awaiting approval | The working checkout passes all 346 tests and the regulatory validators, but a bootstrapped committed-only archive fails closed because the Patrick Henry adopted-plan PDF is absent from both runtime bundles. Final expanded-product acceptance automation, CI, release reporting, and release identity also remain to be completed. |
 
 ## Block 0 evidence
 
@@ -507,7 +507,32 @@ Automated validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 346 repository tests; and
 - `git diff --check` passes.
 
-The available in-app browser blocked navigation to the local Flask URL under its URL policy, so desktop/mobile visual inspection was not falsely marked complete. Automated rendered-document structure and accessibility checks pass, and no JavaScript changed; the manual responsive visual check remains the final Block 5 technical observation before owner acceptance. During the owner's local review, redundant per-citation `Return to result` links were removed, `docs/manual-testing-addresses.md` was added with every live supported designation and controlled failure cases, and a purely decorative, assistive-technology-hidden `YIMBY` wordmark was added behind the hero content using viewport-relative sizing. No dependency, versioned ruleset, schema, result fixture, raw source snapshot, or approved regulatory value changed in Block 5.
+The available in-app browser blocked navigation to the local Flask URL under its URL policy, so the project owner completed the visual review in a locally launched application. During that review, redundant per-citation `Return to result` links were removed, `docs/manual-testing-addresses.md` was added with every live supported designation and controlled failure cases, and a purely decorative, assistive-technology-hidden `YIMBY` wordmark was added behind the hero content using viewport-relative sizing. Automated rendered-document structure and accessibility checks pass, no JavaScript changed, and the owner accepted the complete Block 5 interface on July 19, 2026. No dependency, versioned ruleset, schema, result fixture, raw source snapshot, or approved regulatory value changed in Block 5.
+
+## Block 6 read-only release audit and proposal
+
+The project owner accepted Block 5 and authorized a read-only Block 6 audit on July 19, 2026. The audit changed no application code, ruleset, schema, source snapshot, runtime bundle, dependency, test, or user interface. The owner's separate edit to `docs/manual-testing-addresses.md` remained untouched and outside the audit.
+
+Release-baseline findings:
+
+- `codex/residential-zone-expansion` is 21 commits ahead of `main`, and released tag `v0.1.0-r1-prototype` remains an ancestor of the branch;
+- the approved R1 ruleset, released R1 runtime archive and manifest, R1 amendment audit, and R1 verification record have no branch diff from the released tag;
+- the current branch has no successor release tag, application-version artifact, release report, or GitHub Actions workflow;
+- exact dependency pins remain `jsonschema==4.23.0` and `Flask==3.1.3`, the active Python environment is 3.9.6, and `pip check` passes;
+- the current checkout passes the approved residential source/lineage/runtime validator, both residential result-contract validators, and all 346 repository tests; and
+- the complete suite reports no skips because both local runtime bundles and the ignored research snapshots are present.
+
+The clean-checkout gate exposed one concrete release blocker. A temporary archive created from committed `HEAD` successfully bootstrapped all 20 files from the released R1 bundle and residential GIS add-on, but the default application then rejected approved ruleset `2026-07-19.5` during complete-lineage validation. Both runtime bundles omit `data/raw/2026-07-18/patrick_henry_drive_specific_plan/PatrickHenryPlan.pdf`, even though the approved ruleset checksum-pins that 21,816,482-byte source at SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87`. The clean-checkout suite consequently ran 304 tests with eight failures and 34 errors, all downstream of the same missing source. This is a packaging defect, not a regulatory-value or application-logic conflict; the runtime correctly fails closed instead of bypassing source verification.
+
+The proposed Block 6 implementation is deliberately release-only:
+
+1. Create a nonoverwriting successor residential runtime add-on that includes the adopted Patrick Henry plan and its snapshot manifest alongside the existing residential GIS files; update bootstrap defaults and bundle tests without weakening source or lineage validation or changing the released R1 archive.
+2. Add one consolidated residential vertical-slice acceptance harness covering the ten live default-application zones, synthetic R5/R6 presentation, exact R1 regressions, controlled failures, provenance/version closure, offline startup, and cross-process structured and rendered determinism.
+3. Add a minimal Python CI workflow that bootstraps committed bundles in a clean checkout and runs the approved-ruleset validator, both result-contract validators, the complete suite, and whitespace checks so ignored local research files cannot mask release defects again.
+4. Re-run the source, migration, regression, offline, determinism, interface, clean-checkout, and complete-suite matrix with no unexplained skips, then publish a residential-expansion release report with exact artifact versions, checksums, limitations, and validation evidence.
+5. Use semantic version `v0.2.0` for the proposed next Git tag and **Santa Clara Zoning Explorer v0.2.0 — Residential Expansion** as the proposed release title, subject to owner approval and the normal PR, CI, review, merge, and post-merge tag gates.
+
+Block 6 does not add a regulation, zoning designation, regulatory value, live GIS source, selection screen, commercial analysis, proposal-level compliance logic, or deployment system. Existing immutable source snapshots and released artifacts remain unchanged; any corrected runtime package is a new versioned successor.
 
 ## Blocks 0-1 validation evidence
 
@@ -536,7 +561,7 @@ The available in-app browser blocked navigation to the local Flask URL under its
 
 ## Blockers
 
-None currently recorded.
+- Block 6 release gate: a bootstrapped committed-only checkout lacks the checksum-pinned Patrick Henry adopted-plan PDF, so approved residential rules fail complete-lineage validation and the default application correctly refuses to start. The proposed fix is a new versioned runtime add-on, not weaker validation or an edit to an existing bundle.
 
 ## Decision log
 
@@ -581,3 +606,4 @@ None currently recorded.
 | 2026-07-19 | Accept the complete Block 4 backend and authorize Block 5 presentation and default-application work. | The exact residential matrix and released R1 regressions passed together, so presentation could become the next deliberate consumer of the approved backend. |
 | 2026-07-19 | Present verified common zone standards without a mandatory structure selector and retain exact profile selection as backend and future infrastructure. | Current R2, R3, and R4 ordinary profiles have identical supported regulation semantics; allowed uses and profile-specific limitations can be disclosed separately, while any future standards divergence fails closed and triggers backlog item `UX-001`. |
 | 2026-07-19 | Add a separate residential GIS runtime add-on rather than modifying the released R1 demo archive. | The new default application needs the broader filtered snapshot, while the published R1 bundle must remain checksum-reproducible as historical release evidence. |
+| 2026-07-19 | Accept the complete Block 5 presentation and interface and authorize a read-only Block 6 release audit. | The owner completed local functional and responsive review, accepted the final interface refinements, and confirmed that the generalized residential product works as intended. |
