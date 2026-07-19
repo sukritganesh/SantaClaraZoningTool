@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 4 tranche 4.5 full-backend technical acceptance passes on `codex/residential-zone-expansion` and is awaiting project-owner acceptance; tranches 4.1 through 4.4 are owner accepted, and the default application remains unchanged on the released R1 v2 path
+**Current position:** Block 4 is complete and owner accepted; Block 5 implementation and automated technical gates are complete on `codex/residential-zone-expansion`, with owner acceptance and the manual desktop/mobile visual check pending
 
-**Next action:** Review and accept the complete Block 4 backend; after acceptance, begin a read-only Block 5 presentation/interface audit and implementation proposal before changing the default application
+**Next action:** Review the generalized residential interface in a browser at desktop and mobile sizes, record owner acceptance, and then begin Block 6 release validation
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -43,6 +43,8 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Accepted residential result-contract checkpoint: `contracts/residential-result-contract-2.0.0.schema.json`
 - Runtime-ready residential result contract: `contracts/residential-result-contract-2.1.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
+- Reproducible residential GIS add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.1.zip`
+- Residential GIS add-on manifest: `demo-data/residential-bundle-manifest.json`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
 
 The released R1 artifacts remain the immutable inherited baseline. The Patrick Henry and residential GIS snapshots are Block 1 expansion artifacts and must likewise remain immutable.
@@ -55,8 +57,8 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
-| 4. Expand lookup and retrieval | Tranche 4.5 technical gate complete; awaiting owner acceptance | Tranches 4.1-4.4 are owner accepted; the complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates without corrective code. |
-| 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
+| 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
+| 5. Generalize presentation and interface | Automated technical gate complete; awaiting visual review and owner acceptance | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. All 346 tests and the authoritative ruleset and result-contract gates pass; desktop/mobile browser inspection remains pending because the available browser environment blocked its local URL. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
 
 ## Block 0 evidence
@@ -484,7 +486,28 @@ Validation evidence:
 - a `unittest` discovery run over `tests/` passes all 324 repository tests with zero failures, errors, skips, or unexpected successes; and
 - `git diff --check` passes.
 
-A path-level audit from the approved Block 4 design commit through the completed backend confirms no changes to dependencies, ruleset schemas, versioned rulesets, raw snapshots, presentation, Flask, templates, CSS, or JavaScript. Block 4.5 therefore changes only this status ledger. The complete Block 4 backend is awaiting project-owner acceptance before any Block 5 presentation or default-application work begins.
+A path-level audit from the approved Block 4 design commit through the completed backend confirms no changes to dependencies, ruleset schemas, versioned rulesets, raw snapshots, presentation, Flask, templates, CSS, or JavaScript. Block 4.5 therefore changed only this status ledger. The project owner accepted the complete Block 4 backend and authorized the Block 5 interface audit and implementation on July 19, 2026.
+
+## Block 5 common-zone presentation implementation
+
+The owner-approved interface design deliberately avoids a mandatory structure selector in this phase. `ResidentialZoneSummaryPipeline` resolves an address once, retrieves every approved ordinary profile for its exact zone through the existing selection backend, and exposes one common regulation map only after their capability sets and regulatory semantics agree. Rule identities remain traceable through `source_rule_ids`; allowed single-family, two-family, and multifamily uses remain separate records; profile-specific not-evaluated topics retain their exact applicability; and R1 Chapter 18.24 pathways remain separate `not evaluated` disclosures. Any future profile difference fails closed with `structure_specific_standards_require_selection` rather than showing misleading common cards.
+
+`residential_presentation.py` adds presentation contract `2.0.0` for the common-zone result. The default Flask application now uses the approved residential summary pipeline and the active **Santa Clara Zoning Explorer** identity while still accepting an explicitly injected released `R1StandardsPipeline` for historical regression tests. The established page hierarchy and green visual system remain intact, with generalized use, approval, standard, setback, conflict, limitation, pathway, provenance, and failure rendering. The presenter covers all approved requirement shapes: status, numeric maximum, quantity range, lot-area-tiered maximum, no maximum listed, FAA controlled, ordinary and paired/story-adjusted setbacks, plan dependent, not evaluated, and review required.
+
+The released R1 runtime archive remains unchanged. A separately versioned, deterministic residential GIS add-on supplies the three additional snapshot files needed by the new default application. `scripts/build_residential_demo_data_bundle.py` reproduces its fixed-timestamp ZIP and manifest; repeated generation produces the same 4,186,509-byte archive and SHA-256 `bbe2274b00b2687d4a540484e7fcf8cbdc7a8038a063cb4973b169038bb3e098`. `scripts/bootstrap_demo_data.py` installs or verifies both the historical R1 bundle and the residential add-on by default and remains repeatable.
+
+Automated validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete source, schema, lineage, replay, semantic-preservation, approval, and runtime gates;
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` validates all eight runtime contract fixtures against approved ruleset `.5`;
+- `.venv/bin/python -B scripts/build_residential_demo_data_bundle.py` reproduces the expected archive size and checksum;
+- `.venv/bin/python -B scripts/bootstrap_demo_data.py` reports all 20 files already matching the two approved bundles;
+- the new summary, presentation, Flask, and bundle tests cover common R2/R3/R4 profiles, all supported requirement shapes, R1 pathways, Patrick Henry conflicts and plan-dependent treatment, UC FAA treatment, controlled failures, semantic-divergence rejection, evidence closure, deterministic copies, accessibility structure, and source links;
+- the preserved released R1 presentation, web, and vertical-slice suites pass through explicit historical-pipeline injection;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 346 repository tests; and
+- `git diff --check` passes.
+
+The available in-app browser blocked navigation to the local Flask URL under its URL policy, so desktop/mobile visual inspection was not falsely marked complete. Automated rendered-document structure and accessibility checks pass, and no JavaScript changed; the manual responsive visual check remains the final Block 5 technical observation before owner acceptance. No dependency, versioned ruleset, schema, result fixture, raw source snapshot, or approved regulatory value changed in Block 5.
 
 ## Blocks 0-1 validation evidence
 
@@ -555,3 +578,6 @@ None currently recorded.
 | 2026-07-19 | Accept residential GIS lookup tranche 4.3 and authorize only exact selection retrieval and production-independent pipeline tranche 4.4. | All live supported zone identities already pass the immutable snapshot boundary; the next isolated gate can now attach exact approved branches under contract `2.1.0` without changing presentation or the released application. |
 | 2026-07-19 | Accept exact selection retrieval and residential pipeline tranche 4.4 and begin the Block 4.5 full-backend acceptance gate. | The production-independent backend now covers exact approved branches under contract `2.1.0`; the complete matrix and released-path regressions must pass together before any presentation consumer changes. |
 | 2026-07-19 | Complete Block 4.5 as a validation-only tranche and retain the default R1 application boundary. | Every approved backend acceptance case and released-path regression passed without a code correction; changing presentation consumers remains a separately reviewed Block 5 concern. |
+| 2026-07-19 | Accept the complete Block 4 backend and authorize Block 5 presentation and default-application work. | The exact residential matrix and released R1 regressions passed together, so presentation could become the next deliberate consumer of the approved backend. |
+| 2026-07-19 | Present verified common zone standards without a mandatory structure selector and retain exact profile selection as backend and future infrastructure. | Current R2, R3, and R4 ordinary profiles have identical supported regulation semantics; allowed uses and profile-specific limitations can be disclosed separately, while any future standards divergence fails closed and triggers backlog item `UX-001`. |
+| 2026-07-19 | Add a separate residential GIS runtime add-on rather than modifying the released R1 demo archive. | The new default application needs the broader filtered snapshot, while the published R1 bundle must remain checksum-reproducible as historical release evidence. |
