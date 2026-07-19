@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 8.4 complete — the final validation matrix passes without failures or skips
+**Current position:** First R1 prototype complete — Blocks 0–8 satisfy the approved vertical-slice criteria
 
-**Next action:** Execute Block 8.5 closeout and record the prototype's final milestone disposition
+**Next action:** Select and approve the next scoped enhancement before beginning another implementation block
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -20,7 +20,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
 | 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
-| 8. Validate the vertical slice | In progress | Blocks 8.1–8.4 pass: the complete path, offline and integrity boundaries, provenance and determinism proofs, and final validation matrix are clean. |
+| 8. Validate the vertical slice | Complete | All nine exit conditions pass across the approved fixture matrix, offline and integrity boundaries, provenance and determinism proofs, and final validation matrix. |
 
 ## Completed-block evidence
 
@@ -461,7 +461,7 @@ Implementation sequence:
 | 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
 | 7.5 Validate and close Block 7 | Complete | Every approved browser, accessibility, wording, provenance, deterministic-rendering, setup, and regression acceptance condition has reproducible evidence. |
 
-## Block 8 planning
+## Block 8 validation and closeout
 
 The Block 8 acceptance plan is recorded in `docs/r1-prototype-plan.md`. It treats the milestone as final system validation rather than feature work: one dedicated complete-path module will exercise the real production composition and canonical artifacts across the two supported successes, unit-bearing input, unsupported zoning, ambiguity, unmatched and empty input, synthetic spatial review, and an integrity failure. New evidence will focus on offline operation, final provenance/version closure, controlled failure isolation, and cross-process rendered determinism without duplicating the focused tests from earlier blocks.
 
@@ -543,13 +543,59 @@ passed
 
 The canonical local GIS and regulatory artifacts were present, so no acceptance or focused test was skipped. The approved ruleset validator rechecked schema and domain invariants, source-document SHA-256 values, deterministic migration replay, crosswalk completeness, conflict integrity, approval metadata, and runtime eligibility. The dedicated module then rechecked the complete fixture matrix, offline boundary, final provenance closure, safe integrity handling, and independent-process rendered determinism. No defect or acceptance-oracle adjustment was needed.
 
+### Block 8.5 closeout
+
+The first R1 technical vertical slice is complete within its approved scope. Its canonical runtime inputs and contracts are:
+
+| Artifact | Canonical identity |
+|---|---|
+| Address-point snapshot | `data/raw/2026-07-16/santa_clara_address_points/manifest.json`; 67,243 validated features; snapshot `2026-07-16` |
+| R1 GIS snapshot | `data/raw/2026-07-14/santa_clara_r1_gis/manifest.json`; 16,193 parcels and 16,193 current-zoning features; snapshot `2026-07-14` |
+| Zoning-code baseline and amendment evidence | `data/raw/2026-07-16/santa_clara_zoning_code/manifest.json`; July 2025 consolidated code audited through `2026-07-16` |
+| Approved regulatory rules | `rulesets/santa_clara/r1/2026-07-17.2/ruleset.json`; approved `2026-07-17`; 20 zone-owned regulations |
+| Regulatory migration evidence | `rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json`; complete mapping of all 16 approved v1 rules |
+| Ruleset structure | `rulesets/schema/ruleset-v2.schema.json`; schema version `2.0.0` |
+| Pipeline contract | `santa_clara_zoning/pipeline.py`; contract `1.0.0` |
+| Presentation contract | `santa_clara_zoning/presentation.py`; contract `1.0.0` |
+| Final acceptance harness | `tests/test_vertical_slice.py`; 8 tests |
+
+Final fixture disposition:
+
+| Fixture | Final controlled outcome |
+|---|---|
+| `636 Barto Street` | Success; APN `293-16-045`; R1-6L; all ten supported capabilities rendered with sources and versions |
+| `108 Brookside Avenue` | Success; APN `303-22-022`; R1-8L; paired interior yards and the preserved 10-versus-15-foot street-side conflict rendered |
+| `1500 Warburton Avenue` | `outside_supported_r1_snapshot`; no exact non-R1 designation or regulations inferred |
+| `1577 Pomeroy Avenue, Unit 202` | Unit-bearing source record preserved; `outside_supported_r1_snapshot`; no regulations attached |
+| `324 Los Padres Boulevard` | `address_ambiguous`; two candidates preserved without automatic selection or regulations |
+| `99999 No Such Street` | `address_not_found`; no regulatory content or ruleset version |
+| Empty input | Controlled invalid-address result with a retry path and no regulatory content |
+| Synthetic parcel/zoning disagreement | `review_required`; inconsistent spatial evidence cannot become a success |
+| Synthetic integrity failure | Safe `system_error`; no private detail, regulatory content, receipts, or ruleset version |
+
+All nine Block 8 exit conditions pass:
+
+1. every approved fixture reaches its exact controlled outcome through the production path;
+2. both supported zones preserve typed rules, qualifications, conflicts, sources, limitations, and versions through rendered HTML;
+3. unsuccessful lookup, spatial-review, and integrity outcomes remain non-regulatory;
+4. the real application succeeds with outbound socket connections blocked;
+5. pipeline, presentation, and rendered outputs are repeatable across request order and independent hash-seeded processes;
+6. default loading verifies canonical GIS and regulatory integrity and exposes the loaded versions;
+7. the approved validator and all focused and complete test suites pass without artifact-related skips;
+8. setup, validation, and local startup remain reproducible from `README.md`; and
+9. this ledger records the artifacts, commands, outcomes, counts, limitations, and final disposition.
+
+The completed prototype remains deliberately narrow. It uses normalized exact address matching and a filtered R1 snapshot; it does not provide fuzzy matching or determine the exact zoning of unsupported parcels. It returns selected R1-6L and R1-8L base-zone standards, not a parcel-specific building envelope, proposal-compliance result, or complete entitlement analysis. It does not classify corner lots, evaluate setback exceptions or nonconformities, calculate remaining coverage or floor area, or automate ADUs, SB 9, parking, overlays, density bonuses, or other state-law interactions. The R1-8L corner-side conflict retains a project-selected 15-foot value pending official clarification. Sources are versioned local snapshots rather than live data, and the Flask server remains a local prototype without deployment, authentication, security or performance certification, or exhaustive browser and assistive-technology certification.
+
+Final disposition: **the first Santa Clara R1 prototype is complete for the approved vertical slice.** It must continue to be described as an evidence-backed technical prototype, not as a complete entitlement analysis or legal/planning determination. Broader product development remains active only when a new scope is explicitly approved.
+
 | Substep | Status | Intended result |
 |---|---|---|
 | 8.1 Approve the acceptance contract and fixture matrix | Complete | The project owner approved the final system boundary, fixtures, evidence requirements, and exclusions. |
 | 8.2 Implement complete-path acceptance tests | Complete | Five dedicated tests exercise the approved matrix through real production composition and canonical artifacts without duplicating internal algorithms. |
 | 8.3 Prove offline, integrity, provenance, and determinism boundaries | Complete | Blocked-socket startup and requests, canonical checksum/version closure, safe integrity adaptation, and opposite-order hash-seeded process render digests all pass. |
 | 8.4 Run the final validation matrix | Complete | Approved-v2 validation, 8 acceptance tests, 20 focused web tests, 151 full-suite tests, loader startup, and local JavaScript syntax all pass without skips. |
-| 8.5 Record evidence and close Block 8 | Pending | Record exact artifacts, commands, fixture outcomes, counts, and limitations before final milestone disposition. |
+| 8.5 Record evidence and close Block 8 | Complete | Canonical artifacts and versions, fixture outcomes, all nine exit conditions, limitations, and the scoped final disposition are recorded. |
 
 Planning boundaries:
 
