@@ -1,0 +1,67 @@
+{% macro source_refs(citation_ids, marker_id) -%}
+  {% if citation_ids %}
+    {% set popover_id = ("source-popup-" ~ marker_id) | replace(".", "-") | replace(":", "-") | replace("/", "-") %}
+    <span class="source-popover-trigger">
+      <button
+        class="source-marker"
+        type="button"
+        data-source-popover="{{ popover_id }}"
+        aria-controls="{{ popover_id }}"
+        aria-expanded="false"
+        aria-label="View {{ citation_ids | length }} source{% if citation_ids | length != 1 %}s{% endif %}"
+      >i</button>
+    </span>
+    <span
+      id="{{ popover_id }}"
+      class="source-popover"
+      popover="auto"
+      hidden
+      role="note"
+      aria-label="Sources"
+    >
+      <strong class="source-popover-title">Sources</strong>
+      <span class="source-popover-list">
+        {% for citation_id in citation_ids %}
+          {% set source = citation_sources[citation_id] %}
+          <a href="#source-{{ citation_id }}">
+            <span class="source-popover-number">{{ source_numbers[citation_id] }}</span>
+            <span>
+              <strong>{{ source.document.title }}</strong>
+              <span>{{ source.locator }}</span>
+            </span>
+          </a>
+        {% endfor %}
+      </span>
+    </span>
+  {% endif %}
+{%- endmacro %}
+
+{% macro quantity(value) -%}
+  {{ value.number }} {{ value.unit }}
+{%- endmacro %}
+
+{% macro setback_value(value) -%}
+  {% if value.kind == "distance" %}
+    {{ quantity(value) }}
+  {% elif value.kind == "paired_distances" %}
+    {% for member in value.members %}
+      <span class="paired-value" data-pair-role="{{ member.role }}">
+        {{ "Smaller" if member.role == "smaller_setback" else "Larger" }}: {{ quantity(member) }}
+      </span>{% if not loop.last %}; {% endif %}
+    {% endfor %}
+  {% endif %}
+{%- endmacro %}
+
+{% macro conditions(items, compact=false) -%}
+  {% if items %}
+    {% if compact %}
+      <div class="item-notes">
+        {% for condition in items %}<p>{{ condition }}</p>{% endfor %}
+      </div>
+    {% else %}
+      <ul class="item-conditions">
+        {% for condition in items %}<li>{{ condition }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+{%- endmacro %}

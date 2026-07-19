@@ -1,0 +1,679 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:santa-clara-zoning-portal:schema:ruleset:2.0.0",
+  "title": "Zone-first zoning ruleset v2",
+  "description": "Authoring contract for deterministic, zone-owned zoning regulations with shared provenance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "ruleset_id",
+    "version",
+    "jurisdiction",
+    "status",
+    "approved_on",
+    "verified_through",
+    "scope",
+    "shared",
+    "zones",
+    "conflicts",
+    "not_evaluated",
+    "disclaimer"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path or URI of the schema used to validate this ruleset."
+    },
+    "schema_version": {
+      "const": "2.0.0",
+      "description": "Version of the ruleset data contract."
+    },
+    "ruleset_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+      "description": "Stable identity for this jurisdictional ruleset."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$",
+      "description": "Versioned publication identifier in YYYY-MM-DD.revision form."
+    },
+    "jurisdiction": {
+      "$ref": "#/$defs/jurisdiction"
+    },
+    "status": {
+      "enum": ["candidate", "approved_for_prototype"],
+      "description": "Ruleset-level authoring or approval state."
+    },
+    "approved_on": {
+      "oneOf": [
+        {"type": "string", "format": "date"},
+        {"type": "null"}
+      ],
+      "description": "Approval date, or null while the ruleset remains a candidate."
+    },
+    "verified_through": {
+      "type": "string",
+      "format": "date",
+      "description": "Latest date through which source amendments were reviewed."
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "shared": {
+      "$ref": "#/$defs/sharedReferences"
+    },
+    "zones": {
+      "$ref": "#/$defs/zoneMap"
+    },
+    "conflicts": {
+      "$ref": "#/$defs/conflictMap"
+    },
+    "not_evaluated": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Subjects expressly outside the current deterministic evaluator."
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Required limitation on prototype conclusions."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "candidate"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {"approved_on": {"type": "null"}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "approved_for_prototype"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {"approved_on": {"type": "string", "format": "date"}}
+      }
+    }
+  ],
+  "$defs": {
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "slug", "state", "country"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable jurisdiction name."
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$",
+          "description": "Stable jurisdiction component used in rule IDs."
+        },
+        "state": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "country": {
+          "const": "US"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "structure_types", "result_kind"],
+      "properties": {
+        "description": {"type": "string", "minLength": 1},
+        "structure_types": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "result_kind": {
+          "const": "base_zone_standards_retrieval"
+        }
+      }
+    },
+    "sharedReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_documents",
+        "citations",
+        "definitions",
+        "exception_families"
+      ],
+      "properties": {
+        "source_documents": {
+          "$ref": "#/$defs/sourceDocumentMap"
+        },
+        "citations": {
+          "$ref": "#/$defs/citationMap"
+        },
+        "definitions": {
+          "$ref": "#/$defs/definitionMap"
+        },
+        "exception_families": {
+          "$ref": "#/$defs/exceptionFamilyMap"
+        }
+      }
+    },
+    "sourceDocumentMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/sourceDocument"}
+    },
+    "sourceDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "version",
+        "effective_date",
+        "local_path",
+        "sha256",
+        "verification_status"
+      ],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "effective_date": {
+          "oneOf": [
+            {"type": "string", "format": "date"},
+            {"type": "null"}
+          ]
+        },
+        "local_path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "verification_status": {
+          "enum": [
+            "candidate_unverified",
+            "verified_baseline",
+            "verified_audit_artifact"
+          ]
+        }
+      }
+    },
+    "citationMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/citation"}
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_document_id", "locator", "topic"],
+      "properties": {
+        "source_document_id": {"$ref": "#/$defs/referenceId"},
+        "locator": {"type": "string", "minLength": 1},
+        "topic": {"type": "string", "minLength": 1}
+      }
+    },
+    "definitionMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/definition"}
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["term", "text", "source_refs"],
+      "properties": {
+        "term": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "exceptionFamilyMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/exceptionFamily"}
+    },
+    "exceptionFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "treatment", "source_refs"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "treatment": {"enum": ["not_evaluated", "review_required"]},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "zoneMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {"$ref": "#/$defs/zone"}
+    },
+    "zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regulations"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "regulations": {"$ref": "#/$defs/regulationMap"}
+      }
+    },
+    "regulationMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/capabilityId"},
+      "additionalProperties": {"$ref": "#/$defs/regulation"}
+    },
+    "regulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "label",
+        "requirement",
+        "applicability",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id",
+        "approved_for_ruleset"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/ruleId"},
+        "label": {"type": "string", "minLength": 1},
+        "requirement": {"$ref": "#/$defs/requirement"},
+        "applicability": {"$ref": "#/$defs/applicability"},
+        "conditions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "exception_family_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/referenceId"},
+          "uniqueItems": true
+        },
+        "validation_status": {
+          "enum": [
+            "candidate_unverified",
+            "verified_base_value",
+            "verified_with_conditions",
+            "project_resolved_with_conditions"
+          ]
+        },
+        "conflict_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/referenceId"},
+            {"type": "null"}
+          ]
+        },
+        "approved_for_ruleset": {
+          "type": "boolean",
+          "description": "Must remain false for unapproved AI- or human-authored candidates."
+        }
+      }
+    },
+    "requirement": {
+      "oneOf": [
+        {"$ref": "#/$defs/statusRequirement"},
+        {"$ref": "#/$defs/maximumQuantityRequirement"},
+        {"$ref": "#/$defs/setbackRequirement"}
+      ]
+    },
+    "statusRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "code", "source_refs"],
+      "properties": {
+        "kind": {"const": "status"},
+        "code": {
+          "enum": ["permitted_by_right", "required", "may_be_required"]
+        },
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "maximumQuantityRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "source_refs"],
+      "properties": {
+        "kind": {"const": "maximum_quantity"},
+        "value": {"$ref": "#/$defs/quantity"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "setbackRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "base", "adjustments"],
+      "properties": {
+        "kind": {"const": "setback"},
+        "base": {"$ref": "#/$defs/setbackComponent"},
+        "adjustments": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/setbackAdjustment"},
+          "uniqueItems": true
+        },
+        "adjustment_resolution": {
+          "$ref": "#/$defs/adjustmentResolution"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "adjustments": {"minItems": 2}
+            },
+            "required": ["adjustments"]
+          },
+          "then": {
+            "required": ["adjustment_resolution"]
+          }
+        }
+      ]
+    },
+    "setbackComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source_refs"],
+      "properties": {
+        "value": {"$ref": "#/$defs/setbackValue"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "setbackAdjustment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adjustment_id", "trigger", "effect", "source_refs"],
+      "properties": {
+        "adjustment_id": {"$ref": "#/$defs/localId"},
+        "trigger": {"$ref": "#/$defs/adjustmentTrigger"},
+        "effect": {"$ref": "#/$defs/adjustmentEffect"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "adjustmentResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ordered_adjustment_ids"],
+      "properties": {
+        "kind": {"const": "highest_precedence_applicable"},
+        "ordered_adjustment_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/localId"},
+          "minItems": 2,
+          "uniqueItems": true,
+          "description": "Adjustment IDs in highest-to-lowest precedence order."
+        }
+      }
+    },
+    "adjustmentTrigger": {
+      "oneOf": [
+        {"$ref": "#/$defs/storyTrigger"},
+        {"$ref": "#/$defs/heightTrigger"}
+      ]
+    },
+    "storyTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "story"],
+      "properties": {
+        "kind": {"const": "story_at_or_above"},
+        "story": {"type": "integer", "minimum": 1}
+      }
+    },
+    "heightTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "height"],
+      "properties": {
+        "kind": {"const": "height_above"},
+        "height": {"$ref": "#/$defs/distanceQuantity"}
+      }
+    },
+    "adjustmentEffect": {
+      "oneOf": [
+        {"$ref": "#/$defs/replaceTotalEffect"},
+        {"$ref": "#/$defs/addToBaseEffect"}
+      ]
+    },
+    "replaceTotalEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"const": "replace_total_minimum"},
+        "value": {"$ref": "#/$defs/setbackValue"}
+      }
+    },
+    "addToBaseEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"const": "add_to_base"},
+        "value": {"$ref": "#/$defs/setbackValue"}
+      }
+    },
+    "setbackValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/distanceValue"},
+        {"$ref": "#/$defs/pairedDistanceValue"}
+      ]
+    },
+    "distanceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "number", "unit"],
+      "properties": {
+        "kind": {"const": "distance"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "pairedDistanceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "members",
+        "relationship",
+        "physical_assignment"
+      ],
+      "properties": {
+        "kind": {"const": "paired_distances"},
+        "members": {
+          "type": "array",
+          "prefixItems": [
+            {"$ref": "#/$defs/smallerSetbackMember"},
+            {"$ref": "#/$defs/largerSetbackMember"}
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "relationship": {"const": "coordinated_pair"},
+        "physical_assignment": {"const": "proposal_dependent"}
+      }
+    },
+    "smallerSetbackMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "number", "unit"],
+      "properties": {
+        "role": {"const": "smaller_setback"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "largerSetbackMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "number", "unit"],
+      "properties": {
+        "role": {"const": "larger_setback"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "unit"],
+      "properties": {
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"enum": ["ft", "percent", "stories"]}
+      }
+    },
+    "distanceQuantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "unit"],
+      "properties": {
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structure_type", "lot_context"],
+      "properties": {
+        "structure_type": {"type": "string", "minLength": 1},
+        "lot_context": {"enum": ["all", "corner", "not_applicable"]}
+      }
+    },
+    "conflictMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/conflict"}
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["affected_rule_ids", "assertions", "resolution"],
+      "properties": {
+        "affected_rule_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/ruleId"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "assertions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/conflictAssertion"},
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "resolution": {"$ref": "#/$defs/conflictResolution"}
+      }
+    },
+    "conflictAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertion_id", "value", "source_refs", "disposition"],
+      "properties": {
+        "assertion_id": {"$ref": "#/$defs/localId"},
+        "value": {"$ref": "#/$defs/assertionValue"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"},
+        "disposition": {
+          "enum": ["selected_for_prototype", "not_selected_for_prototype"]
+        }
+      }
+    },
+    "conflictResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_assertion_id",
+        "selected_value",
+        "rationale",
+        "decision_source",
+        "decision_date",
+        "status",
+        "re_review_triggers"
+      ],
+      "properties": {
+        "selected_assertion_id": {"$ref": "#/$defs/localId"},
+        "selected_value": {"$ref": "#/$defs/assertionValue"},
+        "rationale": {"type": "string", "minLength": 1},
+        "decision_source": {"type": "string", "minLength": 1},
+        "decision_date": {"type": "string", "format": "date"},
+        "status": {
+          "const": "project_resolved_pending_official_clarification"
+        },
+        "re_review_triggers": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "assertionValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/statusAssertionValue"},
+        {"$ref": "#/$defs/quantityAssertionValue"},
+        {"$ref": "#/$defs/distanceValue"},
+        {"$ref": "#/$defs/pairedDistanceValue"}
+      ]
+    },
+    "statusAssertionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "code"],
+      "properties": {
+        "kind": {"const": "status"},
+        "code": {
+          "enum": ["permitted_by_right", "required", "may_be_required"]
+        }
+      }
+    },
+    "quantityAssertionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "number", "unit"],
+      "properties": {
+        "kind": {"const": "quantity"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"enum": ["ft", "percent", "stories"]}
+      }
+    },
+    "sourceRefArray": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/referenceId"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "referenceId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "localId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    },
+    "ruleId": {
+      "type": "string",
+      "pattern": "^us\\.[a-z0-9_]+\\.[a-z0-9_]+\\.[a-z0-9-]+\\.[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    }
+  }
+}

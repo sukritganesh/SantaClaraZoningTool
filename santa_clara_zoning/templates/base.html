@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Santa Clara R1 Zoning Prototype{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+      <div class="page-shell">
+        <p class="eyebrow">Santa Clara R1 zoning prototype</p>
+        <h1>Residential zoning lookup</h1>
+        <p class="site-intro">Review selected, evidence-backed base-zone rules for an R1-6L or R1-8L property.</p>
+      </div>
+    </header>
+    <main id="main-content" class="page-shell">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <div class="page-shell">
+        <p>This prototype does not provide a complete entitlement analysis or legal or planning determination.</p>
+      </div>
+    </footer>
+  </body>
+</html>

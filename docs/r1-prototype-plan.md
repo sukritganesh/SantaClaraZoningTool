@@ -1,0 +1,995 @@
+# Santa Clara R1 Zoning Prototype Plan
+
+**Status:** Initial research and planning
+
+**Last updated:** July 18, 2026
+
+**Prototype scope:** Santa Clara R1-6L and R1-8L single-family residential zones
+
+## 1. Purpose
+
+Build a small, end-to-end prototype that accepts a Santa Clara street address and returns a limited set of applicable R1 development standards.
+
+Although the initial result will be deliberately narrow, the prototype must exercise the complete product pipeline:
+
+1. Normalize an entered address.
+2. Match the address to the City's GIS address data.
+3. Locate the corresponding parcel and APN.
+4. Determine the parcel's current zoning designation.
+5. Retrieve approved, structured regulations for that zone.
+6. Produce a deterministic result with source citations and version information.
+7. Present the result in a simple interface.
+
+This is a technical feasibility prototype, not an authoritative planning determination or legal opinion.
+
+## 2. Guiding Principles
+
+### Deterministic runtime
+
+Given the same normalized address, GIS snapshot, approved ruleset, assumptions, and evaluation-engine version, the prototype must return the same result.
+
+AI may assist with research and candidate rule extraction, but AI-generated interpretations do not become authoritative application data until they are checked against the source and approved.
+
+### Parcel-centered analysis
+
+The address is the entry point; the parcel is the unit of analysis. The intended lookup sequence is:
+
+```text
+address -> address point -> parcel/APN -> zoning -> approved rules -> result
+```
+
+### Evidence with every result
+
+Each regulatory value should retain its source document, section or table, source version, and validation status. GIS-derived facts should retain the source service/layer and snapshot date.
+
+### Explicit limits
+
+The prototype must distinguish between:
+
+- evaluated and supported;
+- outside the prototype's current scope;
+- unresolved because data is missing or conflicting; and
+- requiring staff interpretation.
+
+### Reusable core with controlled local extensions
+
+The future product should reuse stable capability semantics, typed requirement shapes, validation rules, and presentation components for regulatory concepts that genuinely mean the same thing across jurisdictions. Jurisdiction-owned rulesets must continue to hold local values, terminology, citations, exceptions, precedence, conflicts, and approval details.
+
+A provision must not be forced into a nearby shared capability when its legal meaning does not fit. A genuinely local rule should instead use a controlled jurisdiction extension that is:
+
+- explicitly named and documented;
+- typed and machine-validated;
+- backed by source provenance and the same approval gates as shared capabilities;
+- handled by deterministic retrieval, evaluation, and presentation code; and
+- rejected or labeled `not evaluated` when the active runtime does not recognize it, never silently omitted or guessed.
+
+AI-assisted workflows may recommend a shared-capability mapping or draft a jurisdiction extension, but they cannot approve either conclusion. A local pattern should be promoted into the shared core only after repeated use demonstrates equivalent semantics and the catalog, authoring contract, schema, migrations, validators, and tests are deliberately updated.
+
+This principle guides future workflow automation without expanding the current Santa Clara R1 scope.
+
+## 3. Initial Functional Scope
+
+### Included
+
+- Santa Clara addresses found in the City's address-point dataset.
+- Parcel and APN identification.
+- Current zoning lookup.
+- R1-6L and R1-8L base-zone recognition.
+- Maximum primary-structure height.
+- Maximum stories.
+- Maximum structure coverage.
+- Basic front, rear, interior-side, and corner-side setbacks.
+- Different first- and second-story setbacks where required.
+- Source citations and data/ruleset version information.
+- A simple retrieval-oriented result view.
+
+### Explicitly deferred
+
+- ADUs and JADUs.
+- SB 9 two-unit development and urban lot splits.
+- Accessory structures and garages as independent analyses.
+- Parking requirements.
+- Detailed architectural or design-review requirements.
+- Historic properties and historic combining districts.
+- Specific plans, legacy zoning, and planned-development entitlements.
+- Airport, flood, environmental, and other overlays.
+- Easements and private restrictions.
+- Variances, legal nonconformities, and prior approvals.
+- State-law overrides and density bonuses.
+- Proposal-specific plan compliance.
+- Parcels outside R1-6L and R1-8L.
+
+Deferred topics should appear as **not evaluated**, not be silently omitted or treated as inapplicable.
+
+## 4. Authoritative Sources
+
+### 4.1 Zoning code
+
+The Google Drive project folder contains `SantaClaraZoningCode.pdf`, titled **Santa Clara Zoning Code, Title 18 — July 2025**.
+
+Research on July 14, 2026 found that its version, date, table of contents, and R1 provisions match the latest consolidated code currently posted by the City:
+
+- [City of Santa Clara — Zoning Code Updates](https://www.santaclaraca.gov/our-city/departments-a-f/community-development/planning-division/zoning/zoning-code-update)
+- [City of Santa Clara — Zoning](https://www.santaclaraca.gov/our-city/departments-a-f/community-development/planning-division/zoning)
+
+The match has not been verified byte-for-byte because the City server rejected automated downloading of the official PDF.
+
+The July 2025 PDF must not be treated as a complete current-law snapshot by itself. A post-publication audit completed on July 16, 2026 identified two adopted amendments not yet incorporated into the City's consolidated code:
+
+- Ordinance 2085 adds citywide objective design standards for multifamily and residential mixed-use projects.
+- Ordinance 2086 adds El Camino Real Corridor regulations.
+
+Neither ordinance changes the selected numeric R1 standards in Table 2-3. Both ordinances purport to add different material as Chapter 18.27, and eCode360 lists both as adopted but not yet incorporated; the prototype must not guess how that chapter-number collision will be reconciled.
+
+Zoning Code Cleanup #3 was also reviewed. As of the audit cutoff, the official matter remained `Agenda Ready` with no passed or enactment date, and its July 14 Council event item had no recorded action or result. Its proposed tables preserve the selected R1 numeric values, but the final text must be rechecked if adopted.
+
+The detailed evidence, source links, status treatment, and recheck triggers are in [Title 18 Amendment Audit](title18-amendment-audit.md). The immutable local source snapshot and machine-readable manifest are stored at:
+
+```text
+data/raw/2026-07-16/santa_clara_zoning_code/
+```
+
+### 4.2 GIS
+
+The public MapSantaClara system exposes queryable ArcGIS REST services. The prototype should query or snapshot the underlying data rather than scrape the interactive map.
+
+Verified endpoints:
+
+| Purpose | REST endpoint |
+|---|---|
+| Service catalog | [ArcGIS REST catalog](https://map.santaclaraca.gov/maps/rest/services?f=pjson) |
+| Address points | [CSCAddress_Active, layer 0](https://map.santaclaraca.gov/maps/rest/services/OPENDATA/CSCAddress_Active/MapServer/0) |
+| Parcels | [RegionalBaseOpenData, layer 7](https://map.santaclaraca.gov/maps/rest/services/OPENDATA/RegionalBaseOpenData/MapServer/7) |
+| Current zoning open data | [RegionalZoningOpenData, layer 0](https://map.santaclaraca.gov/maps/rest/services/OPENDATA/RegionalZoningOpenData/MapServer/0) |
+| City user interface | [MapSantaClara](https://www.santaclaraca.gov/our-city/departments-a-f/community-development/mapsantaclara) |
+
+The correct service catalog path is `/maps/rest/services`. The previously considered `/maps/arcgis/rest/services` path returned HTTP 404 during verification.
+
+Useful confirmed fields include:
+
+**Address points**
+
+- `CSCADDR`
+- `CSCSTREET`
+- `ADDRNUM`
+- `ADDRUNIT`
+- `ADDRCITY`
+- `ADDRZIP5`
+
+**Parcels**
+
+- `APN`
+- `PARCITY`
+- `ZONGDSGN`
+- `GPLANCRT`
+- `SPPLAN`
+- `ACREAGE`
+- `YEARBUILT`
+
+**Current zoning layer**
+
+- `ZONGDSGN`
+- `SPPLAN`
+- `HistoricParcelType`
+- `ZoningURL`
+- `GenPlanURL`
+- `FEMAZONE_NOTE`
+
+On July 14, 2026, live read-only queries successfully completed this chain for 1500 Warburton Avenue:
+
+```text
+address match
+-> coordinate
+-> parcel intersection
+-> APN 224-25-074
+-> parcel zoning PQP
+-> current zoning PQP
+```
+
+This non-R1 example confirms that the required address-to-zoning path is technically available and that parcel and current-zoning attributes can be cross-checked.
+
+### 4.3 Downloaded R1 GIS snapshot
+
+A complete filtered snapshot was downloaded on July 14, 2026 to:
+
+```text
+data/raw/2026-07-14/santa_clara_r1_gis/
+```
+
+The snapshot contains:
+
+- 15,757 R1-6L features from the parcel layer;
+- 436 R1-8L features from the parcel layer;
+- the corresponding 16,193 features from the current-zoning layer;
+- source layer metadata and returned object-ID lists;
+- 100-feature raw GeoJSON batches;
+- consolidated `parcels_r1.geojson` and `current_zoning_r1.geojson` files; and
+- a validation and checksum manifest.
+
+For both layers, the number of downloaded features and unique downloaded object IDs exactly matched the source object-ID response. The consolidated files use EPSG:4326. No database, spatial join, or zoning-rule evaluation was created during this download step.
+
+### 4.4 Downloaded address-point snapshot
+
+A complete citywide address-point snapshot was downloaded on July 16, 2026 to:
+
+```text
+data/raw/2026-07-16/santa_clara_address_points/
+```
+
+All 67,243 source object IDs produced 67,243 unique point features. Core address fields have no missing values, while 45 full-address values appear more than once; lookup logic must preserve multiple exact matches instead of silently choosing a record. The citywide source is retained because address resolution precedes parcel and zoning classification.
+
+## 5. Verified R1 Rule Inputs
+
+The following values were transcribed from Chapter 18.10, Section 18.10.030, Table 2-3 of the July 2025 consolidated code. The post-publication amendment audit found no adopted change to these values. Rule-level verification is complete, and the first approved machine-readable version is stored at `rulesets/santa_clara/r1/2026-07-16/ruleset.json`.
+
+| Standard | R1-6L | R1-8L | Notes |
+|---|---:|---:|---|
+| Minimum newly created parcel area | 6,000 sq ft | 8,000 sq ft | A subdivision/parcel-creation standard; not an automatic determination that a smaller existing parcel is unbuildable. |
+| Minimum street frontage | 60 ft | 70 ft | Primarily relevant to parcel creation; initially informational or deferred. |
+| Maximum structure coverage | 40% | 40% | Requires a confirmed definition of included structures/areas before calculated use. |
+| Front setback, first story | 20 ft | 20 ft | Primary structure. |
+| Front setback, second story | 25 ft | 25 ft | Primary structure stepback. |
+| Interior side setback, first story | 5 ft | 6 ft and 9 ft | R1-8L uses unequal paired side-yard requirements. |
+| Interior side setback, second story | 10 ft | 11 ft and 14 ft | R1-8L uses unequal paired side-yard requirements. |
+| Corner-side setback, first story | 10 ft | 15 ft | Table 2-3 says 10 ft, but the prototype uses the specific written 15-foot provision in Section 18.10.040(B)(1), supported by the more-restrictive rule in Section 18.04.020(G). Preserve both source assertions. |
+| Corner-side setback, second story | 15 ft | 15 ft | Applies to corner lots. |
+| Rear setback | 20 ft | 20 ft | Listed for single- and multi-story primary structures. |
+| Driveway approach setback | 20 ft | 20 ft | Candidate for deferral from the first displayed result. |
+| Maximum primary-structure height | 25 ft | 25 ft | Base-zone value. |
+| Maximum stories | 2 | 2 | Base-zone value. |
+| Density range | 0.1–10 du/ac | 0.1–10 du/ac | Not sufficient by itself to evaluate ADUs, SB 9, or a particular proposal. |
+
+City planning FAQs independently state a 25-foot maximum height, two-story maximum, and 40 percent maximum building coverage for single-family development:
+
+- [City of Santa Clara — Planning FAQs](https://www.santaclaraca.gov/our-city/departments-a-f/community-development/planning-division/faqs)
+
+The detailed source trace, applicability findings, exceptions, cross-references, deferrals, and ruleset gate are in [R1 Rule-Level Verification](r1-rule-verification.md).
+
+Key conclusions:
+
+- Height, stories, coverage, and most setback numbers are verified **base-zone values**, not final parcel-specific requirements.
+- A permitted-by-right single-family dwelling still requires Zoning Clearance and may require Architectural Review and a public hearing.
+- Setback averaging, projections, official plan lines, alley credit, narrow historical parcels, and legal nonconformities can change parcel-specific application.
+- The R1-8L first-story corner-side setback contains a 10-foot/15-foot source conflict. The prototype resolves it to 15 feet while retaining the rejected 10-foot assertion and marking the decision as pending official clarification.
+- Parcel-creation standards, density, driveway approach, daylight plane, and proposal-level envelope calculations remain deferred from the first ruleset.
+
+### Regulatory conflict handling
+
+Future multi-jurisdiction automation must treat regulatory conflicts as structured data rather than extraction noise. The workflow should retain every conflicting assertion, evaluate authority, specificity, effective date, amendment history, and explicit conflict rules, and then either record a deterministic resolution or return `review required`.
+
+A resolution record should preserve the selected value, all source values, citations, rationale, reviewer or decision source, date, status, and re-review trigger. A project resolution must never be represented as an official correction by the source government.
+
+## 6. Proposed Lookup Pipeline
+
+The first local implementation is in `santa_clara_zoning/` with a command at `scripts/lookup_r1_zone.py`. It uses exact controlled address matching, checksum-verified immutable GeoJSON snapshots, bounding-box-prefiltered point-in-polygon checks, and explicit ambiguity or review outcomes. It does not use fuzzy matching, a database, the live City API, or the regulatory ruleset yet.
+
+Because the current parcel and zoning snapshots are filtered to R1-6L and R1-8L, an address with no polygon match is labeled outside the supported R1 snapshot. The implementation does not infer that address's exact non-R1 designation. The current spatial check uses the address point and does not calculate split-zone parcel areas.
+
+### Step 1: Normalize the address
+
+Convert user input into controlled fields such as:
+
+```json
+{
+  "house_number": "1279",
+  "street_name": "Las Palmas",
+  "street_type": "Drive",
+  "unit": null,
+  "city": "Santa Clara",
+  "state": "CA"
+}
+```
+
+The first implementation can use deterministic normalization and exact/controlled matching. Fuzzy matching and AI parsing can be considered later.
+
+### Step 2: Match the city address point
+
+Query the local snapshot or live address-point layer. Handle:
+
+- no match;
+- one unambiguous match;
+- multiple units or candidates; and
+- a normalized address that differs from the user's display form.
+
+Return the source object ID and coordinate with the match.
+
+### Step 3: Locate the parcel
+
+Use a point-in-polygon spatial query to find the parcel containing the address point. Return at minimum:
+
+- APN;
+- parcel geometry;
+- reported acreage or area;
+- parcel zoning attribute; and
+- source feature/object ID.
+
+Do not assume that an address record directly supplies a trustworthy APN.
+
+### Step 4: Determine current zoning
+
+Intersect the point or parcel with the current zoning open-data layer. Cross-check its `ZONGDSGN` against the parcel layer's `ZONGDSGN`.
+
+Possible outcomes:
+
+- values agree;
+- values conflict;
+- multiple zoning features intersect the parcel; or
+- no zoning feature is found.
+
+Only an unambiguous `R1-6L` or `R1-8L` match should proceed to a normal prototype result. Other outcomes should return a controlled unsupported or review-required status.
+
+### Step 5: Retrieve the approved zone rules
+
+Use the confirmed zone code as a deterministic key into a versioned development-standards table. Do not use an LLM to select or generate numeric standards at runtime.
+
+### Step 6: Produce a structured result
+
+Create a machine-readable evaluation result before rendering UI. The first result is a base-zone standards retrieval, not a complete project feasibility determination.
+
+### Step 7: Render the result
+
+The first UI may be plain. It should prioritize correctness and traceability over elaborate design.
+
+### Pre-Block 6 ruleset v2 gate
+
+Deterministic standards retrieval is paused until the initial ruleset is redesigned for long-term growth. The supported capability scope is maintained in [Supported Regulations Catalog](regulations/supported-regulations.md). That catalog explains regulation meanings and boundaries without prescribing schema fields or duplicating jurisdiction-specific values.
+
+The approved machine-readable representation and representative zone-first examples are maintained in the [Ruleset v2 Authoring Guide](regulations/ruleset-authoring-guide.md) and implemented structurally by `rulesets/schema/ruleset-v2.schema.json`.
+
+Before Block 6 begins, the project must:
+
+1. Establish the supported-regulations catalog.
+2. Redesign the canonical hierarchy around zones and their regulations.
+3. Give each zone its own rule identities even when current values match.
+4. Model setbacks as base requirements plus supported vertical adjustments and paired-yard configurations.
+5. Keep shared sources, citations, definitions, exceptions, and conflicts referenceable without duplicating their content in every zone.
+6. Migrate the approved R1-6L and R1-8L data into the v2 representation without losing provenance.
+7. Expand schema, invariant, migration, and regression validation for the v2 model.
+
+The schema representation was deliberately left undecided during catalog step 1. Steps 2 through 7 are complete: the approved contract is structurally implemented, the reviewed candidate contains the migrated R1 data plus a complete v1 crosswalk, and expanded domain and mutation validation passes. Project-owner approval on July 17, 2026 produced separate immutable version `2026-07-17.2`, which is the canonical runtime-eligible regulatory source for Block 6.
+
+## 7. Preliminary Data Model
+
+The exact database technology remains undecided. The logical model should include these concepts even if the first prototype stores some of them in GeoPackage, SQLite, JSON, or another lightweight format.
+
+The initial regulatory implementation is a normalized, versioned JSON ruleset with an executable Draft 2020-12 JSON Schema validator and additional domain-invariant checks. A database remains deferred until the lookup pipeline establishes concrete access patterns.
+
+### `addresses`
+
+- source object ID
+- normalized address fields
+- display address
+- point geometry
+- source layer
+- snapshot version
+
+### `parcels`
+
+- source object ID
+- APN
+- parcel attributes
+- polygon geometry
+- source layer
+- snapshot version
+
+### `zoning_features`
+
+- source object ID
+- zone code
+- relevant planning attributes
+- polygon geometry
+- source layer
+- snapshot version
+
+### `source_documents`
+
+- document ID
+- title
+- jurisdiction
+- version/date
+- effective date
+- source URL or local artifact
+- content hash where available
+- verification status
+
+### `ruleset_versions`
+
+- ruleset ID/version
+- source-document set
+- approval date
+- reviewer/validation status
+- notes
+
+### `development_standards`
+
+- rule ID
+- ruleset version
+- zone code
+- standard type
+- value
+- unit
+- story or location applicability
+- conditions and exceptions
+- source section/table
+- validation status
+
+## 8. Block 6 Retrieval Contract
+
+The project owner approved this direction on July 17, 2026, and Block 6 passed its acceptance gate on July 18, 2026. Contract version `1.0.0` describes the shape and meaning of the combined lookup-and-regulations result; it is not an evaluation-engine version. Ruleset version `2026-07-17.2` independently identifies the approved regulatory data. A separate engine version is deferred until the prototype performs meaningful proposal evaluation or rule calculations.
+
+Block 6 has two deterministic boundaries:
+
+1. A pure zone retriever accepts an exact, case-sensitive supported zone key and an approved, runtime-eligible ruleset; it does not trim, normalize, or guess aliases.
+2. An address orchestrator runs the existing Block 5 lookup and calls the pure retriever only after an unambiguous `r1_zone_found` result.
+
+Conceptually:
+
+```python
+retrieve_zone_standards(zone_code, approved_ruleset)
+analyze_address(address)
+```
+
+The successful combined result will follow this contract direction:
+
+```json
+{
+  "contract_version": "1.0.0",
+  "status": "r1_standards_found",
+  "reason_code": "approved_r1_standards_retrieved",
+  "query": {
+    "entered_address": "636 Barto Street",
+    "normalized_address": "636 BARTO ST"
+  },
+  "address": {
+    "display_address": "636 BARTO ST"
+  },
+  "parcel": {
+    "apn": "293-16-045",
+    "designation": "R1-6L"
+  },
+  "zoning": {
+    "designation": "R1-6L",
+    "parcel_attribute_agrees": true
+  },
+  "regulatory_context": {
+    "jurisdiction": {
+      "name": "City of Santa Clara",
+      "slug": "santa_clara",
+      "state": "CA",
+      "country": "US"
+    },
+    "ruleset_id": "santa-clara-r1-base-zone",
+    "ruleset_version": "2026-07-17.2",
+    "schema_version": "2.0.0",
+    "approved_on": "2026-07-17",
+    "verified_through": "2026-07-16",
+    "scope": {
+      "description": "Selected base-zone rules for single-family primary structures in R1-6L and R1-8L.",
+      "structure_types": ["single_family_primary_structure"],
+      "result_kind": "base_zone_standards_retrieval"
+    }
+  },
+  "regulations": {
+    "use.single_family_dwelling": {},
+    "approval.zoning_clearance": {},
+    "approval.architectural_review": {},
+    "standard.maximum_primary_structure_height": {},
+    "standard.maximum_stories": {},
+    "standard.maximum_structure_coverage": {},
+    "setback.front": {},
+    "setback.interior_side": {},
+    "setback.street_side": {},
+    "setback.rear": {}
+  },
+  "shared_references": {
+    "source_documents": {},
+    "citations": {},
+    "exception_families": {},
+    "conflicts": {}
+  },
+  "not_evaluated": [
+    "<topics copied from the approved ruleset>"
+  ],
+  "disclaimer": "This prototype reports selected base-zone standards and is not a complete entitlement analysis or legal or planning determination.",
+  "versions": {
+    "address_snapshot": "2026-07-16",
+    "r1_gis_snapshot": "2026-07-14",
+    "ruleset": "2026-07-17.2"
+  },
+  "sources": {
+    "address_layer": "...",
+    "parcel_layer": "...",
+    "zoning_layer": "..."
+  }
+}
+```
+
+Empty rule and shared-reference objects in the example are structural placeholders; the real result contains the complete selected records. The `not_evaluated` array is copied from the approved ruleset rather than maintained independently in this contract document.
+
+The actual `regulations` object preserves every approved zone-owned rule rather than flattening it into presentation-only numbers. This retains rule IDs, applicability, paired side yards, base setbacks, story-based adjustments, conditions, validation states, source references, and exception-family references. The street-side regulation is returned with `lot_context: corner`; retrieval does not determine whether the selected parcel is a corner lot.
+
+`shared_references` contains the transitive provenance closure for the selected zone: citations referenced directly by requirements, citations referenced by selected exception families and conflict assertions, the selected exception and conflict records, and the source documents referenced by those citations. The result is therefore self-contained without copying unrelated ruleset content.
+
+The implemented `R1StandardsPipeline` loads the validated GIS lookup and approved ruleset once. `analyze_address()` adds contract version `1.0.0` to every outcome and calls exact-zone retrieval only after `r1_zone_found`. A successful pipeline result replaces that intermediate status with `r1_standards_found`, attaches the complete regulatory result, and adds the ruleset version beside the GIS snapshot versions.
+
+The orchestrator preserves existing Block 5 outcomes when address or spatial lookup does not produce one supported zone: `address_not_found`, `address_ambiguous`, `outside_supported_r1_snapshot`, or `review_required` with its existing reason code. Those results receive no regulations or ruleset version. Regulatory loading and retrieval fail closed for an unapproved ruleset, unsupported zone, missing required capability, invalid reference, inconsistent component result, or other integrity error. The pipeline never reports partial success or recasts a system integrity failure as parcel-specific planning review.
+
+This contract retrieves and packages approved base-zone rules. It does not determine corner-lot facts, choose a proposed story count, calculate a building envelope or structure coverage, compare a proposal with a standard, apply state-law overrides or overlays, or produce final UI formatting.
+
+## 9. Block 7 Deterministic Presentation Plan
+
+### Objective
+
+Block 7 will turn the complete Block 6 result into a concise, planner-friendly presentation without changing, recomputing, or expanding the authoritative content. It will introduce a pure deterministic presenter between `R1StandardsPipeline` and the first user interface.
+
+The presenter answers the narrow question:
+
+> What does the supported base R1 zoning allow, what approvals and selected standards apply, and what has not been evaluated?
+
+It does not answer whether a particular design is compliant or whether development is ultimately feasible.
+
+### Current overview policy
+
+The approved ruleset does not contain a dedicated narrative description for R1-6L or R1-8L. For this iteration, the overview will therefore be brief and assembled deterministically from existing approved fields:
+
+- jurisdiction;
+- exact zone designation;
+- supported structure scope;
+- single-family use status;
+- approval requirements; and
+- the approved scope disclaimer.
+
+A representative overview is:
+
+> This property is zoned R1-6L. Under the supported base-zone rules, a single-family dwelling is permitted by right. Zoning Clearance and Architectural Review are required. This prototype reports selected base-zone standards only.
+
+The presenter must not infer or explain the meaning of the `6L` or `8L` suffixes. Richer descriptions are deferred until source-backed, reviewed zone profiles exist in versioned regulatory data. A later system may compose those profiles with parcel facts, overlays, state-law effects, and proposal evaluation, but runtime AI will not invent the authoritative overview.
+
+### Architecture boundary
+
+```text
+R1StandardsPipeline result contract 1.0.0
+                 ↓
+Pure deterministic presenter
+                 ↓
+Versioned UI-neutral presentation model
+                 ↓
+Initial CLI or local web interface
+```
+
+The presenter will:
+
+- accept one complete Block 6 result;
+- preserve the original result status and reason code;
+- map typed regulatory records into display components;
+- retain rule IDs and source-reference IDs behind every consequential item;
+- carry conditions, exceptions, conflicts, limitations, and versions forward; and
+- return a new object without mutating the pipeline result.
+
+It will not contain zone-specific numeric constants, legal conclusions, spatial calculations, or fallback guesses. The project owner approved presentation-contract version `1.0.0` on July 18, 2026, independently of the Block 6 result-contract version.
+
+For future jurisdictions, the presentation layer will use common component mappings for shared capabilities and explicit adapters for approved jurisdiction extensions. The current presenter only needs the approved prototype capabilities, but its dispatch behavior must fail visibly when it encounters an unrecognized capability or requirement shape. It must never drop an unknown regulatory record merely because no display component exists.
+
+### Approved presentation contract 1.0.0
+
+The successful UI-neutral model follows this required top-level shape:
+
+```json
+{
+  "presentation_contract_version": "1.0.0",
+  "kind": "success",
+  "source_status": "r1_standards_found",
+  "source_reason_code": "approved_r1_standards_retrieved",
+  "query": {
+    "entered_address": "<entered address>",
+    "normalized_address": "<normalized address>"
+  },
+  "property": {
+    "display_address": "<matched address>",
+    "apn": "<APN>",
+    "zone": "<exact zone>",
+    "scope_label": "R1 base-zone prototype"
+  },
+  "overview": {
+    "headline": "<base-zoning conclusion>",
+    "summary": "<brief deterministic summary>",
+    "disclaimer": "<approved ruleset disclaimer>"
+  },
+  "use_permissions": [],
+  "approvals": [],
+  "key_standards": [],
+  "setbacks": [],
+  "warnings": [],
+  "not_evaluated": [],
+  "sources": [],
+  "versions": {
+    "pipeline_contract": "1.0.0",
+    "address_snapshot": "<snapshot version>",
+    "r1_gis_snapshot": "<snapshot version>",
+    "ruleset": "<approved ruleset version>"
+  }
+}
+```
+
+This is the approved design contract for Block 7.2. The implementation may use typed Python models internally, but its serialized output must preserve these names and semantics. An executable schema or equivalent runtime validation belongs with the implementation and tests; it must not redefine the approved meaning.
+
+The contract is a tagged outcome union:
+
+| `kind` | Source | Required behavior |
+|---|---|---|
+| `success` | `r1_standards_found` | Populate the complete successful shape above. |
+| `lookup_failure` | `address_not_found`, `address_ambiguous`, or `outside_supported_r1_snapshot` | Preserve the source status, reason code, query, available property evidence, candidates where applicable, sources, and versions; all regulatory display arrays remain absent or empty. |
+| `review_required` | Block 5 `review_required` | Preserve the source reason and available parcel/zoning evidence without attaching regulatory conclusions. |
+| `system_error` | Ruleset, pipeline, presenter, or unknown-capability integrity failure | Return a controlled system/data message and integrity reason code; never convert the error into a parcel-specific planning conclusion. |
+
+Every outcome includes `presentation_contract_version`, `kind`, `source_status` when one exists, `source_reason_code`, the original query when available, a controlled headline and summary, available provenance, and version information. Property fields may be absent only when the source result did not establish them. Candidate address records appear only for `address_ambiguous` and must not be silently selected.
+
+Each consequential rule-derived display item must retain:
+
+- `capability_id` and `rule_id`;
+- a controlled label and either the authoritative status code or typed display value;
+- applicable conditions and qualifiers;
+- citation IDs, exception-family IDs, and conflict IDs; and
+- no numeric or permission value maintained outside the Block 6 result.
+
+Source receipts must preserve citation ID, source-document ID, document title and version, and locator. An official URL may be displayed only when the authoritative source data supplies one; the presenter must not fabricate a link. The `versions` object maps the input `contract_version` to `pipeline_contract`, preserves available GIS snapshot versions, and includes `ruleset` only when regulations were actually attached.
+
+Approved controlled wording includes:
+
+| Source meaning | Display wording |
+|---|---|
+| `permitted_by_right` | Permitted by right under the supported base zoning |
+| Required approval | Required |
+| Conditional hearing trigger | May require a Development Review Hearing; show the source condition |
+| Numeric maximum | Base-zone maximum |
+| Setback minimum | Base-zone minimum |
+| Unsupported subject | Not evaluated |
+| Unresolved parcel or regulatory fact | Review required |
+
+### Deterministic mapping rules
+
+| Authoritative input | Presentation output |
+|---|---|
+| Address, parcel, and zoning records | Property header with matched address, APN, exact zone, and scope label |
+| `use.single_family_dwelling` status | Primary-use card with controlled permission wording |
+| Approval status rules | Separate required-approval rows; never merged into use permission |
+| `maximum_quantity` rules | Height, stories, and structure-coverage metric cards with units and base-value qualifiers |
+| Scalar setback | Base distance plus any typed story adjustment |
+| Paired setback | Coordinated smaller/larger values; never averaged or assigned to physical sides |
+| `lot_context: corner` | Conditional “applies only to a corner lot” label; never a parcel classification |
+| Rule conditions | Concise notes attached to the affected display item |
+| Exception-family references | “Additional rules may apply” warnings with inspectable detail |
+| Conflict record | Prominent conflict notice showing selected value, competing assertions, status, and rationale |
+| Citations and source documents | Human-readable source receipts using title, version, and locator |
+| `not_evaluated` and disclaimer | Dedicated limitations section and persistent scope notice |
+| Contract and data versions | Collapsible methodology or data-version details |
+
+### Result-page hierarchy
+
+The successful result should present, in order:
+
+1. **Property identity:** matched address, APN, exact zoning designation, and prototype scope.
+2. **Brief overview:** the supported base use, approval summary, and scope limitation.
+3. **What base zoning permits:** single-family dwelling permission, using the exact controlled status.
+4. **Required approvals:** Zoning Clearance and Architectural Review as distinct requirements; a Development Review Hearing remains conditional where the source condition says so.
+5. **Key standards:** maximum primary-structure height, maximum stories, and maximum structure coverage.
+6. **Setbacks:** front, interior-side, street-side, and rear requirements, including typed story adjustments and paired values.
+7. **Warnings and conflicts:** source conflicts, proposal-dependent assignments, corner-only applicability, and other consequential conditions.
+8. **Not evaluated:** deferred subjects that must not be mistaken for prohibitions or completed checks.
+9. **Sources and versions:** inspectable code locators, document versions, GIS snapshot dates, ruleset version, and result-contract version.
+
+### Wording requirements
+
+- Say **“permitted by right under the supported base zoning,”** not “approval free” or “definitely buildable.”
+- Keep use permission separate from Zoning Clearance, Architectural Review, and conditional hearing requirements.
+- Label dimensional numbers as selected **base-zone** standards rather than parcel-specific computed limits.
+- Describe 40 percent as structure coverage, not floor-area ratio, maximum floor area, or remaining capacity.
+- Describe story-triggered setback values as total minimums, not additional distances.
+- Describe paired side yards as coordinated values whose physical assignment is proposal-dependent.
+- Show the street-side rule conditionally because corner-lot status is not currently determined.
+- Preserve the R1-8L 10-foot/15-foot source conflict and project resolution without presenting it as an official City correction.
+- Use **“not evaluated”** for unsupported subjects; do not translate them into “not allowed” or “not applicable.”
+- Always retain the approved disclaimer that the result is not a complete entitlement or legal/planning determination.
+
+### Failure and integrity presentation
+
+| Pipeline outcome | Presentation behavior |
+|---|---|
+| `address_not_found` | Explain that no exact local address match was found and invite corrected input |
+| `address_ambiguous` | Show candidate records without selecting one |
+| `outside_supported_r1_snapshot` | Explain that the address was located but its exact non-R1 zoning was not determined by this prototype |
+| `review_required` | Show the pipeline reason and available parcel/zoning evidence without attaching regulations |
+| Ruleset or pipeline integrity exception | Show a system/data validation error, not a parcel-specific planning conclusion |
+
+Suggested unsupported-zone message:
+
+> This address was located successfully, but its parcel is outside the filtered R1-6L/R1-8L snapshot. Its exact non-R1 zoning was not determined, and no regulations were attached.
+
+### Approved initial web-interface design
+
+The project owner approved a lightweight local web application and its initial page architecture on July 18, 2026. The page is scroll-first: primary regulatory content remains visible, while secondary limitations, methodology, and source detail may use native expandable disclosures. The interface must remain a thin consumer of presentation contract `1.0.0`; it may format values but may not reinterpret rules, duplicate numeric standards, or construct new regulatory conclusions.
+
+The successful page presents:
+
+1. a persistent address search that remains available after every outcome;
+2. a property header with matched address, APN, exact zone, locality, and prototype scope;
+3. a concise supported-use overview with the controlled permission wording;
+4. Zoning Clearance and Architectural Review as distinct approval rows;
+5. height, stories, and structure coverage as compact metric summaries;
+6. setbacks as a comparative table showing base values, typed second-story totals, and concise qualifications;
+7. visible warnings for corner-only applicability, proposal-dependent paired yards, and source conflicts;
+8. an expandable limitations section for deferred topics and exception families; and
+9. unobtrusive superscript references that lead to an expandable source-and-version section at the bottom.
+
+The primary content must not be hidden behind tabs, carousels, or nested accordions. Footnotes and an expandable source list are preferred to a modal for the first iteration because they preserve context, work well on narrow screens, and keep all receipts inspectable together. A later source drawer or modal may be added without changing the presenter contract. An official external link may appear only when it exists in authoritative source data.
+
+The visual language is clean and modern: white content surfaces, a very light gray-green page background, charcoal text, soft gray borders, and restrained forest-green accents for primary actions, the supported-use state, and active controls. Muted amber is reserved for consequential qualifications and preserved source conflicts. Red is reserved for genuine system or data-integrity failures rather than ordinary unmatched or unsupported-scope outcomes. Color never carries meaning without text or an icon.
+
+For R1-8L, paired interior-side values must be labeled as a coordinated smaller/larger pair whose physical assignment is proposal-dependent; the interface must not label them left and right. The preserved 10-foot/15-foot street-side conflict receives a visible warning with the selected project value, competing assertions, project-resolution status, and re-review conditions. It must not be relegated to a footnote.
+
+For unsuccessful outcomes, the address field and entered value remain visible. One focused message replaces the regulatory result and explains whether the address was unmatched, ambiguous, outside the supported R1 snapshot, requires review, or encountered a system/data-integrity error. The page provides an immediate path to edit and resubmit the address. Regulatory cards remain empty whenever the presentation result is not `success`.
+
+### Approved Block 7.4 web architecture
+
+The project owner approved the implementation architecture on July 18, 2026:
+
+- Flask `3.1.3`, pinned as a direct dependency;
+- server-rendered Jinja templates;
+- custom responsive CSS with no CSS framework or build tool;
+- native HTML forms, anchors, and disclosure elements, with custom JavaScript added only if an approved interaction cannot be expressed accessibly without it;
+- one read-only `GET /` route whose optional `address` query parameter selects the landing or analyzed state; and
+- the existing `unittest` suite plus Flask's in-process test client.
+
+The web application remains a thin adapter:
+
+```text
+GET /?address=<entered address>
+             ↓
+Flask application factory and route
+             ↓
+R1StandardsPipeline.analyze_address()
+             ↓
+present_pipeline_result()
+             ↓
+Jinja template selected by presentation kind
+             ↓
+HTML response
+```
+
+`create_app()` loads the canonical pipeline once rather than rebuilding snapshots and the ruleset for each request. The route passes the entered address to the pipeline without adding fuzzy matching or web-specific zoning logic. Known ruleset, pipeline, standards, and presentation integrity failures are converted only through `present_integrity_error()`; unexpected programming failures are not silently relabeled as planning outcomes.
+
+The approved initial file boundaries are:
+
+```text
+santa_clara_zoning/
+├── web.py
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── _success.html
+│   ├── _outcome.html
+│   └── _sources.html
+└── static/
+    └── app.css
+
+tests/
+└── test_web.py
+```
+
+`web.py` owns application construction, the one route, dependency injection for tests, and the known-integrity-error boundary. Templates may branch on the approved presentation `kind` and format presentation fields, but they may not read raw ruleset data, calculate standards, rename controlled statuses, or maintain jurisdiction-specific regulatory values. `app.css` owns the approved visual system and responsive layout. The first version has no database, authentication, session state, JSON API, frontend framework, Node dependency, live GIS request, or runtime AI call.
+
+Web tests cover the empty landing page; real Barto and Brookside successes; Warburton, Los Padres, unmatched, empty-input, review-required, and system-error views; HTML escaping; footnote-to-source linkage; absence of regulatory content on non-successes; and route-level mutation isolation. They do not duplicate rule-engine assertions or encode another copy of zone values. Browser-level responsive, keyboard, disclosure, contrast, and visual-polish checks remain in Block 7.5.
+
+Block 7.4 proceeds in four approved substeps:
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 7.4a Flask shell | Complete | Pinned dependency, application factory, one GET route, pipeline injection, minimum template, and known-integrity-error boundary validated |
+| 7.4b Semantic templates | Next | Render every approved presentation kind with accessible HTML before visual polish |
+| 7.4c Visual implementation | Pending | Implement the approved green, white, gray, and amber responsive design in custom CSS |
+| 7.4d Web validation | Pending | Add route and rendered-output tests for success, controlled outcomes, sources, safety, and isolation |
+
+### Block 7 implementation sequence
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 7.1 Approve presentation contract and wording | Complete | UI-neutral success/failure shapes, controlled labels, ordering, provenance links, and presentation version `1.0.0` approved July 18, 2026 |
+| 7.2 Implement the pure presenter | Complete | Convert Block 6 results into independent UI-ready objects without zone-specific values or runtime AI |
+| 7.3 Validate presenter behavior | Complete | Both R1 zones, controlled failures, conflicts, conditional applicability, provenance, mutation isolation, input ordering, and cross-process repeatability pass |
+| 7.4 Build the initial interface | In progress | Flask shell and route complete; semantic templates, visual implementation, and final web validation remain |
+| 7.5 Validate and close Block 7 | Pending | Confirm readable output, source visibility, limitation wording, failure states, deterministic rendering, setup instructions, and regression coverage |
+
+### Block 7.5 browser validation and closeout plan
+
+Block 7.5 is a validation-and-fix block, not a feature or regulatory-expansion block. It asks whether the completed local interface faithfully, accessibly, and reproducibly presents the approved deterministic model in a real browser. Recording this plan does not start the block; execution remains pending in `docs/progress.md` until the project owner directs it to proceed.
+
+#### 7.5a Reproduce startup
+
+Follow the README from the repository root to confirm that the documented environment, dependency installation, canonical local snapshots, and Flask command are sufficient. Verify that the landing page loads without an API key, database, runtime AI service, live GIS call, frontend build step, or external asset dependency. Check the browser console and server output for startup or rendering errors. Update the README only if the reproduced instructions are wrong or incomplete.
+
+#### 7.5b Exercise the browser-state matrix
+
+Inspect the landing page and the following canonical outcomes at desktop, tablet, and mobile widths where the state has regulatory or layout complexity:
+
+| State | Fixture | Browser acceptance focus |
+|---|---|---|
+| Landing | No address | Clear search purpose, label, help text, and initial focus path |
+| R1-6L success | `636 Barto Street` | Property identity, scalar setbacks, approvals, standards, limitations, and source access |
+| R1-8L success | `108 Brookside Avenue` | Paired side setbacks and the complete 10-foot/15-foot source-conflict warning |
+| Unsupported zone | `1500 Warburton Avenue` | Controlled message, retained address, retry path, and no regulations |
+| Ambiguous address | `324 Los Padres Boulevard` | Candidate evidence without automatic selection or regulations |
+| Unmatched address | A deliberately invalid Santa Clara address | Clear correction path and no regulations |
+
+Use representative widths near 1440 pixels, 768 pixels, and 390 pixels. The page itself must not overflow horizontally. The setback table may scroll inside its labeled region on narrow screens, and no essential content may be clipped, overlapped, or made unreachable.
+
+#### 7.5c Validate interaction and accessibility behavior
+
+Test the complete primary path using both a pointer and keyboard:
+
+- use the skip link and follow a logical focus order through the address form and result;
+- submit, edit, and resubmit an address while preserving the entered value;
+- confirm visible focus treatment for links, buttons, form controls, disclosures, and source markers;
+- open source popovers through hover, focus, and click, then reach their receipt links;
+- close source popovers through Escape or browser light-dismiss behavior without trapping focus;
+- operate limitation, lookup-evidence, and source disclosures from the keyboard;
+- navigate the horizontally scrollable setback region at narrow widths; and
+- confirm reduced-motion behavior and that color is never the only status signal.
+
+The source marker may remain visually unobtrusive, but its effective pointer and touch target must be comfortably selectable. Foreground and background combinations used for body text, controls, links, supported states, qualifications, conflicts, and system errors must meet the normal WCAG AA contrast thresholds applicable to their text size.
+
+#### 7.5d Review visual hierarchy and regulatory wording
+
+Confirm that property identity and zoning are immediately understandable; use permission remains distinct from required approvals; base-zone dimensional standards are not presented as a parcel-specific design calculation; second-story setbacks are labeled as total minimums; paired side setbacks remain smaller/larger rather than left/right; street-side rules remain corner-only without classifying the parcel; and `not evaluated` topics do not appear prohibited or irrelevant.
+
+The R1-8L conflict warning must remain prominent and include the selected project value, competing assertions, project-resolution status, and re-review conditions. The approved disclaimer must remain visible. Source popovers and expanded receipts must remain legible and within the viewport without dominating the primary result.
+
+#### 7.5e Correct confirmed presentation defects and rerun validation
+
+Fix only defects established by the browser review. Expected change surfaces are templates, CSS, the source-popover script, web regression tests, and—only if reproduction fails—the README. Do not change regulatory values, add zones or capabilities, expand address matching, introduce proposal evaluation, or redesign the ruleset in this block. Add an automated regression test when a browser finding has a stable programmatic assertion.
+
+After any correction, rerun the focused web suite, the full repository suite, the JavaScript syntax check, the documented startup path, and the affected browser cases. Previously accepted deterministic, provenance, escaping, and non-regulatory-outcome guarantees must remain intact.
+
+#### 7.5f Record evidence and close Block 7
+
+Record the tested browser states, viewports, interaction results, confirmed fixes, final commands, and regression counts in `docs/progress.md`. Mark Block 7 complete only when all Block 7 exit conditions pass. Update the README only for a setup or runbook correction, and update this prototype plan only if validation changes a design boundary or completion criterion. Commit and push the final validated state.
+
+Block 7.5 does not include exhaustive screen-reader or multi-browser certification, deployment, performance or penetration testing, live-GIS validation, new regulatory research, or the broader end-to-end fixture work assigned to Block 8.
+
+Block 7.5 passes when:
+
+1. the documented local startup path works without an undeclared runtime service;
+2. each browser-state fixture renders the correct controlled presentation kind;
+3. both supported R1 results remain readable and operable at desktop and mobile widths;
+4. unsuccessful outcomes contain no regulatory conclusions;
+5. primary controls, disclosures, source markers, and source links work by keyboard and pointer;
+6. focus, contrast, overflow, popup positioning, and reduced-motion behavior meet the prototype acceptance boundary;
+7. conditional, conflicting, and unevaluated subjects retain their approved qualifications;
+8. focused and full regression validation pass after any fixes; and
+9. the progress ledger contains reproducible evidence and marks Block 7 complete.
+
+### Block 7 validation matrix
+
+- Barto renders the exact R1-6L use, approvals, metrics, scalar setbacks, story adjustments, limitations, and citations.
+- Brookside renders paired R1-8L interior yards and the full street-side conflict warning.
+- Street-side setbacks are labeled corner-only for both zones without classifying either test parcel as a corner lot.
+- Warburton, Los Padres, unmatched, and synthetic review-required results render controlled failure views with no regulatory cards.
+- Every displayed consequential value retains rule and citation references.
+- Presenter output cannot mutate the Block 6 result and is byte-equivalent for identical inputs.
+- Every approved shared capability is mapped without a jurisdiction-specific numeric branch; an unrecognized capability or requirement shape produces an explicit integrity failure rather than disappearing from the result.
+- Tests fail if the presenter hard-codes a zone value, drops a supported regulation, hides a conflict, or converts an unevaluated subject into a conclusion.
+
+### Block 7 exit conditions
+
+Block 7 is complete when:
+
+1. a versioned presentation contract is approved;
+2. a pure deterministic presenter maps every supported rule family and controlled outcome;
+3. a successful view clearly presents property identity, overview, use, approvals, standards, setbacks, warnings, limitations, sources, and versions;
+4. conditional and conflicting rules remain visibly qualified;
+5. no displayed regulatory number is maintained separately from the Block 6 result;
+6. unsupported and integrity outcomes cannot appear as successful planning conclusions;
+7. the initial interface accepts an address and renders the approved presentation model; and
+8. unknown capabilities or requirement shapes fail visibly rather than being silently omitted; and
+9. focused and full-suite validation pass with reproducible setup instructions.
+
+## 10. Block 8: Validate the Vertical Slice
+
+Block 8 is the final system-acceptance block for the current prototype. It validates the assembled production path from immutable local source artifacts through address matching, spatial lookup, exact-zone regulatory retrieval, deterministic presentation, and rendered web output. It does not add another feature, repeat every component test, or reinterpret the governing sources.
+
+The acceptance harness should use the real default `LocalR1Lookup`, `ApprovedR1Ruleset`, `R1StandardsPipeline`, presenter, Flask application factory, and canonical local snapshots. Mocked or synthetic inputs remain appropriate only for integrity boundaries that cannot safely be produced from approved artifacts. Existing focused tests remain the authority for schema mutation details, geometry primitives, individual presenter shapes, and browser polish.
+
+### 10.1 Acceptance matrix
+
+| Fixture | Expected complete-path result | Acceptance focus |
+|---|---|---|
+| `636 Barto Street` | Success; APN `293-16-045`; R1-6L | Exact address normalization, parcel/zoning agreement, all ten approved capabilities, scalar setbacks, approvals, citations, limitations, and versions |
+| `108 Brookside Avenue` | Success; APN `303-22-022`; R1-8L | Paired interior yards, selected 15-foot street-side value, preserved 10-versus-15-foot conflict, re-review language, and full provenance |
+| `1500 Warburton Avenue` | `outside_supported_r1_snapshot` | A matched non-R1 address remains a controlled non-regulatory result; the filtered snapshot must not invent its exact current zone |
+| `1577 Pomeroy Avenue, Unit 202` | One exact unit-bearing address record followed by `outside_supported_r1_snapshot` | Unit normalization and source identity survive the complete path without attaching unsupported regulations |
+| `324 Los Padres Boulevard` | `address_ambiguous` with two candidates | No parcel or regulatory result is selected silently |
+| `99999 No Such Street` | `address_not_found` | No regulatory content, receipt, or ruleset version is attached |
+| Empty input | Controlled invalid-address result | The web and presentation layers retain a retry path without manufacturing evidence |
+| Synthetic parcel/zoning mismatch | `review_required` | Inconsistent spatial evidence cannot become a successful planning conclusion |
+| Synthetic approved-artifact integrity failure | Safe `system_error` at the web boundary | Internal validation failures do not leak details or become parcel-specific review outcomes |
+
+The two success fixtures should assert the final contract shape and selected consequential values, not maintain a second regulatory implementation. Expected test values are acceptance oracles only; any future source or ruleset update must change the authoritative artifact first and then deliberately update the corresponding expectation. A failing expectation may not be weakened merely to make the suite pass.
+
+### 10.2 End-to-end acceptance harness
+
+Add one dedicated `tests/test_vertical_slice.py` module. It should compose the real application and verify complete user journeys rather than reaching into private helpers. The module should cover:
+
+- the fixture matrix above through production entry points;
+- exact success-section and rule-family closure for both supported zones;
+- absence of regulatory cards, regulatory receipts, and ruleset versions on controlled failures;
+- address, APN, zone, capability, conflict, source, and version closure across pipeline, presenter, and rendered HTML;
+- normalized variants of a canonical address producing the same authoritative result;
+- byte-equivalent rendered success output across repeated requests and intervening fixture order; and
+- byte-equivalent rendered output in independent processes with different Python hash seeds.
+
+Do not create a parallel rules engine, duplicate the GIS join, or write a second HTML parser when an existing test helper can be reused cleanly. If the dedicated module would only repeat an existing assertion, cite that focused test in the closeout evidence instead of copying it.
+
+### 10.3 Offline and integrity proof
+
+Run the real vertical slice with outbound socket connections deliberately blocked before application construction. The Barto and Brookside requests must still succeed from the canonical local GIS, code-source, and ruleset artifacts. This proves the runtime path does not depend on live ArcGIS, an LLM API, a database, a CDN, or another undeclared service.
+
+The acceptance pass must also confirm that default startup verifies snapshot manifests and checksums, the approved ruleset remains runtime-eligible, and displayed version fields match the artifacts actually loaded. Corrupt-source and candidate-ruleset mutation details remain covered by their focused loader and lookup tests; Block 8 needs only to prove that such an integrity failure cannot cross the application boundary as a successful result.
+
+### 10.4 Execution sequence
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 8.1 Approve the acceptance contract and fixture matrix | Pending | Fix the final system boundary, expected outcomes, evidence requirements, and explicit exclusions before adding tests |
+| 8.2 Implement complete-path acceptance tests | Pending | Add `tests/test_vertical_slice.py` using real production composition and canonical artifacts without duplicating internal algorithms |
+| 8.3 Prove offline, integrity, provenance, and determinism boundaries | Pending | Demonstrate no undeclared runtime service, complete evidence/version closure, controlled fail-closed behavior, and cross-process rendered repeatability |
+| 8.4 Run the final validation matrix | Pending | Run the dedicated acceptance module, approved ruleset validation with source checksums, and the complete repository suite |
+| 8.5 Record evidence and close Block 8 | Pending | Record commands, fixture outcomes, versions, counts, and limitations; mark the prototype complete only if every criterion passes |
+
+The expected implementation surface is the dedicated acceptance test module and, only if a real failure exposes a defect, the existing owning production module plus a focused regression test. Update the README only if a useful new validation command or a corrected setup requirement belongs in the human runbook. `docs/progress.md` remains the sole execution ledger.
+
+### 10.5 Block 8 exclusions
+
+Block 8 does not include new zones or regulations, corner-lot classification, proposal evaluation, a database migration, live-GIS refresh, deployment, authentication, performance or penetration testing, exhaustive multi-browser or screen-reader certification, or visual redesign. It must not change a regulatory value merely because an expected fixture fails; such a failure stops acceptance and returns to the owning source-verification or ruleset workflow.
+
+### 10.6 Exit conditions
+
+Block 8 is complete when:
+
+1. every fixture in the approved matrix produces its exact controlled outcome through the complete production path;
+2. R1-6L and R1-8L successes preserve their approved rules, typed setback structures, qualifications, conflicts, sources, limitations, and versions through rendered output;
+3. unit-bearing, ambiguous, unmatched, unsupported, review-required, and integrity outcomes cannot acquire unsupported regulatory conclusions;
+4. the real application succeeds with outbound network access blocked;
+5. identical versioned inputs produce byte-equivalent pipeline, presentation, and rendered results across request order and independent processes;
+6. default artifact loading verifies the canonical GIS and regulatory integrity gates and exposes the loaded versions;
+7. the approved ruleset validator, dedicated vertical-slice suite, focused web suite, and complete repository suite all pass without skips caused by missing canonical artifacts;
+8. setup and validation commands are reproducible from the repository runbook; and
+9. `docs/progress.md` records the exact artifacts, commands, fixture outcomes, test counts, limitations, and final milestone disposition.
+
+City staff reports remain useful for test-case comparison but are not substitutes for the current GIS and zoning-code sources.
+
+## 11. Completion Criteria
+
+The first prototype is complete when it can:
+
+- accept a Santa Clara address;
+- resolve it to a city address point and parcel;
+- return the APN;
+- determine and cross-check the current zoning designation;
+- recognize R1-6L and R1-8L;
+- retrieve the approved limited R1 standards deterministically;
+- render a simple readable result;
+- cite the governing code table;
+- show source/ruleset versions;
+- identify unsupported zones and error states cleanly; and
+- reproduce the same output from the same versioned inputs.
+
+## 12. Remaining Decisions
+
+- Whether and when to add authoritative corner-lot classification rather than displaying the street-side rule conditionally.
+- When the direct immutable-snapshot lookup should be replaced by GeoPackage, DuckDB Spatial, PostGIS, or another indexed spatial store.
+- Whether a later deployed version uses local snapshots, refreshed snapshots, live GIS services, or a controlled combination.
+
+## 13. Likely Immediate Next Step
+
+Review and approve Block 8.1's acceptance contract, fixture matrix, and explicit exclusions. After approval, implement the dedicated complete-path test module without changing production behavior unless an acceptance failure proves a genuine defect in an existing owning layer.
+
+This document is the implementation-facing source of truth for the R1 prototype. The Google Doc remains the broader project-planning reference.

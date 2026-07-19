@@ -1,0 +1,185 @@
+{% from "_macros.html" import source_refs, quantity, setback_value, conditions with context %}
+
+<article class="result result--success" data-result-kind="success" aria-labelledby="result-heading">
+  <header class="property-card">
+    <p class="scope-badge">{{ view.property.scope_label }}</p>
+    <h2 id="result-heading">{{ view.property.display_address }}</h2>
+    <dl class="property-facts" aria-label="Property identity">
+      <div>
+        <dt>Assessor parcel number</dt>
+        <dd>{{ view.property.apn }}</dd>
+      </div>
+      <div>
+        <dt>Zoning designation</dt>
+        <dd><span class="zone-badge">{{ view.property.zone }}</span></dd>
+      </div>
+      <div>
+        <dt>Jurisdiction</dt>
+        <dd>City of Santa Clara</dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="content-section overview-panel" aria-labelledby="overview-heading">
+    <h2 id="overview-heading">{{ view.overview.headline }}</h2>
+    <p>{{ view.overview.summary }}</p>
+    <p class="scope-notice"><strong>Scope notice:</strong> {{ view.overview.disclaimer }}</p>
+  </section>
+
+  <section class="content-section" aria-labelledby="permissions-heading">
+    <h2 id="permissions-heading">What base zoning permits</h2>
+    {% for permission in view.use_permissions %}
+      <article class="permission-card" data-capability-id="{{ permission.capability_id }}" data-rule-id="{{ permission.rule_id }}">
+        <h3 class="rule-title">
+          <span class="rule-title-text">{{ permission.label }}</span>
+          {{ source_refs(permission.citation_ids, permission.rule_id) }}
+        </h3>
+        <p class="status-label status-label--supported">{{ permission.status_label }}</p>
+        {{ conditions(permission.conditions, true) }}
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="content-section" aria-labelledby="approvals-heading">
+    <h2 id="approvals-heading">Required approvals</h2>
+    <ul class="approval-grid">
+      {% for approval in view.approvals %}
+        <li class="approval-card" data-capability-id="{{ approval.capability_id }}" data-rule-id="{{ approval.rule_id }}">
+          <div class="approval-heading">
+            <span class="rule-title approval-title">
+              <strong class="rule-title-text">{{ approval.label }}</strong>
+              {{ source_refs(approval.citation_ids, approval.rule_id) }}
+            </span>
+            <span class="status-label">{{ approval.status_label }}</span>
+          </div>
+          {{ conditions(approval.conditions, true) }}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="content-section" aria-labelledby="standards-heading">
+    <h2 id="standards-heading">Key base-zone standards</h2>
+    <dl class="standards-grid">
+      {% for standard in view.key_standards %}
+        <div class="standard-card" data-capability-id="{{ standard.capability_id }}" data-rule-id="{{ standard.rule_id }}">
+          <dt class="rule-title">
+            <span class="rule-title-text">{{ standard.label }}</span>
+            {{ source_refs(standard.citation_ids, standard.rule_id) }}
+          </dt>
+          <dd>
+            <strong class="metric-value">{{ quantity(standard.value) }}</strong>
+            {{ conditions(standard.conditions, true) }}
+          </dd>
+        </div>
+      {% endfor %}
+    </dl>
+  </section>
+
+  <section class="content-section" aria-labelledby="setbacks-heading">
+    <h2 id="setbacks-heading">Setbacks</h2>
+    <p class="section-intro">Values are selected base-zone minimums. Story-based values are total minimums, not added distances.</p>
+    <div class="table-scroll" role="region" aria-labelledby="setbacks-heading" tabindex="0">
+      <table class="setbacks-table">
+        <caption>Base and story-adjusted setback requirements</caption>
+        <thead>
+          <tr>
+            <th scope="col">Setback</th>
+            <th scope="col">Base minimum</th>
+            <th scope="col">Story adjustment</th>
+            <th scope="col">Qualifications</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for setback in view.setbacks %}
+            <tr data-capability-id="{{ setback.capability_id }}" data-rule-id="{{ setback.rule_id }}">
+              <th scope="row">
+                <span class="rule-title">
+                  <span class="rule-title-text">{{ setback.label }}</span>
+                  {{ source_refs(setback.citation_ids, setback.rule_id) }}
+                </span>
+              </th>
+              <td><strong>{{ setback_value(setback.base.value) }}</strong></td>
+              <td>
+                {% if setback.adjustments %}
+                  <ul class="table-list">
+                    {% for adjustment in setback.adjustments %}
+                      <li>
+                        <strong>{{ adjustment.label }}:</strong>
+                        {{ setback_value(adjustment.effect.value) }}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <span class="muted-text">None in the supported rule</span>
+                {% endif %}
+              </td>
+              <td>{{ conditions(setback.conditions) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {% set visible_warnings = view.warnings | rejectattr("kind", "equalto", "not_evaluated_exception") | list %}
+  {% if visible_warnings %}
+    <section class="content-section" aria-labelledby="warnings-heading">
+      <h2 id="warnings-heading">Important qualifications</h2>
+      {% for warning in visible_warnings %}
+        <article class="warning-card warning-card--{{ warning.kind }}" data-warning-kind="{{ warning.kind }}" data-warning-id="{{ warning.warning_id }}">
+          <h3>{{ warning.title }}</h3>
+          {% if warning.kind == "source_conflict" %}
+            <p>
+              <strong>Prototype-selected value:</strong>
+              {{ setback_value(warning.resolution.selected_value) }}.
+              This is a project resolution pending official clarification, not an official City correction.
+            </p>
+            <p>{{ warning.resolution.rationale }}</p>
+            <h4>Competing source assertions</h4>
+            <ul>
+              {% for assertion in warning.assertions %}
+                <li>
+                  {{ setback_value(assertion.value) }} — {{ assertion.disposition | replace("_", " ") }}
+                  {{ source_refs(assertion.source_refs, warning.warning_id ~ "-" ~ assertion.assertion_id) }}
+                </li>
+              {% endfor %}
+            </ul>
+            <p><strong>Decision source:</strong> {{ warning.resolution.decision_source }} ({{ warning.resolution.decision_date }})</p>
+            <p><strong>Status:</strong> {{ warning.resolution.status | replace("_", " ") }}</p>
+            <h4>Re-review if</h4>
+            <ul>
+              {% for trigger in warning.resolution.re_review_triggers %}<li>{{ trigger }}</li>{% endfor %}
+            </ul>
+          {% else %}
+            <p>{{ warning.message }}</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  <section class="content-section disclosure-section" aria-labelledby="limitations-heading">
+    <h2 id="limitations-heading">Limitations</h2>
+    <details class="disclosure-card">
+      <summary>Review topics and additional rules not evaluated by this prototype</summary>
+      {% set exception_warnings = view.warnings | selectattr("kind", "equalto", "not_evaluated_exception") | list %}
+      {% if exception_warnings %}
+        <h3>Additional rules may apply</h3>
+        <ul>
+          {% for warning in exception_warnings %}
+            <li data-warning-id="{{ warning.warning_id }}">
+              {{ warning.title }}{{ source_refs(warning.citation_ids, warning.warning_id) }} — Not evaluated
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <h3>Subjects outside the current scope</h3>
+      <ul>
+        {% for item in view.not_evaluated %}
+          <li>{{ item.topic }} — {{ item.status_label }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+  </section>
+</article>
