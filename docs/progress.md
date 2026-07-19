@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.1 source-complete runtime packaging and its clean-checkout technical gates are complete, with owner acceptance pending before the consolidated release harness begins
+**Current position:** Blocks 0-5 and Block 6.1 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.2 consolidated residential acceptance automation and its clean-checkout technical gates are complete, with owner acceptance pending before CI begins
 
-**Next action:** Review and accept Block 6.1, then begin Block 6.2 consolidated residential vertical-slice acceptance automation
+**Next action:** Review and accept Block 6.2, then begin Block 6.3 clean-checkout continuous integration
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -61,7 +61,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Tranche 6.1 technical gate complete; owner acceptance pending | A nonoverwriting source-complete residential bundle successor repairs committed-only startup without weakening lineage validation or modifying prior archives. Its staged clean checkout bootstraps 22 files, starts the default application, passes the approved 12-zone validator, and passes all 348 tests; consolidated release automation, CI, reporting, and release identity remain. |
+| 6. Validate and release | Tranche 6.2 technical gate complete; owner acceptance pending | Accepted tranche 6.1 repairs clean-checkout source packaging. A new release-level vertical-slice harness now closes the live and synthetic zone matrix, released R1 semantics, controlled outcomes, provenance, offline behavior, and structured/presented/rendered determinism; its committed-only checkout passes all 354 tests. CI, reporting, and release identity remain. |
 
 ## Block 0 evidence
 
@@ -565,6 +565,29 @@ Validation evidence:
 
 No ruleset, schema, result contract, source snapshot, approved regulation, lookup behavior, presentation behavior, template, CSS, JavaScript, or released artifact changed in tranche 6.1.
 
+### Tranche 6.2 consolidated residential acceptance harness
+
+The project owner accepted tranche 6.1 and authorized continued Block 6 work on July 19, 2026. `tests/test_residential_vertical_slice.py` adds one self-contained release gate over the existing focused test layers. Its six tests prove:
+
+- the default Flask application starts with outbound sockets blocked and carries each of the ten source-verified live designations through local address lookup, exact zoning, common-zone summary, deterministic presentation, source receipts, and rendered HTML;
+- synthetic-only `R5` and `R6` render their approved multifamily standards, no-maximum-listed coverage, selected density ranges, and retained conflicts without inventing a real address or contradicting the preserved zero GIS counts;
+- both released R1 addresses retain the exact shared rule semantics, selected R1-8L conflict value, historical ruleset version, and explicitly injected released web path while the expanded path adds density and keeps special pathways separate;
+- all eight residential backend outcomes remain controlled: selection required, standards found, special pathway not evaluated, selection unavailable, outside snapshot, address not found, address ambiguous, and review required; only standards found contains regulations;
+- public lookup, review, and known integrity failures render no regulatory cards or private integrity details;
+- exact address, residential GIS, ruleset, schema, result, summary, and presentation versions close to the loaded artifacts, every displayed citation closes to a source document, and every local regulatory and GIS output checksum matches its manifest; and
+- two independent processes with different hash seeds and reversed request order produce identical structured-result, presented-view, and rendered-HTML SHA-256 values for all ten live addresses plus outside-snapshot, ambiguous, and missing-address outcomes.
+
+Validation evidence:
+
+- `.venv/bin/python -B -m unittest tests.test_residential_vertical_slice -v` passes all six acceptance tests;
+- the approved 12-zone source/lineage/runtime validator and both eight-case residential result-contract validators pass;
+- the working checkout passes all 354 repository tests;
+- a temporary archive of the staged committed-only tree bootstraps all 22 runtime files into an empty `data/raw/` tree;
+- the committed-only checkout passes all six release-harness tests and all 354 repository tests with no failures, errors, or skips; and
+- `git diff --check` passes.
+
+Tranche 6.2 adds tests and status evidence only. It does not change production code, rulesets, schemas, contracts, source snapshots, runtime bundles, dependencies, commands, presentation, or user-visible behavior.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -592,7 +615,7 @@ No ruleset, schema, result contract, source snapshot, approved regulation, looku
 
 ## Blockers
 
-None currently recorded. The clean-checkout source-packaging blocker found by the Block 6 audit is resolved by the staged `.2` successor and remains subject to owner acceptance.
+None currently recorded. The clean-checkout source-packaging blocker found by the Block 6 audit is resolved by accepted tranche 6.1.
 
 ## Decision log
 
@@ -640,3 +663,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-19 | Accept the complete Block 5 presentation and interface and authorize a read-only Block 6 release audit. | The owner completed local functional and responsive review, accepted the final interface refinements, and confirmed that the generalized residential product works as intended. |
 | 2026-07-19 | Approve the Block 6 release-only implementation proposal and begin with the clean-checkout package repair. | Source-complete startup must pass before additional acceptance automation can provide a trustworthy release gate. |
 | 2026-07-19 | Preserve residential GIS-only add-on `.1` and its manifest, and create source-complete successor `.2` with a separate version-specific manifest. | The accepted predecessor remains reproducible while fresh clones receive the Patrick Henry authoritative source required by the unchanged complete-lineage validator. |
+| 2026-07-19 | Accept Block 6.1 and proceed to the consolidated residential acceptance harness. | The source-complete successor repairs fresh-clone startup, preserves every earlier artifact, and passes the approved validator and complete suite from committed-only data. |
+| 2026-07-19 | Keep Block 6.2 test-only and consolidate release evidence without replacing focused tests. | Focused suites remain better diagnostics, while one product-level gate makes the complete offline, regression, provenance, failure, and determinism claim directly executable. |
