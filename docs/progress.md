@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 8 acceptance plan drafted — execution has not started
+**Current position:** Block 8.2 complete — the approved complete-path fixture matrix passes
 
-**Next action:** Review and approve Block 8.1's acceptance contract, fixture matrix, and exclusions
+**Next action:** Plan and execute Block 8.3 offline, provenance, integrity, and cross-process determinism proof
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -20,7 +20,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
 | 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
-| 8. Validate the vertical slice | Not started | Detailed acceptance matrix, complete-path harness, offline proof, determinism checks, execution sequence, and exit conditions are drafted for approval. |
+| 8. Validate the vertical slice | In progress | Block 8.1 is approved and all five Block 8.2 complete-path acceptance tests pass; offline and independent-process proof remain. |
 
 ## Completed-block evidence
 
@@ -462,7 +462,35 @@ Implementation sequence:
 
 The Block 8 acceptance plan is recorded in `docs/r1-prototype-plan.md`. It treats the milestone as final system validation rather than feature work: one dedicated complete-path module will exercise the real production composition and canonical artifacts across the two supported successes, unit-bearing input, unsupported zoning, ambiguity, unmatched and empty input, synthetic spatial review, and an integrity failure. New evidence will focus on offline operation, final provenance/version closure, controlled failure isolation, and cross-process rendered determinism without duplicating the focused tests from earlier blocks.
 
-Execution remains unstarted pending project-owner approval of Block 8.1. No production code, fixture expectation, README command, or milestone status has changed during planning.
+The project owner approved the acceptance contract, fixture matrix, and exclusions on July 18, 2026. Block 8.2 is implemented in `tests/test_vertical_slice.py`. The module constructs the real default Flask application and validated pipeline from canonical artifacts, then follows the production pipeline, presenter, and rendered-route boundaries rather than reproducing their algorithms.
+
+Five acceptance tests cover both supported successes; Warburton, the Pomeroy unit address, Los Padres ambiguity, unmatched and empty input; normalized Barto variants; a synthetic parcel/zoning disagreement; and a synthetic integrity failure. They verify the exact ten-capability closure, APNs, zones, selected standards, typed scalar and paired setbacks, corner-only applicability, the R1-8L conflict, source and version closure, not-evaluated topics, safe non-regulatory outcomes, and final HTML markers.
+
+The first focused run found an overly narrow acceptance assertion rather than a production defect: the street-side rule correctly retained both `lot_context: corner` and its structure-type applicability. The oracle was corrected to assert the required corner condition without discarding the additional authoritative field. No production, ruleset, source-data, template, README, or prototype-plan change was required.
+
+Block 8.2 validation evidence:
+
+```text
+.venv/bin/python -B -m unittest tests.test_vertical_slice -v
+5 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+148 passed, 0 failed, 0 skipped
+
+node --check santa_clara_zoning/static/app.js
+passed
+
+git diff --check
+passed
+```
+
+| Substep | Status | Intended result |
+|---|---|---|
+| 8.1 Approve the acceptance contract and fixture matrix | Complete | The project owner approved the final system boundary, fixtures, evidence requirements, and exclusions. |
+| 8.2 Implement complete-path acceptance tests | Complete | Five dedicated tests exercise the approved matrix through real production composition and canonical artifacts without duplicating internal algorithms. |
+| 8.3 Prove offline, integrity, provenance, and determinism boundaries | Pending | Demonstrate no undeclared runtime service, complete version closure, fail-closed behavior, and cross-process rendered repeatability. |
+| 8.4 Run the final validation matrix | Pending | Run the dedicated suite, approved ruleset validator, focused web tests, and complete repository suite. |
+| 8.5 Record evidence and close Block 8 | Pending | Record exact artifacts, commands, fixture outcomes, counts, and limitations before final milestone disposition. |
 
 Planning boundaries:
 
