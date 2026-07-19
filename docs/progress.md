@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** First R1 prototype complete; user-facing report and portable fresh-clone runtime bundle are ready
+**Current position:** First R1 prototype complete; PR #1 is merged into `main` and GitHub pre-release `v0.1.0-r1-prototype` marks the validated baseline
 
-**Next action:** Review the completed branch for merge and decide whether to create a prototype release tag
+**Next action:** Plan the post-prototype product phase from the tagged baseline before choosing the next implementation scope and development branch
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
