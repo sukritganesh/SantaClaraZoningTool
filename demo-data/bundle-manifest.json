@@ -1,0 +1,106 @@
+{
+  "archive": {
+    "file": "santa-clara-r1-runtime-data-2026-07-18.1.zip",
+    "format": "zip",
+    "sha256": "72df24984f3f614131b67827eef3d09ddea8a6496b420ca21b9d0d7328a3a16c",
+    "size_bytes": 35499787
+  },
+  "bundle_id": "santa-clara-r1-runtime-data",
+  "bundle_version": "2026-07-18.1",
+  "excluded_from_runtime_bundle": [
+    "Raw ArcGIS response chunks are preserved in the research workspace but excluded because the validated consolidated files, source metadata, object IDs, and manifests are sufficient to run and verify the prototype."
+  ],
+  "included_files": [
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/current_zoning/metadata.json",
+      "sha256": "229137c6c5f501665054118060b001fdf96f0a6bfa13f3ed2710dd87a1639a5a",
+      "size_bytes": 54301
+    },
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/current_zoning/object_ids.json",
+      "sha256": "038db700d0c07db737c4e89ed07193ad93559069c3e0981bab71e86e4e429fd2",
+      "size_bytes": 89022
+    },
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/current_zoning_r1.geojson",
+      "sha256": "1eb807ff8bc8bd335fc48c5f062c3f13564fc21d46f6cb6d6093c75a373cbe9d",
+      "size_bytes": 14180433
+    },
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/manifest.json",
+      "sha256": "4f73804a343a813d8ba5605ad4633985282fa29232585a6f14342f3ffd0a6643",
+      "size_bytes": 2334
+    },
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/parcels/metadata.json",
+      "sha256": "61ed6b9a52014813fa8dac02227a5560029b7e388da074b72ae8c7cb481f3adc",
+      "size_bytes": 29869
+    },
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/parcels/object_ids.json",
+      "sha256": "243bd83570d9b84283993718a7bec7fcd026d4b57f8b039f0f07babb5c99aef6",
+      "size_bytes": 89022
+    },
+    {
+      "path": "data/raw/2026-07-14/santa_clara_r1_gis/parcels_r1.geojson",
+      "sha256": "fca10f518312222be073ebc3f8de7bb5e54695f6c7efe5dfafb8b70afcaf63bf",
+      "size_bytes": 12128195
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_address_points/address_points.geojson",
+      "sha256": "5b637bcfa1f5188548545afd183aa4b2e2dcb5edbf0baf409a81ed836e012a22",
+      "size_bytes": 37479517
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_address_points/address_points/metadata.json",
+      "sha256": "6a43b0212145876e3ea51715fa901b50a3e3b5b839062606697fcad3d439dd73",
+      "size_bytes": 6463
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_address_points/address_points/object_ids.json",
+      "sha256": "890dbb2138346df010f232e6b13b1e7ee61a6f66cedc254bddc28e0eba818e6b",
+      "size_bytes": 672476
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_address_points/manifest.json",
+      "sha256": "e1861a418f0c78a0581449d6474f80bb38d6a4d7e3b76dfd7e846c73cabd1632",
+      "size_bytes": 1437
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_address_points/schema_report.json",
+      "sha256": "dbd59f469556d7635849c21b2eb86e29f4f90edc56674c5598bb3bc73845a91c",
+      "size_bytes": 4998
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_zoning_code/SantaClaraZoningCode-July-2025.pdf",
+      "sha256": "d6461e366cd214beb5c96ee8abe7498d80464879ac63f216119db7c3af6c9c35",
+      "size_bytes": 26758463
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_zoning_code/amendments/Ordinance-2085-adopted.pdf",
+      "sha256": "c94e8c73e9af08973af360f650568143deb194ce40c9e4489b305129e92db774",
+      "size_bytes": 1757720
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_zoning_code/amendments/Ordinance-2086-adopted.pdf",
+      "sha256": "2c193bb84d8b49271f152b510c0ba0c321892ad992e8b68078aebdb01d8f5270",
+      "size_bytes": 884684
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_zoning_code/amendments/Zoning-Code-Cleanup-3-proposed-tables.docx",
+      "sha256": "d91563b27f1a5f7b42d7abc4036dcd20824b73396ed29f559cf1ce3f7deb0f04",
+      "size_bytes": 327037
+    },
+    {
+      "path": "data/raw/2026-07-16/santa_clara_zoning_code/manifest.json",
+      "sha256": "771e3f4482ce783374875d1f04d58b00950867aeeb272840d62d1dea7b2d6ed9",
+      "size_bytes": 5145
+    }
+  ],
+  "install_root": ".",
+  "snapshots": {
+    "address_points": "2026-07-16",
+    "r1_gis": "2026-07-14",
+    "zoning_code_and_amendment_audit": "2026-07-16"
+  }
+}

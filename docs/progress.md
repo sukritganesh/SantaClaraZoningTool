@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** First R1 prototype complete; release-readiness work has begun with a user-facing project report
+**Current position:** First R1 prototype complete; user-facing report and portable fresh-clone runtime bundle are ready
 
-**Next action:** Design the portable canonical-data bundle and fresh-clone quick-start workflow before merge or tag
+**Next action:** Review the completed branch for merge and decide whether to create a prototype release tag
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -12,7 +12,13 @@ This is the authoritative project-status ledger. The design and scope remain in 
 
 - `docs/prototype-report.md` provides the completed plain-language account of the prototype, its wider workflow-automation context, accomplishments, trust model, limitations, and future direction.
 - `README.md` links to the report from the user-facing project orientation.
-- The remaining pre-merge distribution task is to make the canonical ignored runtime data reproducibly installable in a fresh clone and then validate that clean-room workflow.
+- `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip` packages the 17 canonical runtime files needed by the accepted vertical slice. Its committed manifest records each file path, size, and SHA-256 digest.
+- `scripts/bootstrap_demo_data.py` verifies the outer archive and every inner file, rejects unsafe or undeclared paths, refuses to overwrite different local data, and restores the ignored `data/raw/` tree idempotently.
+- `scripts/build_demo_data_bundle.py` reproduces the ZIP from an explicit file inventory with fixed archive metadata. Consecutive builds produced identical bytes.
+- The final archive is 35,499,787 bytes with SHA-256 `72df24984f3f614131b67827eef3d09ddea8a6496b420ca21b9d0d7328a3a16c`, below the approved 50 MB Git threshold. Raw ArcGIS response chunks remain excluded.
+- Eight focused bundle tests cover empty-repository installation, the size policy, manifest closure, idempotency, traversal and undeclared-entry rejection, checksum failures, and conflict-safe no-overwrite behavior.
+- The complete post-bundle suite passes 159 tests with no skips; approved-v2 validation, JavaScript syntax, and whitespace validation also pass.
+- A clean checkout reconstructed only from the staged Git index successfully installed all 17 files, rendered the real Barto result with APN `293-16-045` and R1-6L, passed the approved ruleset gate, and passed all 159 tests without artifact-related skips.
 
 ## Milestone tracker
 
@@ -666,3 +672,5 @@ None currently recorded.
 | 2026-07-18 | Use a scroll-first local web interface with expandable secondary detail. | Keeps the main planning answer immediately visible while making limitations, source receipts, and versions inspectable without dominating the page. |
 | 2026-07-18 | Use Flask 3.1.3, Jinja, custom CSS, and one read-only address route for the prototype interface. | Preserves the existing synchronous Python pipeline, provides precise semantic and visual control, and avoids a separate API, frontend build system, database, or duplicated client-side regulatory state. |
 | 2026-07-18 | Load or inject one pipeline at Flask application creation and catch only known integrity failures at the route boundary. | Avoids repeated snapshot and ruleset loading, keeps tests isolated, produces approved system-error views, and prevents programming defects from being mislabeled as zoning outcomes. |
+| 2026-07-18 | Commit one deterministic runtime-data ZIP while continuing to ignore extracted raw snapshots. | Makes a fresh clone runnable without live GIS retrieval, preserves a small reviewable runtime package, and avoids committing large ArcGIS response chunks or treating extracted files as source-controlled working data. |
+| 2026-07-18 | Make bundle installation checksum-gated, path-restricted, idempotent, and non-overwriting. | A distribution convenience must not weaken the prototype's provenance model or silently replace locally preserved source evidence. |

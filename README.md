@@ -19,25 +19,53 @@ The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family 
 
 The README intentionally does not duplicate detailed milestone status. Consult `docs/progress.md` when returning to the project.
 
-## Requirements
+## Quick start from a fresh clone
 
 The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local web prototype uses pinned Flask with server-rendered Jinja templates.
 
 - Python 3.9 or newer
-- Internet access to `map.santaclaraca.gov`
-- Approximately 60 MB for an R1 snapshot and 80 MB for a citywide address snapshot
+- Approximately 135 MB of free space for the committed ZIP and its extracted runtime data
 
-Create the local environment and install the validation dependency:
+From the repository root, create the environment, install the pinned dependencies, and restore the canonical runtime data:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+python scripts/bootstrap_demo_data.py
 ```
 
-No database, API key, or runtime AI service is currently required.
+On Windows PowerShell, create and activate the environment with `py -3 -m venv .venv` and `.\.venv\Scripts\Activate.ps1`, then run the same `python -m pip` and bootstrap commands.
 
-## Download an R1 GIS snapshot
+Then start the application:
+
+```bash
+python -m flask --app santa_clara_zoning.web run
+```
+
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Useful supported fixtures include `636 Barto Street` (R1-6L) and `108 Brookside Avenue` (R1-8L).
+
+The repository includes a 35,499,787-byte compressed bundle at `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`. The bootstrap command verifies the archive and every included file against `demo-data/bundle-manifest.json`, installs the approved snapshots under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
+
+No database, API key, runtime AI service, or live City GIS request is required to run the prototype. Internet access is needed only to install Python dependencies if they are not already cached.
+
+Run the automated checks with:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+If Node.js is installed, also check the small local JavaScript enhancement:
+
+```bash
+node --check santa_clara_zoning/static/app.js
+```
+
+## Refresh source snapshots for development
+
+The committed bundle is the quickest and canonical way to run this prototype. The following commands are for researchers or developers who deliberately want to retrieve a new dated source snapshot from Santa Clara's live ArcGIS services; they are not part of normal setup.
+
+### Download an R1 GIS snapshot
 
 From the repository root, use the current UTC date automatically:
 
@@ -62,9 +90,9 @@ The downloader:
 
 Snapshots are immutable. The command fails if its dated destination already exists; use a new date rather than overwriting raw source data.
 
-Downloaded GIS snapshots are intentionally excluded from Git because they are generated, potentially large artifacts. Recreate them locally with the downloader; each snapshot retains its own manifest and validation evidence.
+Newly downloaded snapshot directories are intentionally excluded from Git because they are generated, potentially large artifacts. Each snapshot retains its own manifest and validation evidence. The committed runtime ZIP contains the selected canonical consolidated files and provenance records, but not the much larger raw ArcGIS response chunks.
 
-## Download a citywide address-point snapshot
+### Download a citywide address-point snapshot
 
 ```bash
 python3 scripts/download_address_points.py
@@ -72,7 +100,7 @@ python3 scripts/download_address_points.py
 
 Use `--snapshot-date YYYY-MM-DD` to choose the dated destination. This downloader preserves the source metadata, object IDs, and raw POST batches, then writes a consolidated EPSG:4326 GeoJSON file, a schema report, and a validated manifest. It downloads the complete citywide layer because zoning classification happens after address-to-parcel resolution.
 
-## Inspect a snapshot
+### Inspect a snapshot
 
 Find the canonical snapshot path in [docs/progress.md](docs/progress.md). To inspect the newest dated R1 manifest currently on disk:
 
@@ -197,7 +225,7 @@ A supported address returns `r1_standards_found` with parcel and zoning evidence
 
 ## Run the local web prototype
 
-After installing `requirements.txt` and restoring the canonical local snapshots, start the development server from the repository root:
+After completing the quick start, launch the development server from the repository root at any time with:
 
 ```bash
 python -m flask --app santa_clara_zoning.web run
@@ -234,8 +262,11 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── GOOGLE_DRIVE_SOURCE.txt           Shared project-source link
 ├── README.md                         Human-facing setup and runbook
 ├── requirements.txt                  Pinned Python validation dependency
+├── demo-data/
+│   ├── bundle-manifest.json          Runtime bundle inventory and checksums
+│   └── santa-clara-r1-runtime-…zip   Committed canonical runtime data
 ├── data/
-│   └── raw/                          Immutable dated source snapshots
+│   └── raw/                          Ignored, installed immutable snapshots
 ├── docs/
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── future-improvements.md        Deferred enhancement burndown
@@ -264,6 +295,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   └── web.py                         Flask application factory and route boundary
 ├── scripts/
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
+│   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
+│   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
 │   ├── download_address_points.py     Citywide address-point downloader
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
 │   ├── lookup_r1_zone.py              Offline address-to-zone command
