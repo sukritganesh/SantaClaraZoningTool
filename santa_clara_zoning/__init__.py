@@ -12,6 +12,15 @@ from .presentation import (
     present_integrity_error,
     present_pipeline_result,
 )
+from .residential_pipeline import (
+    RESIDENTIAL_CONTRACT_VERSION,
+    ResidentialStandardsPipeline,
+)
+from .residential_standards import (
+    UnsupportedSelectionError,
+    available_selections,
+    retrieve_residential_selection,
+)
 from .ruleset import (
     ApprovedR1Ruleset,
     ApprovedResidentialRuleset,
@@ -33,12 +42,17 @@ __all__ = [
     "PRESENTATION_CONTRACT_VERSION",
     "PipelineIntegrityError",
     "PresentationIntegrityError",
+    "RESIDENTIAL_CONTRACT_VERSION",
     "R1StandardsPipeline",
+    "ResidentialStandardsPipeline",
     "ResidentialRulesetArtifacts",
     "RulesetLoadError",
     "StandardsRetrievalError",
     "UnsupportedZoneError",
+    "UnsupportedSelectionError",
+    "available_selections",
     "present_integrity_error",
     "present_pipeline_result",
     "retrieve_zone_standards",
+    "retrieve_residential_selection",
 ]

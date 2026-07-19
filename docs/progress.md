@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 4 tranche 4.3 is implemented on `codex/residential-zone-expansion` and awaiting project-owner acceptance; tranches 4.1 and 4.2 are owner accepted, all ten live residential designations resolve through the exact validated snapshot boundary, and the default application remains unchanged on the released R1 v2 path
+**Current position:** Block 4 tranche 4.4 is implemented on `codex/residential-zone-expansion` and awaiting project-owner acceptance; tranches 4.1 through 4.3 are owner accepted, exact residential profile/pathway retrieval and contract-`2.1.0` pipeline orchestration now pass across the approved 12-zone scope, and the default application remains unchanged on the released R1 v2 path
 
-**Next action:** Review and accept tranche 4.3; after acceptance, begin tranche 4.4 by implementing pure exact selection listing/retrieval and the production-independent `ResidentialStandardsPipeline`, without changing presentation, templates, static assets, or the default Flask application
+**Next action:** Review and accept tranche 4.4; after acceptance, perform the Block 4.5 full-backend acceptance gate before beginning any Block 5 presentation or default-application integration
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -55,7 +55,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
-| 4. Expand lookup and retrieval | Tranche 4.3 implemented; awaiting owner acceptance | Tranches 4.1-4.2 are accepted; `LocalResidentialLookup` validates the ruleset-owned 12-zone scope, both manifests, checksums, feature and zone counts, explicit R5/R6 zeroes, excluded codes, and cross-layer agreement before resolving all ten live designations. |
+| 4. Expand lookup and retrieval | Tranche 4.4 implemented; awaiting owner acceptance | Tranches 4.1-4.3 are accepted; exact selection listing/retrieval and `ResidentialStandardsPipeline` now combine the approved ruleset with the verified lookup under result contract `2.1.0`, while presentation and the default Flask application remain unchanged. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
 
@@ -427,7 +427,34 @@ Validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 299 repository tests; and
 - `git diff --check` passes.
 
-No standards retriever, pipeline, result contract or fixture, ruleset, ruleset schema, source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. Tranche 4.3 is awaiting project-owner acceptance before selection retrieval and residential pipeline orchestration begin.
+No standards retriever, pipeline, result contract or fixture, ruleset, ruleset schema, source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. The project owner accepted tranche 4.3 on July 19, 2026 and authorized exact selection retrieval and residential pipeline orchestration as tranche 4.4.
+
+## Block 4 tranche 4.4 selection retrieval and pipeline implementation
+
+Tranche 4.4 adds a pure, production-independent retrieval boundary over the already approved residential artifact:
+
+- `available_selections()` validates and lists ordinary profiles in the closed `single_family`, `two_family`, `multifamily` order, followed by approved special pathways in authored order;
+- `retrieve_residential_selection()` accepts only an exact zone and exact selection identity from an `ApprovedResidentialRuleset`, without aliases, prefix matching, profile synthesis, or nearby-zone fallback;
+- all 16 approved ordinary profiles retrieve the exact ten-capability map, approved legal-use permission, transitive not-evaluated topics, retained conflicts, exception families, citations, and source documents required by that selected branch;
+- both R1 Chapter 18.24 pathway selections return `analysis_not_evaluated` with their prerequisites and provenance, never the ordinary R1 single-family standards;
+- all 18 profile/use combinations recorded as `not_listed` return the controlled `selection_not_available` outcome and the source evidence for that conclusion; and
+- malformed, unapproved, incomplete, unknown, or wrongly bound records fail closed. In particular, requesting the ordinary `two_family` profile in an R1 zone cannot silently substitute its differently named special pathway.
+
+`ResidentialStandardsPipeline` loads the approved residential ruleset once, binds `LocalResidentialLookup` to its exact identity set, and emits the accepted contract `2.1.0` envelope. A resolved zone with no selection returns `residential_zone_found` and its exact available choices. An exact profile, pathway, or known-unavailable profile returns `residential_standards_found`, `analysis_not_evaluated`, or `selection_not_available`, respectively. Outside-snapshot, not-found, ambiguous, and review-required lookup branches remain nonregulatory and never receive selected rules. Unknown selection identities and integrity failures remain exceptions rather than being mislabeled as parcel-specific planning review.
+
+The retrieval boundary strips authoring-only approval flags from returned use and regulation records, computes branch-specific transitive provenance closure, and returns defensive copies. The pipeline preserves separate address-snapshot, residential-GIS-snapshot, ruleset, ruleset-schema, and result-contract identities, verifies successful lookup/property agreement, and rejects incomplete retrieval output before returning it.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the approved `.5` lineage and all runtime gates;
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` passes all eight accepted contract fixtures;
+- `.venv/bin/python -B -m unittest tests.test_residential_standards -q` passes 11 exact-selection, profile/pathway, requirement-shape, evidence-closure, mutation, and determinism tests;
+- `.venv/bin/python -B -m unittest tests.test_residential_pipeline -q` passes 14 integration, status-matrix, contract-validation, integrity, mutation, and cross-process determinism tests;
+- the focused released/residential loader, lookup, retrieval, pipeline, and contract regression passes all 105 tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 324 repository tests; and
+- `git diff --check` passes.
+
+No result-contract fixture, ruleset, ruleset schema, raw snapshot, dependency, presentation component, template, static asset, web route, or default Flask behavior changed. Tranche 4.4 is awaiting project-owner acceptance before the Block 4.5 full-backend acceptance gate.
 
 ## Blocks 0-1 validation evidence
 
@@ -495,3 +522,4 @@ None currently recorded.
 | 2026-07-19 | Approve the Block 4 design and implement only tranche 4.1 before residential runtime wiring. | A separate `2.1.0` contract resolves the approved-density, use-permission-evidence, filtered-snapshot, empty-address, and version-identity gaps while preserving accepted `2.0.0` and the released R1 application. |
 | 2026-07-19 | Accept result-contract tranche 4.1 and authorize only the approved residential loader tranche 4.2. | The accepted runtime-ready result boundary can now be paired with an exact `.5` loader, while GIS lookup, selection retrieval, pipeline orchestration, and presentation remain independently gated. |
 | 2026-07-19 | Accept approved-loader tranche 4.2 and authorize only residential GIS lookup tranche 4.3. | The complete-lineage `.5` loader can now define the exact snapshot identity boundary, while selection retrieval, pipeline orchestration, presentation, and the default Flask application remain separately gated. |
+| 2026-07-19 | Accept residential GIS lookup tranche 4.3 and authorize only exact selection retrieval and production-independent pipeline tranche 4.4. | All live supported zone identities already pass the immutable snapshot boundary; the next isolated gate can now attach exact approved branches under contract `2.1.0` without changing presentation or the released application. |

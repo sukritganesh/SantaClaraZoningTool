@@ -2,7 +2,7 @@
 
 **Contract:** Santa Clara residential ruleset schema `3.2.0`; accepted predecessors preserved under `3.0.0` and `3.1.0`
 
-**Status:** Representation and complete authoring contracts implemented; runtime approval contract exercised for Block 3
+**Status:** Representation and complete authoring contracts implemented; standalone runtime retrieval integrated through Block 4
 
 **Last updated:** July 19, 2026
 
@@ -374,7 +374,7 @@ The approval successor consumes the exact reviewed bytes of candidate `2026-07-1
 - checksum-pin the candidate, approved target, schema, and shared semantic projection in the approval crosswalk; and
 - prove deterministic target and crosswalk replay before the artifact is eligible for application integration.
 
-Runtime eligibility authorizes `.5` as regulatory input. Block 4's standalone `ApprovedResidentialRuleset` accepts it only after the complete lineage passes, and `LocalResidentialLookup` uses its exact zone identities to validate the filtered GIS scope. The default application remains on the released R1 path until the later retrieval, pipeline, and presentation gates are accepted.
+Runtime eligibility authorizes `.5` as regulatory input. Block 4's standalone `ApprovedResidentialRuleset` accepts it only after the complete lineage passes, and `LocalResidentialLookup` uses its exact zone identities to validate the filtered GIS scope. Exact selection retrieval now validates the closed profile/pathway identities and branch bindings, returns the complete approved profile or explicit unavailable/not-evaluated result, strips authoring-only approval flags, and closes every selected provenance reference transitively. `ResidentialStandardsPipeline` attaches that output only after an exact lookup under result contract `2.1.0`. The default application remains on the released R1 path until the later presentation gate is accepted.
 
 ## Authoring workflow
 

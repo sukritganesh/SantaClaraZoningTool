@@ -169,7 +169,7 @@ The production-independent Block 4 backend can resolve the broader approved resi
 python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset, LocalResidentialLookup; r = ApprovedResidentialRuleset.load(); lookup = LocalResidentialLookup.from_snapshots(ruleset=r); print(lookup.lookup("1240 White Drive"))'
 ```
 
-`LocalResidentialLookup` requires the validated approved ruleset to define its exact 12-zone identity set, verifies the complete address and July 18 residential manifests, output checksums, feature counts, per-zone counts, cross-layer agreement, and exact excluded-designation preflights, then performs local exact-address and point-in-polygon matching. Ten designations have verified live-address fixtures. R5 and R6 remain supported regulatory identities with explicit zero live GIS features; `R1-6LHT`, `R2-7L`, and `R2HT` remain distinct excluded codes and are never normalized. This backend identifies a residential zone only; selection retrieval and pipeline orchestration remain separately gated.
+`LocalResidentialLookup` requires the validated approved ruleset to define its exact 12-zone identity set, verifies the complete address and July 18 residential manifests, output checksums, feature counts, per-zone counts, cross-layer agreement, and exact excluded-designation preflights, then performs local exact-address and point-in-polygon matching. Ten designations have verified live-address fixtures. R5 and R6 remain supported regulatory identities with explicit zero live GIS features; `R1-6LHT`, `R2-7L`, and `R2HT` remain distinct excluded codes and are never normalized. This lower-level backend identifies a residential zone only. `ResidentialStandardsPipeline` below adds exact selection listing and retrieval without changing the default Flask application.
 
 ## Validate the R1 regulatory ruleset
 
@@ -300,7 +300,7 @@ Validate the full approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.
 python3 scripts/validate_approved_residential_rules.py --verify-source-files
 ```
 
-The approved `.5` ruleset is eligible for the Block 4 residential loader and retrieval work. Production continues to load only the released R1 v2 ruleset until that integration is deliberately implemented and validated.
+The approved `.5` ruleset is consumed by the standalone Block 4 residential loader, lookup, selection retriever, and pipeline. The default Flask application continues to load only the released R1 v2 ruleset until presentation integration is deliberately implemented and validated.
 
 Validate all eight nonruntime result-contract fixtures:
 
@@ -316,7 +316,7 @@ Validate the same eight statuses against the approved `.5` ruleset and runtime-r
 python3 scripts/validate_residential_result_contract_v2_1.py
 ```
 
-The `2.1.0` fixtures add the selected use-permission record and its exact provenance, require all ten profile capabilities including gross residential density, preserve five independent version identities, allow address-only evidence outside the filtered residential snapshot, and permit an empty query only for `address_not_found`. They are approved-data contract fixtures, not results produced by the still-R1 production pipeline.
+The `2.1.0` fixtures add the selected use-permission record and its exact provenance, require all ten profile capabilities including gross residential density, preserve five independent version identities, allow address-only evidence outside the filtered residential snapshot, and permit an empty query only for `address_not_found`. They remain static contract fixtures; the production-independent residential pipeline now produces equivalent contract-valid results while the default application remains on the released R1 pipeline.
 
 Load the approved residential artifact through its standalone Block 4 backend boundary:
 
@@ -324,7 +324,7 @@ Load the approved residential artifact through its standalone Block 4 backend bo
 python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset; r = ApprovedResidentialRuleset.load(); print(r.version, r.schema_version, r.supported_zones, r.regulation_count)'
 ```
 
-`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. The standalone residential lookup consumes this validated identity boundary, but selection retrieval is not yet wired and the default Flask application remains unchanged.
+`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. The standalone residential lookup, exact selection retriever, and residential pipeline consume this validated boundary; the default Flask application remains unchanged.
 
 The released R1 application continues to load its separately approved v2 artifact before serving lookups:
 
@@ -363,6 +363,26 @@ print(list(result["regulations"]))
 ```
 
 A supported address returns `r1_standards_found` with parcel and zoning evidence, all approved zone regulations, their referenced provenance, explicit limitations, and GIS/ruleset versions. Unmatched, ambiguous, unsupported, or spatially inconsistent lookups retain their controlled Block 5 outcome and do not receive regulations. Ruleset integrity failures stop the pipeline rather than being mislabeled as parcel-specific planning review.
+
+Run the production-independent residential pipeline to list the exact choices for a resolved zone and retrieve one selected profile:
+
+```python
+from santa_clara_zoning import ResidentialStandardsPipeline
+
+pipeline = ResidentialStandardsPipeline.from_defaults()
+zone_result = pipeline.analyze_address("1240 White Drive")
+print(zone_result["status"])
+print(zone_result["available_selections"])
+
+selected_result = pipeline.analyze_address(
+    "1240 White Drive",
+    selection_id="multifamily",
+)
+print(selected_result["status"])
+print(list(selected_result["regulations"]))
+```
+
+Selection IDs are exact and case-sensitive. Ordinary `single_family`, `two_family`, and `multifamily` profiles return their approved ten-rule branch when available. A listed special pathway returns `analysis_not_evaluated`; a known profile recorded as `not_listed` returns `selection_not_available`; an unknown or inexact identity raises an error. These are regulatory retrieval results, not parcel- or proposal-level compliance determinations.
 
 ## Run the released local R1 application
 
@@ -449,6 +469,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── lookup.py                      Snapshot loading and lookup outcomes
 │   ├── pipeline.py                    Versioned address-to-standards orchestration
 │   ├── presentation.py                UI-neutral deterministic presentation model
+│   ├── residential_pipeline.py        Contract 2.1 residential orchestration
+│   ├── residential_standards.py       Exact profile and pathway retrieval
 │   ├── ruleset.py                     Approved v2 and residential v3 loaders
 │   ├── standards.py                   Pure exact-zone regulation retrieval
 │   ├── templates/                     Server-rendered web templates

@@ -272,6 +272,10 @@ class ApprovedResidentialRuleset:
         return value
 
     @property
+    def disclaimer(self) -> str:
+        return str(self._data["disclaimer"])
+
+    @property
     def supported_zones(self) -> tuple[str, ...]:
         zones = self._validated_zones()
         return tuple(str(zone) for zone in zones)
