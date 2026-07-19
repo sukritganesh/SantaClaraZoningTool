@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 3 remains in progress on `codex/residential-zone-expansion`; the R2-R6 citywide tranche is implemented and technically validated in nonruntime candidate `2026-07-19.2`, while owner acceptance, Patrick Henry authoring, complete ruleset approval, runtime integration, and user-visible changes remain pending
+**Current position:** Block 3 remains in progress on `codex/residential-zone-expansion`; the R1-R6 citywide tranche plus gross residential density is implemented and technically validated in nonruntime candidate `2026-07-19.3`, while owner acceptance of the completed density successor, Patrick Henry authoring, complete ruleset approval, runtime integration, and user-visible changes remain pending
 
-**Next action:** Obtain project-owner acceptance of the completed R2-R6 tranche, then author the five Patrick Henry designations in a new successor candidate and run the complete 12-zone approval gate; do not load candidate `2026-07-19.2` in production
+**Next action:** Obtain project-owner acceptance of candidate `2026-07-19.3`, then author the five Patrick Henry designations in a new successor candidate and run the complete 12-zone approval gate; do not load any residential v3 candidate in production
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -15,7 +15,7 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Target citywide zones: `R1-6L`, `R1-8L`, `R2`, `R3`, `R4`, `R5`, and `R6`.
 - Target Patrick Henry designations: `PH-R5`, `UV`, `VR`, `UC`, and GIS designation `HDF`.
 - Target structure identities: single-family, two-family, and multifamily primary structures.
-- Target regulations: the existing use, approval, height, stories, coverage, and four setback families, with only the minimum additional dispositions needed for no maximum listed, FAA-controlled, plan-dependent, not evaluated, and review-required results.
+- Target regulations: the existing use, approval, height, stories, coverage, and four setback families plus the approved base-zone gross residential density range, with only the minimum additional dispositions needed for no maximum listed, FAA-controlled, plan-dependent, not evaluated, and review-required results.
 - Commercial analysis and additional regulation families remain outside the phase.
 
 ## Canonical artifacts
@@ -28,10 +28,13 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Approved R1 ruleset: `rulesets/santa_clara/r1/2026-07-17.2/ruleset.json`
 - Accepted R1 migration schema: `rulesets/schema/ruleset-v3.schema.json`
 - Additive citywide schema: `rulesets/schema/ruleset-v3.1.schema.json`
+- Additive density schema: `rulesets/schema/ruleset-v3.2.schema.json`
 - Nonruntime migrated R1 v3 candidate: `rulesets/santa_clara/residential/2026-07-19.1/ruleset.json`
 - Approved-v2-to-candidate-v3 crosswalk: `rulesets/santa_clara/residential/2026-07-19.1/migration-crosswalk.json`
 - Nonruntime R1-R6 v3.1 candidate: `rulesets/santa_clara/residential/2026-07-19.2/ruleset.json`
 - R1-candidate-to-citywide expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.2/citywide-expansion-crosswalk.json`
+- Nonruntime R1-R6 v3.2 density candidate: `rulesets/santa_clara/residential/2026-07-19.3/ruleset.json`
+- Citywide-candidate-to-density expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.3/density-expansion-crosswalk.json`
 - Residential result contract: `contracts/residential-result-contract-2.0.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
@@ -45,7 +48,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
-| 3. Author and approve residential rules | In progress; citywide tranche implemented | Candidate `2026-07-19.2` preserves R1 and contains the verified R2-R6 records with complete validation evidence; owner acceptance is the gate before Patrick Henry authoring and final approval. |
+| 3. Author and approve residential rules | In progress; citywide and density tranches implemented | Candidate `2026-07-19.3` preserves all predecessor rules and adds 11 verified gross-density ranges with retained R5/R6 conflicts; owner acceptance is the gate before Patrick Henry authoring and final approval. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
@@ -214,6 +217,38 @@ Validation evidence:
 
 This evidence makes the R2-R6 tranche ready for project-owner review, not runtime use. Block 3 remains open for owner acceptance, Patrick Henry authoring, complete-source review, per-record approval, and final runtime eligibility.
 
+## Block 3 gross residential density evidence
+
+The project owner approved adding base-zone gross residential density through the current nonruntime Block 3 stage and directed the project to retain the R5/R6 source conflicts while selecting the Table 1-1 values. The implementation preserves the accepted citywide checkpoint and creates a direct successor:
+
+- `docs/residential-density-rule-verification.md` records the visually checked Table 1-1, zone-purpose, and Table 2-3 assertions, the capability boundary, and the July 19 project decisions without changing the checksum-pinned predecessor verification record;
+- `docs/residential-density-title18-amendment-audit.md` records that no adopted post-baseline amendment identified through July 18 changes the selected R1-R6 ranges and preserves the internal baseline conflicts separately;
+- `rulesets/schema/ruleset-v3.2.schema.json` adds only typed `quantity_range` requirements and conflict assertion values in `dwelling_units_per_acre`;
+- `scripts/author_density_residential_rules.py` deterministically consumes immutable candidate `2026-07-19.2` and emits nonoverwriting candidate `2026-07-19.3` plus its density expansion crosswalk;
+- `scripts/validate_density_residential_rules.py` validates the complete approved-v2-to-v3.0-to-v3.1-to-v3.2 lineage, source checksums, conflict consistency, deterministic replay, exact predecessor-rule preservation, and GIS fixtures;
+- candidate `2026-07-19.3` contains the same seven zones, 21 use permissions, 11 ordinary profiles, and two R1 special pathways; it adds exactly 11 density rules for 110 total profile regulations and 131 total permission/regulation records;
+- R1-6L and R1-8L use 0.1-10, R2 uses 8-19, R3 uses 20-36, and R4 uses 37-50 dwelling units per acre;
+- R5 retains 51-100 from Table 1-1 against the 51-99 purpose/Table 2-3 assertions, and R6 retains 60-350 from Table 1-1 and the purpose text against Table 2-3's 85-350 assertion;
+- the R5/R6 rules use `project_resolved_with_conditions`, and the conflict records identify project-owner direction rather than claiming an official City correction;
+- density limitation topics now distinguish supported base-zone range retrieval from deferred parcel yield, plan reconciliation, density bonus, affordability, development-agreement, and state-law evaluation; and
+- production loading, lookup, retrieval, pipeline, presentation, templates, and frontend remain unchanged.
+
+Canonical density-tranche checksums:
+
+- schema v3.2: `186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef`;
+- R1-R6 density candidate: `7f54eb7569a007ce4b5bdac334aa3fd051990937df2717e270960cdde6e426d6`; and
+- density expansion crosswalk: `4c0746efd77d061a00f9a7b54186eb61cdd513b520531c57847d29f3ef28ec4e`.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_density_residential_rules.py --verify-source-files` passes the complete schema, domain, source-checksum, conflict, chained-lineage, deterministic-replay, preservation, and GIS-fixture gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because five Patrick Henry zones are absent, the artifact is a candidate, and its rules remain unapproved;
+- `.venv/bin/python -B -m unittest tests.test_density_residential_rules -v` passes 12 new source-matrix, conflict, range-shape, mutation, preservation, checksum, runtime-boundary, and replay tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 231 tests; and
+- `git diff --check` passes.
+
+This evidence makes candidate `2026-07-19.3` ready for project-owner review, not runtime use. Block 3 remains open for that acceptance, Patrick Henry authoring, complete-source review, per-record approval, and final runtime eligibility.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -235,7 +270,8 @@ This evidence makes the R2-R6 tranche ready for project-owner review, not runtim
 - A missing maximum must be presented as no maximum listed in the controlling base table, not as unlimited.
 - An FAA-controlled height and a plan-dependent Patrick Henry rear setback require explicit nonnumeric dispositions within the existing regulation families.
 - Patrick Henry rear setback must not default to zero without an affirmative verified source value.
-- Candidate `2026-07-19.2` discloses Objective Design Standards on multifamily profiles and the applicable 32-foot R1/R2 proximity transition without evaluating them; Patrick Henry recreation-space rules remain for the next tranche and will likewise stay outside the evaluated regulation map.
+- Candidate `2026-07-19.3` discloses Objective Design Standards on multifamily profiles and the applicable 32-foot R1/R2 proximity transition without evaluating them; Patrick Henry recreation-space rules remain for the next tranche and will likewise stay outside the evaluated regulation map.
+- Base-zone gross residential density is now a supported candidate capability, but parcel yield, plan reconciliation, density bonus, affordability, development agreements, and state-law adjustments remain not evaluated.
 
 ## Blockers
 
@@ -266,3 +302,6 @@ None currently recorded.
 | 2026-07-19 | Preserve `2026-07-19.1` and create a new versioned candidate for citywide expansion. | The committed R1-only candidate is reproducible migration evidence; adding R2-R6 in place would erase that checkpoint and weaken lineage inspection. |
 | 2026-07-19 | Add schema `3.1.0` as a successor while preserving schema `3.0.0` unchanged. | R3 and R4 have separate coverage outcomes below and at/above 10,000 square feet; a typed tier within the existing coverage capability preserves both outcomes without flattening data or broadening the regulation catalog. |
 | 2026-07-19 | Keep the completed R1-R6 candidate nonruntime and nonapproved until Patrick Henry and full Block 3 approval. | Technical validity and deterministic source encoding do not satisfy the complete 12-zone matrix, owner approval, or production-loader gates. |
+| 2026-07-19 | Add `standard.gross_residential_density` as a typed minimum-to-maximum base-zone range while keeping unit yield and density adjustments out of scope. | The base density range is a key zone standard that can be retrieved deterministically without expanding into acreage, proposal, bonus, affordability, plan, or state-law evaluation. |
+| 2026-07-19 | Retain all R5/R6 density assertions and select Table 1-1 values of 51-100 and 60-350 DU/AC through explicit project resolutions. | The project owner supplied a deterministic policy choice; preserving the competing purpose and Table 2-3 values prevents that local choice from being mistaken for an official City correction. |
+| 2026-07-19 | Preserve candidate `2026-07-19.2` and its pinned verification sources, then create density-specific source supplements and successor `2026-07-19.3`. | Editing checksum-pinned predecessor evidence or rule data in place would break reproducibility; additive documents, schema, rules, and crosswalk retain an inspectable lineage. |

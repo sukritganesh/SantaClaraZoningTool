@@ -1,0 +1,93 @@
+{
+  "crosswalk_version": "1.0.0",
+  "migration_id": "santa-clara-residential-v3-add-gross-density-r1-r6",
+  "generated_on": "2026-07-19",
+  "migration_status": "candidate_contract_validated",
+  "source_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.2/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.2",
+    "schema_version": "3.1.0",
+    "status": "candidate",
+    "sha256": "57166a693fbab477fec631e251cc909541db912ee01e2a3ef2345dbbc06f0d94"
+  },
+  "target_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.3/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.3",
+    "schema_version": "3.2.0",
+    "status": "candidate",
+    "sha256": "7f54eb7569a007ce4b5bdac334aa3fd051990937df2717e270960cdde6e426d6"
+  },
+  "target_schema": {
+    "path": "rulesets/schema/ruleset-v3.2.schema.json",
+    "sha256": "186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef"
+  },
+  "counts": {
+    "source_zones": 7,
+    "target_zones": 7,
+    "carried_source_rules": 120,
+    "target_rules": 131,
+    "added_profile_regulations": 11,
+    "modified_not_evaluated_topics": 2,
+    "added_profile_topic_references": 1,
+    "carried_conflicts": 1,
+    "added_conflicts": 2
+  },
+  "preserved_components": [
+    {
+      "component_path": "zones.R1-6L.use_permissions",
+      "sha256": "3634e095f9a0c4531aa5ac062e174f78a7377089cda47a769fb8dfe67418759f"
+    },
+    {
+      "component_path": "zones.R1-8L.use_permissions",
+      "sha256": "df4f72471a2fadd52cb3128199fe9d407e0c452892d646f9a3947c48532d82a5"
+    },
+    {
+      "component_path": "zones.R2.use_permissions",
+      "sha256": "f74751df2aec5a9e4d0580a334c28762f0265be40d245456774f1ab23d3c9d0b"
+    },
+    {
+      "component_path": "zones.R3.use_permissions",
+      "sha256": "ab280aecd7e434020a27cd299ee09abcee698e645a30b872f220bb1700395e70"
+    },
+    {
+      "component_path": "zones.R4.use_permissions",
+      "sha256": "2dbaeaea9c14092af952ae347f2a586b39f20119ae65c4849d13432d27d09d95"
+    },
+    {
+      "component_path": "zones.R5.use_permissions",
+      "sha256": "09a1ac21f3eaea7f9bd5da768dbc514320620a4b4aad750557ff47cdfbe4ecaa"
+    },
+    {
+      "component_path": "zones.R6.use_permissions",
+      "sha256": "4ef3bcd63169c2b3614de84987bb9d411096352b3ce41f5b3d3af6d90588d1ac"
+    },
+    {
+      "component_path": "conflicts.conflict-r1-8l-corner-side-first",
+      "sha256": "60e2c0201fdf36dd6fe2893e3e6378a8a8a572d50220bba7dd17b375c79f8821"
+    }
+  ],
+  "added_capability": "standard.gross_residential_density",
+  "added_rule_ids": [
+    "us.ca.santa_clara.r1-6l.single_family.standard.gross_residential_density",
+    "us.ca.santa_clara.r1-8l.single_family.standard.gross_residential_density",
+    "us.ca.santa_clara.r2.single_family.standard.gross_residential_density",
+    "us.ca.santa_clara.r2.two_family.standard.gross_residential_density",
+    "us.ca.santa_clara.r2.multifamily.standard.gross_residential_density",
+    "us.ca.santa_clara.r3.two_family.standard.gross_residential_density",
+    "us.ca.santa_clara.r3.multifamily.standard.gross_residential_density",
+    "us.ca.santa_clara.r4.two_family.standard.gross_residential_density",
+    "us.ca.santa_clara.r4.multifamily.standard.gross_residential_density",
+    "us.ca.santa_clara.r5.multifamily.standard.gross_residential_density",
+    "us.ca.santa_clara.r6.multifamily.standard.gross_residential_density"
+  ],
+  "allowed_ruleset_changes": [
+    "Advance the closed authoring contract from schema 3.1.0 to additive schema 3.2.0.",
+    "Add one gross residential density range to each of 11 ordinary R1-R6 profiles.",
+    "Retain and project-resolve the R5 and R6 density conflicts using Table 1-1 values.",
+    "Update density limitation topics to distinguish base-range support from deferred yield and adjustments.",
+    "Add checksum-pinned density verification, audit, and citation records.",
+    "Retain candidate status, null approval, and false rule approvals pending the complete target matrix."
+  ]
+}

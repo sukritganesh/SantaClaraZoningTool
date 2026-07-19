@@ -1,0 +1,1022 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:santa-clara-zoning-portal:schema:ruleset:3.2.0",
+  "title": "Residential zoning ruleset v3.2",
+  "description": "Closed authoring contract for zone-owned use permissions, ordinary analysis profiles, special pathways, and typed residential standards.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "ruleset_id",
+    "version",
+    "jurisdiction",
+    "status",
+    "approved_on",
+    "verified_through",
+    "scope",
+    "predecessor_rulesets",
+    "shared",
+    "zones",
+    "conflicts",
+    "not_evaluated_topics",
+    "disclaimer"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "const": "3.2.0"
+    },
+    "ruleset_id": {
+      "const": "santa-clara-residential-zoning"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"
+    },
+    "jurisdiction": {
+      "$ref": "#/$defs/jurisdiction"
+    },
+    "status": {
+      "enum": ["candidate", "approved_for_runtime"]
+    },
+    "approved_on": {
+      "oneOf": [
+        {"type": "string", "format": "date"},
+        {"type": "null"}
+      ]
+    },
+    "verified_through": {
+      "type": "string",
+      "format": "date"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "predecessor_rulesets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/predecessorRuleset"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "shared": {
+      "$ref": "#/$defs/sharedReferences"
+    },
+    "zones": {
+      "$ref": "#/$defs/zoneMap"
+    },
+    "conflicts": {
+      "$ref": "#/$defs/conflictMap"
+    },
+    "not_evaluated_topics": {
+      "$ref": "#/$defs/notEvaluatedTopicMap"
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "candidate"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {"approved_on": {"type": "null"}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "approved_for_runtime"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {"approved_on": {"type": "string", "format": "date"}}
+      }
+    }
+  ],
+  "$defs": {
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "slug", "state", "country"],
+      "properties": {
+        "name": {"const": "City of Santa Clara"},
+        "slug": {"const": "santa_clara"},
+        "state": {"const": "CA"},
+        "country": {"const": "US"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "workflow_families",
+        "legal_use_capability_ids",
+        "primary_structure_types",
+        "result_kind"
+      ],
+      "properties": {
+        "description": {"type": "string", "minLength": 1},
+        "workflow_families": {
+          "type": "array",
+          "items": {"enum": ["single_family", "multifamily"]},
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "legal_use_capability_ids": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "use.single_family_dwelling",
+              "use.two_family_dwelling",
+              "use.multifamily_dwelling"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "primary_structure_types": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "single_family_primary_structure",
+              "two_family_primary_structure",
+              "multifamily_primary_structure"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "result_kind": {"const": "selected_residential_standards_retrieval"}
+      }
+    },
+    "predecessorRuleset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleset_id", "version", "sha256", "crosswalk_path"],
+      "properties": {
+        "ruleset_id": {"type": "string", "minLength": 1},
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"
+        },
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "crosswalk_path": {"type": "string", "minLength": 1}
+      }
+    },
+    "sharedReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_documents", "citations", "definitions", "exception_families"],
+      "properties": {
+        "source_documents": {"$ref": "#/$defs/sourceDocumentMap"},
+        "citations": {"$ref": "#/$defs/citationMap"},
+        "definitions": {"$ref": "#/$defs/definitionMap"},
+        "exception_families": {"$ref": "#/$defs/exceptionFamilyMap"}
+      }
+    },
+    "sourceDocumentMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/sourceDocument"}
+    },
+    "sourceDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "version",
+        "effective_date",
+        "local_path",
+        "sha256",
+        "verification_status"
+      ],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "effective_date": {
+          "oneOf": [
+            {"type": "string", "format": "date"},
+            {"type": "null"}
+          ]
+        },
+        "local_path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "verification_status": {
+          "enum": [
+            "candidate_unverified",
+            "verified_baseline",
+            "verified_audit_artifact",
+            "verified_migration_source",
+            "verified_source_matrix",
+            "verified_enactment"
+          ]
+        }
+      }
+    },
+    "citationMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/citation"}
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_document_id", "locator", "topic"],
+      "properties": {
+        "source_document_id": {"$ref": "#/$defs/referenceId"},
+        "locator": {"type": "string", "minLength": 1},
+        "topic": {"type": "string", "minLength": 1}
+      }
+    },
+    "definitionMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/definition"}
+    },
+    "definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["term", "text", "source_refs"],
+      "properties": {
+        "term": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "exceptionFamilyMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/exceptionFamily"}
+    },
+    "exceptionFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "treatment", "source_refs"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "treatment": {"enum": ["not_evaluated", "review_required"]},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "zoneMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/zone"}
+    },
+    "zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "use_permissions", "analysis_profiles", "special_pathways"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "use_permissions": {"$ref": "#/$defs/usePermissionMap"},
+        "analysis_profiles": {"$ref": "#/$defs/analysisProfileMap"},
+        "special_pathways": {"$ref": "#/$defs/specialPathwayMap"}
+      }
+    },
+    "usePermissionMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "use.single_family_dwelling",
+        "use.two_family_dwelling",
+        "use.multifamily_dwelling"
+      ],
+      "properties": {
+        "use.single_family_dwelling": {"$ref": "#/$defs/usePermission"},
+        "use.two_family_dwelling": {"$ref": "#/$defs/usePermission"},
+        "use.multifamily_dwelling": {"$ref": "#/$defs/usePermission"}
+      }
+    },
+    "usePermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "label",
+        "requirement",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id",
+        "special_pathway_id",
+        "approved_for_ruleset"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/ruleId"},
+        "label": {"type": "string", "minLength": 1},
+        "requirement": {"$ref": "#/$defs/useStatusRequirement"},
+        "conditions": {"$ref": "#/$defs/stringArray"},
+        "exception_family_ids": {"$ref": "#/$defs/referenceIdArray"},
+        "validation_status": {"$ref": "#/$defs/validationStatus"},
+        "conflict_id": {"$ref": "#/$defs/nullableReferenceId"},
+        "special_pathway_id": {"$ref": "#/$defs/nullableReferenceId"},
+        "approved_for_ruleset": {"type": "boolean"}
+      }
+    },
+    "analysisProfileMap": {
+      "type": "object",
+      "propertyNames": {"enum": ["single_family", "two_family", "multifamily"]},
+      "additionalProperties": {"$ref": "#/$defs/analysisProfile"}
+    },
+    "analysisProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflow_family",
+        "legal_use_capability_id",
+        "primary_structure_type",
+        "regulations",
+        "not_evaluated_topic_ids"
+      ],
+      "properties": {
+        "workflow_family": {"enum": ["single_family", "multifamily"]},
+        "legal_use_capability_id": {
+          "enum": [
+            "use.single_family_dwelling",
+            "use.two_family_dwelling",
+            "use.multifamily_dwelling"
+          ]
+        },
+        "primary_structure_type": {
+          "enum": [
+            "single_family_primary_structure",
+            "two_family_primary_structure",
+            "multifamily_primary_structure"
+          ]
+        },
+        "regulations": {"$ref": "#/$defs/regulationMap"},
+        "not_evaluated_topic_ids": {"$ref": "#/$defs/referenceIdArray"}
+      }
+    },
+    "specialPathwayMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/specialPathway"}
+    },
+    "specialPathway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "workflow_family",
+        "legal_use_capability_id",
+        "configuration_scope",
+        "analysis_requirement",
+        "not_evaluated_topic_ids",
+        "validation_status",
+        "approved_for_ruleset"
+      ],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "workflow_family": {"const": "multifamily"},
+        "legal_use_capability_id": {"const": "use.two_family_dwelling"},
+        "configuration_scope": {"const": "attached_or_detached_homes"},
+        "analysis_requirement": {"$ref": "#/$defs/notEvaluatedRequirement"},
+        "not_evaluated_topic_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/referenceId"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "validation_status": {"$ref": "#/$defs/validationStatus"},
+        "approved_for_ruleset": {"type": "boolean"}
+      }
+    },
+    "regulationMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/capabilityId"},
+      "additionalProperties": {"$ref": "#/$defs/regulation"}
+    },
+    "regulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "label",
+        "requirement",
+        "applicability",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id",
+        "approved_for_ruleset"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/ruleId"},
+        "label": {"type": "string", "minLength": 1},
+        "requirement": {"$ref": "#/$defs/requirement"},
+        "applicability": {"$ref": "#/$defs/applicability"},
+        "conditions": {"$ref": "#/$defs/stringArray"},
+        "exception_family_ids": {"$ref": "#/$defs/referenceIdArray"},
+        "validation_status": {"$ref": "#/$defs/validationStatus"},
+        "conflict_id": {"$ref": "#/$defs/nullableReferenceId"},
+        "approved_for_ruleset": {"type": "boolean"}
+      }
+    },
+    "useStatusRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "code", "source_refs"],
+      "properties": {
+        "kind": {"const": "status"},
+        "code": {"enum": ["permitted_by_right", "not_listed"]},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "requirement": {
+      "oneOf": [
+        {"$ref": "#/$defs/approvalStatusRequirement"},
+        {"$ref": "#/$defs/maximumQuantityRequirement"},
+        {"$ref": "#/$defs/quantityRangeRequirement"},
+        {"$ref": "#/$defs/lotAreaTieredMaximumRequirement"},
+        {"$ref": "#/$defs/setbackRequirement"},
+        {"$ref": "#/$defs/noMaximumListedRequirement"},
+        {"$ref": "#/$defs/faaControlledRequirement"},
+        {"$ref": "#/$defs/planDependentRequirement"},
+        {"$ref": "#/$defs/notEvaluatedRequirement"},
+        {"$ref": "#/$defs/reviewRequiredRequirement"}
+      ]
+    },
+    "approvalStatusRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "code", "source_refs"],
+      "properties": {
+        "kind": {"const": "status"},
+        "code": {"enum": ["required", "may_be_required"]},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "maximumQuantityRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "source_refs"],
+      "properties": {
+        "kind": {"const": "maximum_quantity"},
+        "value": {"$ref": "#/$defs/quantity"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "quantityRangeRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "minimum", "maximum", "unit", "source_refs"],
+      "properties": {
+        "kind": {"const": "quantity_range"},
+        "minimum": {"type": "number", "exclusiveMinimum": 0},
+        "maximum": {"type": "number", "exclusiveMinimum": 0},
+        "unit": {"const": "dwelling_units_per_acre"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "lotAreaTieredMaximumRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "threshold",
+        "below_threshold",
+        "at_or_above_threshold"
+      ],
+      "properties": {
+        "kind": {"const": "lot_area_tiered_maximum"},
+        "threshold": {"$ref": "#/$defs/lotAreaQuantity"},
+        "below_threshold": {
+          "oneOf": [
+            {"$ref": "#/$defs/maximumQuantityRequirement"},
+            {"$ref": "#/$defs/noMaximumListedRequirement"}
+          ]
+        },
+        "at_or_above_threshold": {
+          "oneOf": [
+            {"$ref": "#/$defs/maximumQuantityRequirement"},
+            {"$ref": "#/$defs/noMaximumListedRequirement"}
+          ]
+        }
+      }
+    },
+    "setbackRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "base", "adjustments"],
+      "properties": {
+        "kind": {"const": "setback"},
+        "base": {"$ref": "#/$defs/setbackComponent"},
+        "adjustments": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/setbackAdjustment"},
+          "uniqueItems": true
+        },
+        "adjustment_resolution": {"$ref": "#/$defs/adjustmentResolution"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"adjustments": {"minItems": 2}},
+            "required": ["adjustments"]
+          },
+          "then": {"required": ["adjustment_resolution"]}
+        }
+      ]
+    },
+    "noMaximumListedRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reason_code", "explanation", "source_refs"],
+      "properties": {
+        "kind": {"const": "no_maximum_listed"},
+        "reason_code": {"const": "controlling_base_table_has_no_maximum"},
+        "explanation": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "faaControlledRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "controlling_authority", "reason_code", "explanation", "source_refs"],
+      "properties": {
+        "kind": {"const": "faa_controlled"},
+        "controlling_authority": {"const": "FAA"},
+        "reason_code": {"const": "controlling_source_defers_to_faa"},
+        "explanation": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "planDependentRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reason_code", "explanation", "source_refs", "required_sources_or_facts"],
+      "properties": {
+        "kind": {"const": "plan_dependent"},
+        "reason_code": {"const": "controlling_source_requires_plan_or_project_review"},
+        "explanation": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"},
+        "required_sources_or_facts": {"$ref": "#/$defs/nonemptyStringArray"}
+      }
+    },
+    "notEvaluatedRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reason_code", "explanation", "source_refs", "prerequisite_ids"],
+      "properties": {
+        "kind": {"const": "not_evaluated"},
+        "reason_code": {
+          "enum": [
+            "requires_unimplemented_eligibility_and_branch_logic",
+            "deferred_regulation_family",
+            "requires_unavailable_proposal_facts",
+            "migrated_scope_limitation"
+          ]
+        },
+        "explanation": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"},
+        "prerequisite_ids": {"$ref": "#/$defs/referenceIdArray"}
+      }
+    },
+    "reviewRequiredRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reason_code", "explanation", "source_refs", "review_triggers"],
+      "properties": {
+        "kind": {"const": "review_required"},
+        "reason_code": {
+          "enum": [
+            "unresolved_source_conflict",
+            "project_specific_determination_required",
+            "missing_controlling_source"
+          ]
+        },
+        "explanation": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"},
+        "review_triggers": {"$ref": "#/$defs/nonemptyStringArray"}
+      }
+    },
+    "setbackComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source_refs"],
+      "properties": {
+        "value": {"$ref": "#/$defs/setbackValue"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "setbackAdjustment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adjustment_id", "trigger", "effect", "source_refs"],
+      "properties": {
+        "adjustment_id": {"$ref": "#/$defs/localId"},
+        "trigger": {"$ref": "#/$defs/adjustmentTrigger"},
+        "effect": {"$ref": "#/$defs/adjustmentEffect"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"}
+      }
+    },
+    "adjustmentResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ordered_adjustment_ids"],
+      "properties": {
+        "kind": {"const": "highest_precedence_applicable"},
+        "ordered_adjustment_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/localId"},
+          "minItems": 2,
+          "uniqueItems": true
+        }
+      }
+    },
+    "adjustmentTrigger": {
+      "oneOf": [
+        {"$ref": "#/$defs/storyTrigger"},
+        {"$ref": "#/$defs/heightTrigger"}
+      ]
+    },
+    "storyTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "story"],
+      "properties": {
+        "kind": {"const": "story_at_or_above"},
+        "story": {"type": "integer", "minimum": 1}
+      }
+    },
+    "heightTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "height"],
+      "properties": {
+        "kind": {"const": "height_above"},
+        "height": {"$ref": "#/$defs/distanceQuantity"}
+      }
+    },
+    "adjustmentEffect": {
+      "oneOf": [
+        {"$ref": "#/$defs/replaceTotalEffect"},
+        {"$ref": "#/$defs/addToBaseEffect"}
+      ]
+    },
+    "replaceTotalEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"const": "replace_total_minimum"},
+        "value": {"$ref": "#/$defs/setbackValue"}
+      }
+    },
+    "addToBaseEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {"const": "add_to_base"},
+        "value": {"$ref": "#/$defs/setbackValue"}
+      }
+    },
+    "setbackValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/distanceValue"},
+        {"$ref": "#/$defs/pairedDistanceValue"}
+      ]
+    },
+    "distanceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "number", "unit"],
+      "properties": {
+        "kind": {"const": "distance"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "pairedDistanceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "members", "relationship", "physical_assignment"],
+      "properties": {
+        "kind": {"const": "paired_distances"},
+        "members": {
+          "type": "array",
+          "prefixItems": [
+            {"$ref": "#/$defs/smallerSetbackMember"},
+            {"$ref": "#/$defs/largerSetbackMember"}
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "relationship": {"const": "coordinated_pair"},
+        "physical_assignment": {"const": "proposal_dependent"}
+      }
+    },
+    "smallerSetbackMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "number", "unit"],
+      "properties": {
+        "role": {"const": "smaller_setback"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "largerSetbackMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "number", "unit"],
+      "properties": {
+        "role": {"const": "larger_setback"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "unit"],
+      "properties": {
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"enum": ["ft", "percent", "stories"]}
+      }
+    },
+    "lotAreaQuantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "unit"],
+      "properties": {
+        "number": {"type": "number", "exclusiveMinimum": 0},
+        "unit": {"const": "sq_ft"}
+      }
+    },
+    "distanceQuantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "unit"],
+      "properties": {
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"const": "ft"}
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lot_context"],
+      "properties": {
+        "lot_context": {"enum": ["all", "corner", "not_applicable"]}
+      }
+    },
+    "notEvaluatedTopicMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/notEvaluatedTopic"}
+    },
+    "notEvaluatedTopic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "reason_code", "explanation", "source_refs", "prerequisite_ids"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "reason_code": {
+          "enum": [
+            "requires_unimplemented_eligibility_and_branch_logic",
+            "deferred_regulation_family",
+            "requires_unavailable_proposal_facts",
+            "migrated_scope_limitation"
+          ]
+        },
+        "explanation": {"type": "string", "minLength": 1},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"},
+        "prerequisite_ids": {"$ref": "#/$defs/referenceIdArray"}
+      }
+    },
+    "conflictMap": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/referenceId"},
+      "additionalProperties": {"$ref": "#/$defs/conflict"}
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["affected_rule_ids", "assertions", "resolution"],
+      "properties": {
+        "affected_rule_ids": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/ruleId"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "assertions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/conflictAssertion"},
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "resolution": {"$ref": "#/$defs/conflictResolution"}
+      }
+    },
+    "conflictAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertion_id", "value", "source_refs", "disposition"],
+      "properties": {
+        "assertion_id": {"$ref": "#/$defs/localId"},
+        "value": {"$ref": "#/$defs/assertionValue"},
+        "source_refs": {"$ref": "#/$defs/sourceRefArray"},
+        "disposition": {
+          "enum": ["selected_for_ruleset", "not_selected_for_ruleset", "unresolved"]
+        }
+      }
+    },
+    "conflictResolution": {
+      "oneOf": [
+        {"$ref": "#/$defs/resolvedConflictResolution"},
+        {"$ref": "#/$defs/unresolvedConflictResolution"}
+      ]
+    },
+    "resolvedConflictResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_assertion_id",
+        "selected_value",
+        "rationale",
+        "decision_source",
+        "decision_date",
+        "status",
+        "re_review_triggers"
+      ],
+      "properties": {
+        "selected_assertion_id": {"$ref": "#/$defs/localId"},
+        "selected_value": {"$ref": "#/$defs/assertionValue"},
+        "rationale": {"type": "string", "minLength": 1},
+        "decision_source": {"type": "string", "minLength": 1},
+        "decision_date": {"type": "string", "format": "date"},
+        "status": {"const": "project_resolved_pending_official_clarification"},
+        "re_review_triggers": {"$ref": "#/$defs/nonemptyStringArray"}
+      }
+    },
+    "unresolvedConflictResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_assertion_id",
+        "selected_value",
+        "rationale",
+        "decision_source",
+        "decision_date",
+        "status",
+        "re_review_triggers"
+      ],
+      "properties": {
+        "selected_assertion_id": {"type": "null"},
+        "selected_value": {"type": "null"},
+        "rationale": {"type": "string", "minLength": 1},
+        "decision_source": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "decision_date": {
+          "oneOf": [
+            {"type": "string", "format": "date"},
+            {"type": "null"}
+          ]
+        },
+        "status": {"const": "review_required_unresolved"},
+        "re_review_triggers": {"$ref": "#/$defs/nonemptyStringArray"}
+      }
+    },
+    "assertionValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/statusAssertionValue"},
+        {"$ref": "#/$defs/quantityAssertionValue"},
+        {"$ref": "#/$defs/quantityRangeAssertionValue"},
+        {"$ref": "#/$defs/distanceValue"},
+        {"$ref": "#/$defs/pairedDistanceValue"},
+        {"$ref": "#/$defs/nonnumericAssertionValue"}
+      ]
+    },
+    "statusAssertionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "code"],
+      "properties": {
+        "kind": {"const": "status"},
+        "code": {
+          "enum": [
+            "permitted_by_right",
+            "not_listed",
+            "required",
+            "may_be_required"
+          ]
+        }
+      }
+    },
+    "quantityAssertionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "number", "unit"],
+      "properties": {
+        "kind": {"const": "quantity"},
+        "number": {"type": "number", "minimum": 0},
+        "unit": {"enum": ["ft", "percent", "stories"]}
+      }
+    },
+    "quantityRangeAssertionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "minimum", "maximum", "unit"],
+      "properties": {
+        "kind": {"const": "quantity_range"},
+        "minimum": {"type": "number", "exclusiveMinimum": 0},
+        "maximum": {"type": "number", "exclusiveMinimum": 0},
+        "unit": {"const": "dwelling_units_per_acre"}
+      }
+    },
+    "nonnumericAssertionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reason_code"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "no_maximum_listed",
+            "faa_controlled",
+            "plan_dependent",
+            "not_evaluated",
+            "review_required"
+          ]
+        },
+        "reason_code": {"$ref": "#/$defs/referenceId"}
+      }
+    },
+    "validationStatus": {
+      "enum": [
+        "candidate_unverified",
+        "verified_base_value",
+        "verified_with_conditions",
+        "project_resolved_with_conditions"
+      ]
+    },
+    "sourceRefArray": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/referenceId"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "referenceIdArray": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/referenceId"},
+      "uniqueItems": true
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "nonemptyStringArray": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "nullableReferenceId": {
+      "oneOf": [
+        {"$ref": "#/$defs/referenceId"},
+        {"type": "null"}
+      ]
+    },
+    "referenceId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "localId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    },
+    "ruleId": {
+      "type": "string",
+      "pattern": "^us\\.[a-z0-9_]+\\.[a-z0-9_]+\\.[a-z0-9-]+\\.[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"
+    }
+  }
+}

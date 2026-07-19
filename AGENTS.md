@@ -26,8 +26,10 @@ Each project document has one job:
 - `contracts/residential-result-contract-2.0.0.schema.json` is the machine-enforced residential pipeline result contract. Put controlled status payload shapes and selection/result cardinality there; keep runtime implementation status in `docs/progress.md`.
 - `docs/title18-amendment-audit.md` is the checksum-pinned historical amendment audit used by the approved R1 rulesets. Preserve it byte-for-byte unless intentionally creating a new R1 ruleset version and migration.
 - `docs/residential-title18-amendment-audit.md` owns the current expansion cutoff, later-legislation effects, and recheck triggers.
+- `docs/residential-density-title18-amendment-audit.md` is the checksum-pinned density-capability audit supplement for residential candidate `2026-07-19.3`; preserve it when creating later successors.
 - `docs/r1-rule-verification.md` is the historical source trace and approval gate for the released machine-readable R1 rules. Preserve it except when correcting or re-verifying its own R1 conclusions.
 - `docs/residential-rule-verification.md` is the active source trace and approval gate for new-zone use permissions, structure applicability, definitions, exceptions, conflicts, and rule dispositions.
+- `docs/residential-density-rule-verification.md` is the checksum-pinned source trace and project-decision record for the gross residential density capability added after candidate `2026-07-19.2`.
 - Each raw snapshot's `manifest.json` is the authoritative record of that download's sources, filters, counts, files, and checksums.
 
 When something changes, update only its owning document unless the change genuinely affects another document's role. In particular, a milestone change normally updates `docs/progress.md` only.
@@ -38,15 +40,16 @@ When something changes, update only its owning document unless the change genuin
 2. Read the relevant portions of `docs/residential-expansion-plan.md` before making design or scope decisions.
 3. Read `docs/residential-rule-verification.md` before approving, authoring, or implementing a new residential-zone rule or disposition.
 4. Read `docs/residential-title18-amendment-audit.md` before making a current-law or later-legislation conclusion for the expansion.
-5. Read the relevant portions of `docs/r1-prototype-plan.md` when changing, migrating, or testing a contract inherited from the R1 baseline.
-6. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
-7. Read `docs/regulations/ruleset-authoring-guide.md` before changing or migrating the released R1/v2 contract.
-8. Read `docs/regulations/residential-ruleset-authoring-guide.md` before changing residential ruleset v3 schemas, authoring v3 rule data, or building v3 extraction workflows.
-9. Read `contracts/residential-result-contract-2.0.0.schema.json` before changing expansion pipeline or presentation result shapes.
-10. Read `README.md` when running, changing, or documenting repository commands or dependencies.
-11. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
-12. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
-13. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
+5. Read the density-specific verification and audit supplements before changing gross residential density data or its conflict resolutions.
+6. Read the relevant portions of `docs/r1-prototype-plan.md` when changing, migrating, or testing a contract inherited from the R1 baseline.
+7. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
+8. Read `docs/regulations/ruleset-authoring-guide.md` before changing or migrating the released R1/v2 contract.
+9. Read `docs/regulations/residential-ruleset-authoring-guide.md` before changing residential ruleset v3 schemas, authoring v3 rule data, or building v3 extraction workflows.
+10. Read `contracts/residential-result-contract-2.0.0.schema.json` before changing expansion pipeline or presentation result shapes.
+11. Read `README.md` when running, changing, or documenting repository commands or dependencies.
+12. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
+13. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
+14. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
 
 ## Preserve authoritative inputs
 

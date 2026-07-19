@@ -51,7 +51,7 @@ The current Santa Clara work uses only the shared capabilities cataloged below. 
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Residential candidate `2026-07-19.2` now encodes the verified R2-R6 use/profile matrix and selected standards, including two-family and multifamily identities and explicit nonnumeric dispositions. It is nonruntime candidate data; Patrick Henry authoring, complete-matrix review, approval, and application integration remain open. Parcel- or proposal-level compliance evaluation remains outside this phase.
+The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Residential candidate `2026-07-19.3` now encodes the verified R1-R6 use/profile matrix and selected standards, including gross residential density, two-family and multifamily identities, and explicit nonnumeric dispositions. It is nonruntime candidate data; Patrick Henry authoring, complete-matrix review, approval, and application integration remain open. Parcel- or proposal-level compliance evaluation remains outside this phase.
 
 ## Current supported regulation families
 
@@ -72,6 +72,7 @@ The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 
 | `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement, exception, and applicable proximity-transition warnings | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
 | `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
 | `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Retrievable from approved v2; R2-R6 encoded in nonruntime candidate |
+| `standard.gross_residential_density` | Gross residential density range | Base-zone minimum and maximum in dwelling units per acre; parcel yield, plan reconciliation, density bonus, and state-law adjustments are not calculated | R1-R6 encoded in nonruntime candidate |
 
 ### Setbacks
 
@@ -126,6 +127,12 @@ The system may retrieve a universal base maximum percentage, preserve separate s
 
 The system does not yet calculate existing coverage, remaining buildable area, or the treatment of every site feature.
 
+### Gross residential density
+
+The system may retrieve the base-zone gross residential density range as a sourced minimum and maximum in dwelling units per acre. A range is not a parcel unit-count result: the product does not multiply it by acreage, determine qualifying acreage, round a yield, or decide whether a proposal complies.
+
+Where authoritative code locations disagree, every assertion remains in a conflict record. A project-selected value remains visibly project-resolved and conditional; it is not presented as an official City correction. General Plan, master-plan, specific-plan, area-plan, development-agreement, density-bonus, affordable-housing, and state-law effects remain outside the evaluated result.
+
 ## Setback capabilities
 
 All currently supported setbacks are **base-zone requirements**, not computed building envelopes. The system may retrieve the applicable minimums and disclose known unevaluated exception families. It does not yet derive setback lines from parcel geometry or decide which exceptions alter a specific project.
@@ -174,6 +181,7 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 - Controlled `not evaluated` and `review required` outcomes
 - Explicit `no maximum listed`, `FAA-controlled`, and `plan-dependent` source dispositions without invented numeric substitutes
 - Typed lot-area-tiered maximum outcomes within an existing supported capability
+- Typed minimum-to-maximum quantity ranges with one closed unit
 - Separation of legal-use permission, workflow family, primary-structure identity, ordinary analysis profiles, and special pathways
 - Partial-candidate validation that remains distinct from complete runtime eligibility
 
@@ -193,7 +201,7 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 | ADUs and JADUs | Deferred; local and state-law interaction is not encoded |
 | R1 Chapter 18.24 two-home dimensional analysis | Permission pathway is cataloged; eligibility, configuration, and branch-specific dimensional evaluation remain `not evaluated` |
 | SB 9 project evaluation beyond the source-verified local pathway | Deferred; state-law eligibility and override analysis are not encoded |
-| Density and density bonus | Deferred; project and affordability inputs are not encoded |
+| Density bonus, parcel unit yield, and density compliance | Base-zone gross density ranges are encoded; acreage, plan reconciliation, bonus, affordability, state-law, and proposal evaluation remain deferred |
 | Minimum parcel area and frontage | Values identified but parcel-creation evaluation is deferred |
 | Driveway approach length | Value identified but proposal-specific applicability is deferred |
 | Daylight plane | Geometry and applicability interpretation are deferred |

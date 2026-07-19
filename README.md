@@ -221,7 +221,7 @@ The original candidate can still be validated without the runtime requirement by
 
 ## Validate the residential expansion contracts
 
-Residential schemas `3.0.0` and `3.1.0` and result contract `2.0.0` are implemented as development contracts without changing the released R1 application. The accepted v3.0 R1 migration checkpoint remains preserved at:
+Residential schemas `3.0.0`, `3.1.0`, and `3.2.0` and result contract `2.0.0` are implemented as development contracts without changing the released R1 application. The accepted v3.0 R1 migration checkpoint remains preserved at:
 
 ```text
 rulesets/santa_clara/residential/2026-07-19.1/ruleset.json
@@ -248,6 +248,21 @@ python3 scripts/validate_citywide_residential_rules.py --verify-source-files
 ```
 
 Candidate `2026-07-19.2` deliberately remains nonruntime: it lacks the five Patrick Henry target designations, carries candidate status, and contains no residential-lineage approvals. Supplying `--require-runtime-eligible` to the citywide validator must fail closed until Patrick Henry authoring and complete ruleset approval are finished.
+
+The gross-density successor preserves candidate `2026-07-19.2` and adds one typed minimum-to-maximum range in dwelling units per acre to each of the 11 R1-R6 ordinary profiles. R5 and R6 retain their conflicting Table 1-1, zone-purpose, and Table 2-3 assertions while using the project-owner-selected Table 1-1 values:
+
+```text
+rulesets/santa_clara/residential/2026-07-19.3/ruleset.json
+rulesets/santa_clara/residential/2026-07-19.3/density-expansion-crosswalk.json
+```
+
+Validate the complete approved-v2 → v3.0 → v3.1 → density-v3.2 lineage, source checksums, conflict consistency, exact predecessor preservation, deterministic replay, and GIS fixture contract:
+
+```bash
+python3 scripts/validate_density_residential_rules.py --verify-source-files
+```
+
+Candidate `2026-07-19.3` also remains nonruntime and nonapproved. It retrieves base-zone gross density ranges only; it does not calculate unit yield or evaluate applicable plans, density bonus, affordability, development agreements, or state-law adjustments.
 
 Validate all eight nonruntime result-contract fixtures:
 
@@ -345,6 +360,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── progress.md                   Current status and milestone ledger
 │   ├── future-improvements.md        Deferred enhancement burndown
 │   ├── residential-expansion-plan.md Active residential expansion specification
+│   ├── residential-density-rule-verification.md Density source matrix and conflict decisions
+│   ├── residential-density-title18-amendment-audit.md Density amendment-audit supplement
 │   ├── residential-rule-verification.md Active residential source and rule gate
 │   ├── residential-title18-amendment-audit.md Active expansion amendment audit
 │   ├── regulations/
@@ -359,9 +376,11 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── schema/ruleset-v2.schema.json  Approved zone-first v2 contract
 │   ├── schema/ruleset-v3.schema.json  Accepted residential v3.0 R1 contract
 │   ├── schema/ruleset-v3.1.schema.json Additive citywide coverage-tier contract
+│   ├── schema/ruleset-v3.2.schema.json Additive gross-density range contract
 │   └── santa_clara/
 │       ├── residential/2026-07-19.1/  Nonruntime migrated R1 v3 candidate
 │       ├── residential/2026-07-19.2/  Nonruntime R1-R6 v3.1 candidate
+│       ├── residential/2026-07-19.3/  Nonruntime R1-R6 density v3.2 candidate
 │       └── r1/
 │           ├── 2026-07-16/            Versioned approved v1 R1 rules
 │           ├── 2026-07-17/            Preserved reviewed v2 candidate
@@ -379,6 +398,7 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── scripts/
 │   ├── arcgis_snapshot.py             Shared ArcGIS snapshot utilities
 │   ├── author_citywide_residential_rules.py Non-overwriting R2-R6 authoring replay
+│   ├── author_density_residential_rules.py Non-overwriting gross-density authoring replay
 │   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
 │   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
 │   ├── download_address_points.py     Citywide address-point downloader
@@ -390,6 +410,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
 │   ├── validate_residential_result_contract.py Expansion fixture validator
 │   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
+│   ├── validate_density_residential_rules.py Density lineage and domain validator
 │   ├── validate_residential_rules_v3.py Residential domain and runtime gate
 │   ├── validate_r1_rules.py           Approved v1 ruleset validator
 │   └── validate_r1_rules_v2.py        V2 domain, migration, and runtime gate

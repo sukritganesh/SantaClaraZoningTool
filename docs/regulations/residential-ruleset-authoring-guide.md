@@ -1,8 +1,8 @@
 # Residential Ruleset Authoring Guide
 
-**Contract:** Santa Clara residential ruleset schema `3.1.0`; accepted R1 predecessor preserved under `3.0.0`
+**Contract:** Santa Clara residential ruleset schema `3.2.0`; accepted predecessors preserved under `3.0.0` and `3.1.0`
 
-**Status:** Block 2 representation accepted; additive citywide authoring contract implemented for Block 3
+**Status:** Block 2 representation accepted; additive citywide and density authoring contracts implemented for Block 3
 
 **Last updated:** July 19, 2026
 
@@ -10,9 +10,9 @@
 
 This guide is the human- and AI-facing representation contract for the residential expansion lineage. It defines how verified residential use permissions, ordinary structure profiles, special pathways, approvals, selected dimensional standards, provenance, conflicts, and explicit nonnumeric dispositions are represented.
 
-It does not contain Santa Clara's numeric values and does not authorize candidate data for runtime use. The capability meanings live in `supported-regulations.md`; zone-specific source conclusions live in `docs/residential-rule-verification.md`; active status and validation evidence live in `docs/progress.md`.
+It does not contain Santa Clara's numeric values and does not authorize candidate data for runtime use. The capability meanings live in `supported-regulations.md`; zone-specific source conclusions live in `docs/residential-rule-verification.md` and checksum-pinned capability supplements such as `docs/residential-density-rule-verification.md`; active status and validation evidence live in `docs/progress.md`.
 
-The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Schema `3.1.0` adds the minimum closed shape needed to preserve R3/R4 lot-area-tiered coverage without flattening either source-table tier.
+The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Candidate `2026-07-19.2` and schema `3.1.0` remain the R1-R6 citywide checkpoint. Schema `3.2.0` adds the minimum closed range and conflict-assertion shapes needed for gross residential density.
 
 ## Non-negotiable semantics
 
@@ -52,7 +52,7 @@ Closed JSON objects reject unknown fields. Identifiers are map keys wherever pra
 
 The residential lineage uses:
 
-- schema version `3.0.0` for the accepted R1 migration checkpoint and additive `3.1.0` for the R1-R6 citywide candidate;
+- schema version `3.0.0` for the accepted R1 migration checkpoint, additive `3.1.0` for the R1-R6 citywide checkpoint, and additive `3.2.0` for the gross-density successor;
 - ruleset ID `santa-clara-residential-zoning`;
 - calendar-and-revision versions in the form `YYYY-MM-DD.N`;
 - status `candidate` while any representation, source, completeness, approval, or migration gate remains open; and
@@ -137,6 +137,7 @@ For the current phase, every ordinary profile contains exactly these evaluated o
 - `standard.maximum_primary_structure_height`
 - `standard.maximum_stories`
 - `standard.maximum_structure_coverage`
+- `standard.gross_residential_density`
 - `setback.front`
 - `setback.rear`
 - `setback.interior_side`
@@ -189,6 +190,12 @@ A pathway may be listed while dimensional analysis remains unavailable. Retrieva
 - an `at_or_above_threshold` outcome.
 
 Each outcome is independently either `maximum_quantity` in percent or `no_maximum_listed`, with its own source references. The two tiers must never be flattened into one percentage, and a no-maximum-listed tier must never be converted to infinity or “unlimited.” The Santa Clara domain validator pins the current approved source-table split to 10,000 square feet while the shared JSON shape remains typed rather than jurisdiction-named.
+
+### Quantity range
+
+`quantity_range` stores one sourced minimum and maximum using the same closed unit. Schema `3.2.0` uses it for `standard.gross_residential_density` with unit `dwelling_units_per_acre`. The minimum must be positive and must not exceed the maximum.
+
+This shape retrieves a source range only. It must not encode or imply parcel acreage, an allowed unit count, rounding, density-bonus eligibility, plan reconciliation, or proposal compliance.
 
 ### Setback
 
@@ -274,6 +281,8 @@ Conflicting source assertions remain separate from the selected rule value. Each
 - the selected value, if deterministically resolved; and
 - re-review triggers.
 
+Schema `3.2.0` permits a typed `quantity_range` assertion value so competing minimum/maximum density ranges can be retained without prose or scalar flattening. A project resolution selects one assertion only when the decision source is explicit. The selected rule uses `project_resolved_with_conditions`, matches the selected range exactly, and remains distinguishable from an official correction.
+
 Migration may change affected rule IDs to their profile-owned v3 identities, but it must preserve all assertion values, sources, and resolution meaning. A project resolution is not an official government correction.
 
 ## Candidate and runtime gates
@@ -329,6 +338,18 @@ The citywide authoring successor consumes accepted candidate `2026-07-19.1` dire
 - prove byte-identical target and crosswalk replay from the pinned predecessor and authoring code.
 
 The additive schema version does not authorize changing the accepted `3.0.0` schema or `2026-07-19.1` artifact in place.
+
+The density authoring successor consumes candidate `2026-07-19.2` directly and emits candidate `2026-07-19.3` plus a separate expansion crosswalk. It must:
+
+- preserve every predecessor use permission and the existing nine regulations in every ordinary profile exactly;
+- add `standard.gross_residential_density` once to each of the 11 R1-R6 ordinary profiles;
+- use `quantity_range` in dwelling units per acre;
+- preserve the R5 and R6 competing assertions, while selecting the project-owner-approved Table 1-1 values through project-resolved conflict records;
+- pin the density-specific verification and amendment-audit supplements without changing predecessor-pinned documents;
+- keep every candidate rule nonapproved and the artifact nonruntime; and
+- prove byte-identical target and crosswalk replay from the checksum-pinned predecessor.
+
+The additive density schema does not authorize changing schema `3.1.0` or candidate `2026-07-19.2` in place.
 
 ## Authoring workflow
 

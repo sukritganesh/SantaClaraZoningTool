@@ -106,7 +106,7 @@ Two-family may reuse multifamily workflow and presentation machinery, but the re
 
 ## 5. Supported regulations and explicit dispositions
 
-This phase should retain the existing regulation families instead of expanding into a full multifamily entitlement model.
+This phase retains a deliberately small set of key base-zone standards rather than expanding into a full multifamily entitlement model. Gross residential density was added during Block 3 after source verification and project-owner approval; density bonus and unit-yield analysis remain outside scope.
 
 | Family | Expansion intent |
 |---|---|
@@ -116,11 +116,13 @@ This phase should retain the existing regulation families instead of expanding i
 | Maximum primary-structure height | Return a numeric base maximum where stated, or an explicit FAA-controlled disposition where no fixed base maximum is stated. |
 | Maximum stories | Return the stated base maximum without classifying a proposal's levels. |
 | Maximum structure coverage | Return the stated percentage, or state that no maximum is listed in the controlling base-zone table. |
+| Gross residential density | Return the stated base-zone minimum-to-maximum range in dwelling units per acre; preserve conflicting source assertions and any project resolution. Do not calculate parcel yield or apply plan, bonus, or state-law adjustments. |
 | Front, rear, interior-side, and street-side setbacks | Return supported base values and already-supported typed story adjustments; retain context and plan dependencies. |
 
 The minimum schema generalization should support these dispositions without inventing new regulation families:
 
 - **Numeric requirement:** an ordinary supported number and unit.
+- **Numeric range requirement:** a sourced minimum and maximum in the same closed unit, used for gross residential density without converting it into a parcel unit count.
 - **No maximum listed:** the controlling base-zone source states no maximum for that field. Presentation must not call this “unlimited.”
 - **FAA-controlled:** the source makes height subject to FAA criteria and does not state an ordinary fixed base maximum. This remains a height result, not a new overlay capability.
 - **Plan-dependent:** the controlling plan or development plan supplies the value and the base table does not establish one.
@@ -161,6 +163,7 @@ Block 1 must establish and preserve:
 - Objective Design Standards applicability and the unresolved Chapter 18.27 source issue;
 - exact City GIS designations, counts, source object IDs, filters, and checksums in a new immutable snapshot; and
 - `docs/residential-rule-verification.md`, which separates source assertions, candidate interpretations, approved dispositions, conflicts, and unresolved questions.
+- checksum-pinned capability supplements when adding a capability after a predecessor already pins the active verification and audit documents; the gross-density supplements are `docs/residential-density-rule-verification.md` and `docs/residential-density-title18-amendment-audit.md`.
 
 Consequential values, use permissions, structure applicability, and nonnumeric dispositions require human approval before runtime use. Previously approved R1 rules remain approved only within their existing scope and immutable version.
 
@@ -223,6 +226,8 @@ The implemented base representation is **ruleset schema `3.0.0`** in a new resid
 
 The R2-R6 authoring tranche requires one additive **schema `3.1.0`** refinement: a closed lot-area-tiered maximum shape within the existing structure-coverage capability. This preserves the two Table 2-3 lot-area outcomes for R3 and R4 without flattening either tier, inventing an unlimited value, or introducing a new regulation family. Schema `3.0.0` and candidate `2026-07-19.1` remain unchanged as the direct predecessor checkpoint.
 
+The approved Block 3 gross-density addition requires additive **schema `3.2.0`**: a closed minimum-to-maximum quantity range plus the same range shape for conflict assertions. Candidate `2026-07-19.3` adds that capability to the 11 R1-R6 ordinary profiles while preserving schemas `3.0.0` and `3.1.0` and candidates `2026-07-19.1` and `.2` as immutable checkpoints.
+
 The new artifacts should be introduced alongside, not in place of:
 
 - `rulesets/schema/ruleset-v2.schema.json`;
@@ -230,7 +235,7 @@ The new artifacts should be introduced alongside, not in place of:
 - the v1-to-v2 migration and crosswalk; and
 - the released R1 validator, loader, pipeline, presenter, and acceptance tests until residential replacement gates pass.
 
-The proposed residential ruleset ID is `santa-clara-residential-zoning`. Candidate artifacts use `status: candidate`; an approved artifact uses `status: approved_for_runtime`. Approval still requires a valid `approved_on` date and every selected rule to be individually approved. The first version number remains undecided until candidate data is generated; it must continue the existing `YYYY-MM-DD.revision` publication convention.
+The residential ruleset ID is `santa-clara-residential-zoning`. Candidate artifacts use `status: candidate`; an approved artifact uses `status: approved_for_runtime`. Approval still requires a valid `approved_on` date and every selected rule to be individually approved. Versions use the existing `YYYY-MM-DD.revision` publication convention.
 
 ### 10.3 Proposed zone hierarchy
 
@@ -292,6 +297,7 @@ The existing `status`, `maximum_quantity`, and `setback` payloads remain the typ
 | `status` | Source-backed use or approval category | Use permissions, Zoning Clearance, and Architectural Review |
 | `maximum_quantity` | Ordinary numeric maximum with explicit unit | Height, stories, and structure coverage |
 | `lot_area_tiered_maximum` | Separate maximum or no-maximum-listed outcomes below and at/above one stated lot-area threshold | Structure coverage only; added in schema `3.1.0` without creating a new capability |
+| `quantity_range` | Sourced minimum and maximum in one closed unit | Gross residential density only in schema `3.2.0`; retrieves a base range without calculating unit yield |
 | `setback` | Ordinary base minimum with supported typed adjustments | Front, rear, interior-side, and street-side setbacks |
 | `no_maximum_listed` | The controlling base table supplies no maximum | A maximum capability only; never rendered as unlimited |
 | `faa_controlled` | The source supplies `FAA` instead of an ordinary number | Patrick Henry `UC` height and stories only in this phase |

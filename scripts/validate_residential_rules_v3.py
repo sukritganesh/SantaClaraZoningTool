@@ -76,6 +76,8 @@ PROFILE_CAPABILITIES = {
     "setback.interior_side",
     "setback.street_side",
 }
+DENSITY_CAPABILITY = "standard.gross_residential_density"
+PROFILE_CAPABILITIES_WITH_DENSITY = PROFILE_CAPABILITIES | {DENSITY_CAPABILITY}
 PROFILE_BINDINGS = {
     "single_family": {
         "workflow_family": "single_family",
@@ -137,6 +139,16 @@ EXPECTED_LOT_CONTEXT = {
     "setback.rear": "all",
     "setback.interior_side": "all",
     "setback.street_side": "corner",
+    DENSITY_CAPABILITY: "all",
+}
+DENSITY_RANGES = {
+    "R1-6L": (0.1, 10),
+    "R1-8L": (0.1, 10),
+    "R2": (8, 19),
+    "R3": (20, 36),
+    "R4": (37, 50),
+    "R5": (51, 100),
+    "R6": (60, 350),
 }
 MAXIMUM_UNITS = {
     "standard.maximum_primary_structure_height": "ft",
@@ -324,6 +336,13 @@ def operational_assertion_value(rule: dict[str, Any]) -> dict[str, Any]:
             "number": requirement["value"]["number"],
             "unit": requirement["value"]["unit"],
         }
+    if kind == "quantity_range":
+        return {
+            "kind": "quantity_range",
+            "minimum": requirement["minimum"],
+            "maximum": requirement["maximum"],
+            "unit": requirement["unit"],
+        }
     if kind == "setback":
         return requirement["base"]["value"]
     if kind == "lot_area_tiered_maximum":
@@ -434,6 +453,20 @@ def validate_requirement(
                 location=f"{location}.at_or_above_threshold",
                 errors=errors,
             )
+    elif capability == DENSITY_CAPABILITY:
+        if kind != "quantity_range":
+            errors.append(f"{location} must use a quantity_range requirement")
+        else:
+            if requirement["unit"] != "dwelling_units_per_acre":
+                errors.append(f"{location} must use unit dwelling_units_per_acre")
+            minimum = requirement["minimum"]
+            maximum = requirement["maximum"]
+            if isinstance(minimum, bool) or minimum <= 0:
+                errors.append(f"{location}.minimum must be greater than zero")
+            if isinstance(maximum, bool) or maximum <= 0:
+                errors.append(f"{location}.maximum must be greater than zero")
+            if minimum > maximum:
+                errors.append(f"{location}.minimum exceeds maximum")
     elif capability in {
         "setback.front",
         "setback.rear",
@@ -604,6 +637,11 @@ def validate_ruleset(
             )
 
     zones = ruleset["zones"]
+    expected_profile_capabilities = (
+        PROFILE_CAPABILITIES_WITH_DENSITY
+        if ruleset["schema_version"] == "3.2.0"
+        else PROFILE_CAPABILITIES
+    )
     unexpected_zones = set(zones) - TARGET_ZONES
     if unexpected_zones:
         errors.append(f"zones contains unsupported exact designations: {sorted(unexpected_zones)}")
@@ -668,9 +706,9 @@ def validate_ruleset(
                 if profile[field] != expected:
                     errors.append(f"{location}.{field} must be {expected}")
             regulations = profile["regulations"]
-            if set(regulations) != PROFILE_CAPABILITIES:
-                missing = PROFILE_CAPABILITIES - set(regulations)
-                extra = set(regulations) - PROFILE_CAPABILITIES
+            if set(regulations) != expected_profile_capabilities:
+                missing = expected_profile_capabilities - set(regulations)
+                extra = set(regulations) - expected_profile_capabilities
                 if missing:
                     errors.append(f"{location} is missing capabilities: {sorted(missing)}")
                 if extra:
@@ -707,6 +745,18 @@ def validate_ruleset(
                     location=f"{rule_location}.requirement",
                     errors=errors,
                 )
+                if capability == DENSITY_CAPABILITY:
+                    expected_range = DENSITY_RANGES.get(zone)
+                    actual_range = (
+                        rule["requirement"]["minimum"],
+                        rule["requirement"]["maximum"],
+                    )
+                    if expected_range is None:
+                        errors.append(f"{rule_location} has no verified density matrix value")
+                    elif actual_range != expected_range:
+                        errors.append(
+                            f"{rule_location} must use source-approved range {expected_range}"
+                        )
                 rule_ids.append(rule["rule_id"])
                 rules_by_id[rule["rule_id"]] = rule
 
@@ -749,6 +799,11 @@ def validate_ruleset(
                 location=f"{location}.assertions[{index}]",
                 errors=errors,
             )
+            value = assertion["value"]
+            if value["kind"] == "quantity_range" and value["minimum"] > value["maximum"]:
+                errors.append(
+                    f"{location}.assertions[{index}].value minimum exceeds maximum"
+                )
         selected = [
             assertion
             for assertion in conflict["assertions"]
