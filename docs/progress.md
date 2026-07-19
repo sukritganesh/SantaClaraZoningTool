@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 and Block 6.1-6.2 are complete and owner accepted on `codex/residential-zone-expansion`; the Block 6.3 clean-checkout CI workflow is implemented locally and awaits its first GitHub-hosted validation run
+**Current position:** Blocks 0-5 and Block 6.1-6.2 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.3 clean-checkout CI implementation and its first GitHub-hosted run are complete, with owner acceptance pending before release reporting
 
-**Next action:** Push the Block 6.3 workflow, inspect its actual GitHub Actions result, correct any real runner issue, and record the remote evidence before beginning release reporting
+**Next action:** Review and accept Block 6.3, then begin Block 6.4 residential expansion release reporting and final release-identity preparation
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -61,7 +61,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Tranche 6.3 implemented; remote validation pending | Accepted tranches 6.1-6.2 repair source packaging and consolidate release acceptance. A minimal read-only GitHub Actions workflow now reproduces bundle bootstrap and generation, all regulatory and result validators, the release harness, the 354-test complete suite, JavaScript syntax, and whitespace integrity on clean Python 3.9 runners; its first hosted run remains pending. |
+| 6. Validate and release | Tranche 6.3 technical gate complete; owner acceptance pending | Accepted tranches 6.1-6.2 repair source packaging and consolidate release acceptance. The minimal read-only GitHub Actions workflow reproduces bundle bootstrap and generation, all regulatory and result validators, the release harness, the 354-test complete suite, JavaScript syntax, and whitespace integrity; hosted run `29706880910` passed every step on Python 3.9. |
 
 ## Block 0 evidence
 
@@ -603,7 +603,15 @@ The Python 3.9 clean-checkout job:
 7. checks the unchanged JavaScript enhancement with Node and runs `git diff --check`; and
 8. fails immediately on any unexplained error because no step uses `continue-on-error` or an allowed-failure path.
 
-Local workflow-file evidence currently passes YAML parsing and `git diff --check`. The workflow's technical gate remains open until the committed workflow runs successfully on GitHub's hosted runner; local command success is not substituted for remote CI evidence.
+Validation evidence:
+
+- the workflow file passes local YAML parsing and `git diff --check`;
+- push commit `7dc9c0b5d53195276f43ca27517256d2e38095a6` triggered **Residential release validation** run `29706880910` on July 19, 2026;
+- hosted job `88245280734`, **Python 3.9 clean-checkout gate**, completed successfully in 4 minutes 51 seconds;
+- every substantive step passed: checkout, Python setup, dependency installation and `pip check`, two bootstrap passes, byte-identical residential bundle reproduction, the approved residential validator, both result-contract validators, the six-test release harness, the complete 354-test repository suite, JavaScript syntax, and whitespace integrity; and
+- the successful run is recorded at `https://github.com/sukritganesh/SantaClaraZoningTool/actions/runs/29706880910`.
+
+No CI step has write authority or an allowed-failure path. Tranche 6.3 changes automation and status evidence only; it does not change dependencies, production code, regulatory data, source snapshots, runtime archives, contracts, presentation, or user-visible behavior.
 
 ## Blocks 0-1 validation evidence
 
