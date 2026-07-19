@@ -51,7 +51,7 @@ The current Santa Clara work uses only the shared capabilities cataloged below. 
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Residential candidate `2026-07-19.4` now encodes the verified complete 12-zone use/profile matrix and selected standards, including gross residential density, two-family and multifamily identities, and explicit no-maximum-listed, FAA-controlled, and plan-dependent dispositions. It is nonruntime candidate data; complete-candidate approval, runtime promotion, and application integration remain open. Parcel- or proposal-level compliance evaluation remains outside this phase.
+The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Approved residential ruleset `2026-07-19.5` now encodes the verified complete 12-zone use/profile matrix and selected standards, including gross residential density, two-family and multifamily identities, and explicit no-maximum-listed, FAA-controlled, and plan-dependent dispositions. It is runtime-eligible regulatory data, but the production loader and retrieval path still use the released R1 v2 artifact pending Block 4 integration. Parcel- or proposal-level compliance evaluation remains outside this phase.
 
 ## Current supported regulation families
 
@@ -59,29 +59,29 @@ The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Retrievable for R1 from approved v2; complete target matrix encoded in nonruntime candidate |
-| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Complete target matrix encoded in nonruntime residential candidate |
-| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Complete target matrix encoded in nonruntime residential candidate |
-| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
+| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Approved across the complete target ruleset; production integration pending |
+| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Approved across the complete target ruleset; production integration pending |
+| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Approved across the complete target ruleset; production retrieval currently limited to R1 |
 
 ### Dimensional standards
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit or explicit FAA-controlled result with measurement, exception, and applicable proximity-transition warnings | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `standard.maximum_stories` | Maximum number of stories | Base numeric limit or explicit FAA-controlled result; automated story classification is excluded | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `standard.gross_residential_density` | Gross residential density range | Base-zone minimum and maximum in dwelling units per acre; parcel yield, plan reconciliation, density bonus, and state-law adjustments are not calculated | Complete target profiles encoded in nonruntime candidate |
+| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit or explicit FAA-controlled result with measurement, exception, and applicable proximity-transition warnings | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `standard.maximum_stories` | Maximum number of stories | Base numeric limit or explicit FAA-controlled result; automated story classification is excluded | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `standard.gross_residential_density` | Gross residential density range | Base-zone minimum and maximum in dwelling units per acre; parcel yield, plan reconciliation, density bonus, and state-law adjustments are not calculated | Approved across the complete target ruleset; production integration pending |
 
 ### Setbacks
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `setback.front` | Front setback | Base requirement and supported upper-story difference | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `setback.rear` | Rear setback | Base requirement, supported story-triggered replacement, or explicit plan-dependent result | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
-| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Retrievable from approved v2; complete target profiles encoded in nonruntime candidate |
+| `setback.front` | Front setback | Base requirement and supported upper-story difference | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `setback.rear` | Rear setback | Base requirement, supported story-triggered replacement, or explicit plan-dependent result | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Approved across the complete target ruleset; production retrieval currently limited to R1 |
+| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Approved across the complete target ruleset; production retrieval currently limited to R1 |
 | `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Retrievable as embedded approved-v2 behavior |
 | `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Retrievable as embedded approved-v2 behavior |
 

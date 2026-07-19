@@ -1,0 +1,45 @@
+{
+  "crosswalk_version": "1.0.0",
+  "promotion_id": "santa-clara-residential-v3-complete-runtime-approval",
+  "promotion_status": "approved_runtime_validated",
+  "approved_on": "2026-07-19",
+  "decision_source": "Project owner approval of candidate 2026-07-19.4 in the July 19, 2026 Codex task",
+  "source_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.4/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.4",
+    "schema_version": "3.2.0",
+    "status": "candidate",
+    "sha256": "7e4261277aeb527cd479249a6f580cb6006f5e186c911106c9d4ab9f9ce734b7"
+  },
+  "target_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.5/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.5",
+    "schema_version": "3.2.0",
+    "status": "approved_for_runtime",
+    "sha256": "ed72cfd24cc43755ddcfbcf566a2c6212592155bb491807cb747748addbb05c4"
+  },
+  "target_schema": {
+    "path": "rulesets/schema/ruleset-v3.2.schema.json",
+    "sha256": "186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef"
+  },
+  "counts": {
+    "zones": 12,
+    "use_permissions": 36,
+    "analysis_profiles": 16,
+    "profile_regulations": 160,
+    "special_pathways": 2,
+    "conflicts": 4,
+    "approved_records": 198
+  },
+  "semantic_projection_sha256": "20365bc42bff16afcaac3497dd0edfcfdb34f8450cab2caa166313d5f8e29cac",
+  "allowed_changes": [
+    "Advance the immutable ruleset version from 2026-07-19.4 to 2026-07-19.5.",
+    "Change status from candidate to approved_for_runtime and set approved_on.",
+    "Replace the predecessor pointer with a checksum-pinned approval crosswalk to the reviewed candidate.",
+    "Replace the nonruntime scope description with an equivalent runtime-approved lifecycle description.",
+    "Set approved_for_ruleset true on all 196 rules and both special pathways.",
+    "Preserve all regulatory semantics, sources, citations, conflicts, values, conditions, and limitations."
+  ]
+}

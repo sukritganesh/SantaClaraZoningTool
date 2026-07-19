@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 3 remains in progress on `codex/residential-zone-expansion`; the project owner accepted density candidate `2026-07-19.3`, and all five Patrick Henry designations are implemented and technically validated in complete nonruntime candidate `2026-07-19.4`, while complete-candidate approval, runtime promotion, application integration, and user-visible changes remain pending
+**Current position:** Block 3 is complete and project-owner accepted on `codex/residential-zone-expansion`; immutable residential ruleset `2026-07-19.5` is approved and runtime-eligible for all 12 target zones, while production still loads the released R1 v2 artifact until Block 4 deliberately integrates the new lookup and retrieval path
 
-**Next action:** Obtain project-owner review and approval of complete candidate `2026-07-19.4`; after approval, produce a separately versioned runtime-approved artifact and pass the runtime-eligibility gate before Block 4 changes any production loader or lookup code
+**Next action:** Begin Block 4 by auditing and then generalizing the production ruleset loader, residential GIS lookup, and exact zone/use/structure retrieval boundary against approved ruleset `2026-07-19.5`; preserve all current R1 runtime behavior until the expanded integration passes its focused gates
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -38,6 +38,8 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Patrick Henry source and decision supplement: `docs/patrick-henry-rule-verification-supplement.md`
 - Complete nonruntime 12-zone v3.2 candidate: `rulesets/santa_clara/residential/2026-07-19.4/ruleset.json`
 - Density-candidate-to-Patrick-Henry expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.4/patrick-henry-expansion-crosswalk.json`
+- Approved runtime-eligible 12-zone v3.2 ruleset: `rulesets/santa_clara/residential/2026-07-19.5/ruleset.json`
+- Candidate-to-approved promotion crosswalk: `rulesets/santa_clara/residential/2026-07-19.5/approval-crosswalk.json`
 - Residential result contract: `contracts/residential-result-contract-2.0.0.schema.json`
 - Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
 - Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
@@ -51,7 +53,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
-| 3. Author and approve residential rules | In progress; complete 12-zone candidate implemented | Candidate `2026-07-19.4` preserves all accepted predecessor data, adds the five Patrick Henry multifamily profiles, and passes the complete technical gate; owner approval and a separately versioned runtime promotion remain. |
+| 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
@@ -218,7 +220,7 @@ Validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 219 tests, including 14 new citywide matrix, tier semantics, source, approval, mutation, preservation, checksum, and deterministic replay tests; and
 - `git diff --check` passes.
 
-This evidence makes the R2-R6 tranche ready for project-owner review, not runtime use. Block 3 remains open for owner acceptance, Patrick Henry authoring, complete-source review, per-record approval, and final runtime eligibility.
+At this checkpoint, the R2-R6 tranche was ready for project-owner review but not runtime use. The later density, Patrick Henry, and approval successors preserve this candidate while completing the remaining Block 3 gates.
 
 ## Block 3 gross residential density evidence
 
@@ -284,7 +286,35 @@ Validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 245 tests; and
 - `git diff --check` passes.
 
-This evidence makes candidate `2026-07-19.4` ready for project-owner review, not runtime use. Block 3 remains open for complete-candidate approval, per-record promotion in a separate artifact, and final runtime eligibility.
+This evidence made candidate `2026-07-19.4` ready for project-owner review. The subsequent approval promotion below closes Block 3 without altering that reviewed checkpoint.
+
+## Block 3 complete-candidate approval and runtime promotion
+
+The project owner approved complete candidate `2026-07-19.4` on July 19, 2026. Approval is recorded as a new immutable successor rather than an in-place edit:
+
+- `scripts/promote_residential_rules_v3.py` revalidates the complete candidate, its Patrick Henry replay, local sources, and the candidate's expected fail-closed runtime state before writing anything;
+- approved ruleset `2026-07-19.5` retains schema `3.2.0`, all 12 zones, 36 use permissions, 16 profiles, 160 profile regulations, two special pathways, four conflicts, every source and citation, every selected value, and every condition and limitation from `.4`;
+- the promotion changes only the immutable version and lifecycle metadata, predecessor/crosswalk pointer, scope lifecycle wording, and `approved_for_ruleset` flags on the 196 rules and two pathways;
+- `approval-crosswalk.json` pins the source, target, and schema checksums, records the owner decision, counts all 198 approval-bearing records, and records a checksum of the regulatory-semantic projection shared by `.4` and `.5`;
+- `scripts/validate_approved_residential_rules.py` validates the complete approved-R1-v2 through residential-v3.2 lineage, every deterministic authoring replay, source-file integrity, GIS fixtures, the approval replay, semantic preservation, and runtime eligibility in one command; and
+- production application modules remain unchanged. Runtime eligibility makes `.5` valid input for Block 4 integration; it does not silently switch the released R1 loader or user experience.
+
+Canonical approval checksums:
+
+- approved 12-zone ruleset: `ed72cfd24cc43755ddcfbcf566a2c6212592155bb491807cb747748addbb05c4`;
+- approval crosswalk: `778dd129b35fdd4026a76b6b5cf40c875d26795daadff0dcfe7827bd556e4e5b`;
+- preserved reviewed candidate: `7e4261277aeb527cd479249a6f580cb6006f5e186c911106c9d4ab9f9ce734b7`;
+- preserved Patrick Henry crosswalk: `e6f789acf82d79ff3ab9dfff462d05779349bab19c3286d1b60a926708fbefea`; and
+- preserved schema v3.2: `186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef`.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete source, schema, conflict, lineage, replay, semantic-preservation, GIS-fixture, per-record approval, and runtime-eligibility gates;
+- `.venv/bin/python -B -m unittest tests.test_residential_rules_v3_approval -v` passes 10 approval, checksum, replay, immutability, and mutation tests, including rejection of an R5-density semantic change;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 255 tests; and
+- `git diff --check` passes.
+
+Block 3 is complete and project-owner accepted. Block 4 may now integrate the approved residential artifact through the production loader and exact lookup/retrieval boundaries, but no user-visible expansion is claimed yet.
 
 ## Blocks 0-1 validation evidence
 
@@ -307,9 +337,9 @@ This evidence makes candidate `2026-07-19.4` ready for project-owner review, not
 - A missing maximum must be presented as no maximum listed in the controlling base table, not as unlimited.
 - An FAA-controlled height and a plan-dependent Patrick Henry rear setback require explicit nonnumeric dispositions within the existing regulation families.
 - Patrick Henry rear setback must not default to zero without an affirmative verified source value.
-- Candidate `2026-07-19.4` discloses Objective Design Standards, the applicable 32-foot R1/R2 proximity transition, Patrick Henry recreation space and encroachments, plan/project review, the UC community-benefits path, and the HDF office option without adding them to the evaluated regulation map.
-- PH-R5 has a retained 51-100 versus 51-99 gross-density conflict; the candidate uses Table 1-1 only through explicit project-owner policy and does not claim a City correction.
-- Base-zone gross residential density is now a supported candidate capability, but parcel yield, plan reconciliation, density bonus, affordability, development agreements, and state-law adjustments remain not evaluated.
+- Approved ruleset `2026-07-19.5` discloses Objective Design Standards, the applicable 32-foot R1/R2 proximity transition, Patrick Henry recreation space and encroachments, plan/project review, the UC community-benefits path, and the HDF office option without adding them to the evaluated regulation map.
+- PH-R5 has a retained 51-100 versus 51-99 gross-density conflict; the approved ruleset uses Table 1-1 only through explicit project-owner policy and does not claim a City correction.
+- Base-zone gross residential density is now an approved encoded capability, but parcel yield, plan reconciliation, density bonus, affordability, development agreements, and state-law adjustments remain not evaluated.
 
 ## Blockers
 
@@ -346,3 +376,5 @@ None currently recorded.
 | 2026-07-19 | Accept nonruntime density candidate `2026-07-19.3` and authorize the Patrick Henry tranche. | Its 11 ranges, R5/R6 conflict records, deterministic lineage, source pins, and mutation tests passed; Patrick Henry can be added without editing the checkpoint. |
 | 2026-07-19 | Apply the R5 conflict policy to PH-R5: preserve all 51-100 and 51-99 assertions and select Table 1-1's 51-100 DU/AC range. | The project owner supplied the policy explicitly; retaining the four competing 51-99 assertions prevents the project choice from appearing to be an official correction. |
 | 2026-07-19 | Reuse schema `3.2.0` for Patrick Henry candidate `2026-07-19.4` and keep all new records nonapproved. | Existing typed requirements already express numeric, range, no-maximum-listed, FAA-controlled, and plan-dependent outcomes; the tranche adds data and provenance, not schema or runtime authority. |
+| 2026-07-19 | Approve complete residential candidate `2026-07-19.4` as the Block 3 regulatory content. | The exact 12-zone matrix, supported regulation families, retained conflicts, source pins, deterministic lineage, and technical validation passed project-owner review. |
+| 2026-07-19 | Preserve `.4` and promote it without regulatory-semantic change into immutable runtime-eligible version `2026-07-19.5`. | A separate lifecycle successor records approval transparently, enables all 196 rules and two pathways, and keeps the reviewed candidate and every prior checkpoint reproducible. |

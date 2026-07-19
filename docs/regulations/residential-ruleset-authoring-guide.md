@@ -2,7 +2,7 @@
 
 **Contract:** Santa Clara residential ruleset schema `3.2.0`; accepted predecessors preserved under `3.0.0` and `3.1.0`
 
-**Status:** Block 2 representation accepted; complete citywide, density, and Patrick Henry authoring contracts implemented for Block 3
+**Status:** Representation and complete authoring contracts implemented; runtime approval contract exercised for Block 3
 
 **Last updated:** July 19, 2026
 
@@ -12,7 +12,7 @@ This guide is the human- and AI-facing representation contract for the residenti
 
 It does not contain Santa Clara's numeric values and does not authorize candidate data for runtime use. The capability meanings live in `supported-regulations.md`; zone-specific source conclusions live in `docs/residential-rule-verification.md` and checksum-pinned capability supplements such as `docs/residential-density-rule-verification.md`; active status and validation evidence live in `docs/progress.md`.
 
-The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Candidate `2026-07-19.2` and schema `3.1.0` remain the R1-R6 citywide checkpoint. Schema `3.2.0` adds the minimum closed range and conflict-assertion shapes needed for gross residential density. Complete candidate `2026-07-19.4` reuses schema `3.2.0` because the existing typed dispositions already represent every supported Patrick Henry result.
+The released R1 ruleset remains governed by `ruleset-authoring-guide.md` and schema v2. The residential lineage consumes that artifact through deterministic, checksum-pinned successors; it does not edit or replace it. Candidate `2026-07-19.1` and schema `3.0.0` remain the accepted R1 migration checkpoint. Candidate `2026-07-19.2` and schema `3.1.0` remain the R1-R6 citywide checkpoint. Schema `3.2.0` adds the minimum closed range and conflict-assertion shapes needed for gross residential density. Complete candidate `2026-07-19.4` reuses schema `3.2.0` because the existing typed dispositions already represent every supported Patrick Henry result. Project-owner-approved successor `2026-07-19.5` uses that same schema and changes only lifecycle metadata and approval flags; it is the canonical runtime-eligible residential regulatory artifact.
 
 ## Non-negotiable semantics
 
@@ -362,7 +362,19 @@ The Patrick Henry authoring successor consumes accepted candidate `2026-07-19.3`
 - disclose the 32-foot transition, recreation space, encroachments, design/project review, Objective Design Standards, UC community-benefits path, HDF office option, and density adjustments as profile-specific `not_evaluated` topics; and
 - keep every new record nonapproved and prove byte-identical target and crosswalk replay.
 
-No schema `3.3.0` is warranted for this tranche. Candidate `2026-07-19.4` remains nonruntime until complete-candidate approval is expressed through a separately versioned artifact with every record approved.
+No schema `3.3.0` is warranted for this tranche. Candidate `2026-07-19.4` remains the immutable nonruntime review artifact.
+
+The approval successor consumes the exact reviewed bytes of candidate `2026-07-19.4` and emits runtime-eligible version `2026-07-19.5` plus `approval-crosswalk.json`. It must:
+
+- require explicit project-owner approval before promotion;
+- preserve `.4`, its Patrick Henry crosswalk, schema `3.2.0`, and every earlier lineage artifact unchanged;
+- change only versioned lifecycle fields, the predecessor/crosswalk pointer, equivalent scope lifecycle wording, and `approved_for_ruleset` flags;
+- set `status: approved_for_runtime`, a valid `approved_on`, and approval flags on every use permission, profile regulation, and special pathway;
+- compare lifecycle-neutral semantic projections so any change to a zone, use, profile, requirement, selected conflict value, source, citation, condition, exception, or limitation fails closed;
+- checksum-pin the candidate, approved target, schema, and shared semantic projection in the approval crosswalk; and
+- prove deterministic target and crosswalk replay before the artifact is eligible for application integration.
+
+Runtime eligibility authorizes `.5` as regulatory input. It does not itself change which artifact the production loader uses; that boundary is owned by Block 4.
 
 ## Authoring workflow
 

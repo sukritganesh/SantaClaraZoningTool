@@ -232,10 +232,13 @@ The approved Block 3 gross-density addition requires additive **schema `3.2.0`**
 
 The Patrick Henry tranche reuses **schema `3.2.0`** in candidate `2026-07-19.4`. Numeric maxima, quantity ranges, no-maximum-listed results, FAA-controlled values, and plan-dependent rear setbacks already have approved typed shapes, so adding the five plan designations is a data/provenance successor rather than a schema expansion.
 
+Project-owner approval produces a separate immutable **`2026-07-19.5`** successor under schema `3.2.0`. The approval promotion changes only lifecycle identity and metadata, the checksum-pinned predecessor/crosswalk pointer, equivalent scope lifecycle wording, and every rule/pathway approval flag. A lifecycle-neutral semantic projection must prove that all zone data, requirement values and dispositions, conflicts, sources, citations, conditions, exceptions, and limitations remain identical to reviewed candidate `.4`.
+
 The new artifacts should be introduced alongside, not in place of:
 
 - `rulesets/schema/ruleset-v2.schema.json`;
 - `rulesets/santa_clara/r1/2026-07-17.2/`;
+- `rulesets/santa_clara/residential/2026-07-19.5/` as the approved residential input for later application integration;
 - the v1-to-v2 migration and crosswalk; and
 - the released R1 validator, loader, pipeline, presenter, and acceptance tests until residential replacement gates pass.
 

@@ -247,7 +247,7 @@ Validate the full approved-v2 → accepted-v3.0 → citywide-v3.1 lineage, sourc
 python3 scripts/validate_citywide_residential_rules.py --verify-source-files
 ```
 
-Candidate `2026-07-19.2` deliberately remains nonruntime: it lacks the five Patrick Henry target designations, carries candidate status, and contains no residential-lineage approvals. Supplying `--require-runtime-eligible` to the citywide validator must fail closed until Patrick Henry authoring and complete ruleset approval are finished.
+Candidate `2026-07-19.2` deliberately remains nonruntime: it lacks the five Patrick Henry target designations, carries candidate status, and contains no residential-lineage approvals. Supplying `--require-runtime-eligible` to the citywide validator must continue to fail closed; later approved successor `.5` does not retroactively alter this checkpoint.
 
 The gross-density successor preserves candidate `2026-07-19.2` and adds one typed minimum-to-maximum range in dwelling units per acre to each of the 11 R1-R6 ordinary profiles. R5 and R6 retain their conflicting Table 1-1, zone-purpose, and Table 2-3 assertions while using the project-owner-selected Table 1-1 values:
 
@@ -277,7 +277,22 @@ Validate the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone
 python3 scripts/validate_patrick_henry_residential_rules.py --verify-source-files
 ```
 
-Candidate `2026-07-19.4` contains the complete target-zone matrix but remains nonruntime and nonapproved. Supplying `--require-runtime-eligible` must still fail closed because the artifact is a candidate, `approved_on` is null, and every v3 record remains unapproved. Production continues to load only the released R1 v2 ruleset.
+Candidate `2026-07-19.4` remains the immutable reviewed checkpoint. Supplying `--require-runtime-eligible` still fails closed for that artifact because it is a candidate, `approved_on` is null, and every record is unapproved.
+
+Project-owner approval is recorded in a separate, semantically identical successor. Version `2026-07-19.5` sets the lifecycle metadata and all 196 rule plus two pathway approval flags, while its approval crosswalk checksum-pins `.4`, `.5`, schema `3.2.0`, and the shared regulatory-semantic projection:
+
+```text
+rulesets/santa_clara/residential/2026-07-19.5/ruleset.json
+rulesets/santa_clara/residential/2026-07-19.5/approval-crosswalk.json
+```
+
+Validate the full approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage, local source checksums, deterministic replays, exact semantic preservation, GIS fixtures, per-record approvals, and runtime eligibility:
+
+```bash
+python3 scripts/validate_approved_residential_rules.py --verify-source-files
+```
+
+The approved `.5` ruleset is eligible for the Block 4 residential loader and retrieval work. Production continues to load only the released R1 v2 ruleset until that integration is deliberately implemented and validated.
 
 Validate all eight nonruntime result-contract fixtures:
 
@@ -398,6 +413,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │       ├── residential/2026-07-19.2/  Nonruntime R1-R6 v3.1 candidate
 │       ├── residential/2026-07-19.3/  Nonruntime R1-R6 density v3.2 candidate
 │       ├── residential/2026-07-19.4/  Complete nonruntime 12-zone v3.2 candidate
+│       ├── residential/2026-07-19.5/  Approved runtime-eligible 12-zone v3.2 rules
 │       └── r1/
 │           ├── 2026-07-16/            Versioned approved v1 R1 rules
 │           ├── 2026-07-17/            Preserved reviewed v2 candidate
@@ -426,7 +442,9 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── migrate_r1_rules_v3.py         Non-overwriting approved-v2-to-v3 migration
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
 │   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
+│   ├── promote_residential_rules_v3.py Non-overwriting residential approval promotion
 │   ├── validate_residential_result_contract.py Expansion fixture validator
+│   ├── validate_approved_residential_rules.py Approved 12-zone lineage/runtime validator
 │   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
 │   ├── validate_density_residential_rules.py Density lineage and domain validator
 │   ├── validate_patrick_henry_residential_rules.py Complete 12-zone lineage validator
