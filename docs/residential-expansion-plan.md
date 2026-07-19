@@ -192,7 +192,7 @@ Historical filenames that accurately describe the released prototype—such as `
 | Ruleset loading and retrieval | `ApprovedR1Ruleset` and zone-only regulation selection | Approved residential ruleset selected by exact zone and applicable legal use/structure |
 | Pipeline | `R1StandardsPipeline` and R1 success statuses | Residential analysis contract that cannot return standards for an unsupported zone/use/structure combination |
 | Presentation | Fixed ten-capability closure, R1 scope label, single-family overview, and prototype wording | Registered residential capabilities, explicit use/structure choice, exact disposition wording, and product-level scope |
-| Web interface | One implicit building type and R1 prototype page copy | Zone-aware residential choices, clear unavailable/special-pathway states, and no active prototype label |
+| Web interface | One implicit building type and R1 prototype page copy | Zone-aware residential-use summary, clear conditional/special-pathway states, and no active prototype label |
 | Tests | R1-only success fixtures and hardcoded status strings | Preserved R1 regressions plus one meaningful fixture per reachable zone/structure branch and synthetic coverage where GIS has no parcel |
 | Documentation | R1 plan and progress ledger treated as current | Historical R1 records plus this active expansion plan and a phase-specific progress ledger |
 
@@ -217,7 +217,7 @@ The released vertical slice has a sound deterministic core, but its contracts cl
 | Standards retrieval | Exact zone key returns exactly ten approved records | Exact zone plus an available analysis profile returns the selected use rule, profile-owned standards, qualifications, and provenance closure |
 | Pipeline result | `analyze_address(address)` attaches rules immediately after `r1_zone_found` | Address resolution first exposes valid selections; standards attach only after an exact available selection is supplied |
 | Presentation | Fixed ten-capability registry, numeric maxima, one single-family overview, global string limitations, and R1 statuses | Dispatch the same regulation families for the selected profile, render typed dispositions, and preserve structured profile-specific limitations |
-| Web boundary | One address input and one implicit building type | Address-first flow followed by an explicit available single-family, two-family, multifamily, or special-pathway selection |
+| Web boundary | One address input and one implicit building type | Address-first zone summary that lists verified residential types and presents their common supported standards without a mandatory structure selector |
 | Acceptance tests | Two R1 successes and R1-specific status, scope, version, and copy assertions | Preserve the R1 matrix and add real or synthetic coverage for every reachable or explicitly unavailable residential selection |
 
 The address normalizer, geometry primitives, immutable-source discipline, shared provenance model, conflict preservation, defensive-copy behavior, and deterministic ordering do not require conceptual redesign.
@@ -501,7 +501,30 @@ Expected implementation surfaces are the runtime loader, lookup, standards retri
 
 Block 4 does **not** change regulatory values, schemas `3.0.0` through `3.2.0`, approved ruleset `.5`, source snapshots, the capability catalog, presentation contract, templates, CSS, JavaScript, or active page copy. It does not add a database, live GIS call, fuzzy address or zone matching, commercial use, density bonus, unit-yield calculation, proposal compliance, or a new regulation family.
 
-## 12. Implementation blocks
+## 12. Block 5 common-zone presentation design
+
+The approved runtime ruleset retains separate legal-use, workflow, and primary-structure profiles, and the contract-`2.1.0` backend retains exact selection retrieval. Those identities remain necessary regulatory data and future application infrastructure. They do not, by themselves, require a blocking selection step in the current public interface.
+
+A direct audit of approved ruleset `2026-07-19.5` found that every zone with more than one ordinary profile currently has semantically identical supported regulations across those profiles:
+
+- R2 single-family, two-family, and multifamily profiles have the same ten requirements, applicability, conditions, exception references, validation statuses, and conflict treatment after profile-specific rule identity is excluded;
+- R3 and R4 two-family and multifamily profiles pass the same comparison; and
+- the only profile-specific presentation difference in those zones is the structured Objective Design Standards `not evaluated` topic attached to multifamily.
+
+Block 5 therefore uses a **common zone summary** rather than requiring the user to select a structure:
+
+1. Resolve the address and exact zone once.
+2. Retrieve every approved ordinary profile internally and verify semantic equality before presenting one shared set of supported standards.
+3. List each source-verified residential use and structure identity separately, with its own use-permission evidence.
+4. Preserve profile-specific `not evaluated` topics as conditional disclosures naming the residential type to which they apply.
+5. Present each R1 Chapter 18.24 pathway separately as `not evaluated`; never merge it into the ordinary R1 standards.
+6. Fail closed without regulatory cards if ordinary profiles in one zone differ. A later interface may then activate the already implemented exact selection path under backlog item `UX-001`.
+
+The comparison excludes only profile-specific rule IDs. Requirement payloads, applicability, conditions, exception references, validation status, and conflict identity must match. The interface must not silently choose one profile, relabel a representative profile as universal, or suppress a conditional topic.
+
+The active product copy is **Santa Clara Zoning Explorer** with scope line **Selected residential zoning standards by address**. The established page hierarchy, green visual system, search interaction, property card, approval and standard cards, setback table, disclosures, source receipts, accessibility behavior, and responsive layout should be extended rather than redesigned.
+
+## 13. Implementation blocks
 
 | Block | Objective | Exit conditions |
 |---|---|---|
@@ -510,12 +533,12 @@ Block 4 does **not** change regulatory values, schemas `3.0.0` through `3.2.0`, 
 | 2. Generalize the data and result contracts | Design the new ruleset schema, applicability model, dispositions, migration crosswalk, validators, and result contracts. | Contracts are documented, mutation-tested, owner-approved, and can replay the approved R1 data without loss. |
 | 3. Author and approve residential rules | Encode independent zone- and structure-owned candidate rules with provenance and conflicts. | Every matrix cell has an explicit approved, `not_listed`, special-pathway, plan-dependent, not-evaluated, or review-required treatment; runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Load the residential GIS and ruleset, determine exact zones, and retrieve standards only for valid use/structure combinations. | Real and synthetic fixtures cover supported, unsupported, ambiguous, mismatch, missing-data, and integrity outcomes deterministically. |
-| 5. Generalize presentation and interface | Remove active R1/prototype assumptions, add residential structure selection, and present all supported dispositions and qualifications. | Desktop and mobile states are accessible, source-linked, deterministic, and cannot display regulatory content after a failed or unsupported selection. |
+| 5. Generalize presentation and interface | Remove active R1/prototype assumptions, present the verified common zone standards and residential-use matrix, and render all supported dispositions and qualifications without a mandatory structure selector. | Desktop and mobile states are accessible, source-linked, deterministic, preserve profile-specific disclosures and special pathways, and fail closed if profiles diverge or lookup evidence is insufficient. |
 | 6. Validate and release | Run the complete acceptance matrix, protect the R1 baseline, document limitations, and assign the next release identity. | Source, migration, regression, offline, determinism, interface, and complete-suite gates pass with no unexplained skips. |
 
 Implementation should stop at each source, contract, data-approval, and release gate for project-owner review.
 
-## 13. Block 0 file policy
+## 14. Block 0 file policy
 
 This documentation transition intentionally changes only:
 
@@ -527,7 +550,7 @@ This documentation transition intentionally changes only:
 
 `README.md`, the capability catalog, authoring guide, source-verification documents, schemas, rulesets, application code, scripts, tests, and user-interface copy remain unchanged in Block 0. Each will be updated in its owning later block when its actual contract or behavior changes.
 
-## 14. Expansion completion criteria
+## 15. Expansion completion criteria
 
 The phase is complete when the product can:
 

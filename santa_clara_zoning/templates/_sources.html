@@ -37,10 +37,14 @@
     {% if view.versions %}
       <h3>Versions</h3>
       <dl class="versions-grid">
+        {% if view.versions.summary_contract %}<div><dt>Zone-summary contract</dt><dd>{{ view.versions.summary_contract }}</dd></div>{% endif %}
+        {% if view.versions.source_result_contract %}<div><dt>Residential result contract</dt><dd>{{ view.versions.source_result_contract }}</dd></div>{% endif %}
         {% if view.versions.pipeline_contract %}<div><dt>Pipeline contract</dt><dd>{{ view.versions.pipeline_contract }}</dd></div>{% endif %}
         {% if view.versions.address_snapshot %}<div><dt>Address snapshot</dt><dd>{{ view.versions.address_snapshot }}</dd></div>{% endif %}
+        {% if view.versions.residential_gis_snapshot %}<div><dt>Residential GIS snapshot</dt><dd>{{ view.versions.residential_gis_snapshot }}</dd></div>{% endif %}
         {% if view.versions.r1_gis_snapshot %}<div><dt>R1 GIS snapshot</dt><dd>{{ view.versions.r1_gis_snapshot }}</dd></div>{% endif %}
         {% if view.versions.ruleset %}<div><dt>Ruleset</dt><dd>{{ view.versions.ruleset }}</dd></div>{% endif %}
+        {% if view.versions.ruleset_schema %}<div><dt>Ruleset schema</dt><dd>{{ view.versions.ruleset_schema }}</dd></div>{% endif %}
         <div><dt>Presentation contract</dt><dd>{{ view.presentation_contract_version }}</dd></div>
       </dl>
     {% endif %}

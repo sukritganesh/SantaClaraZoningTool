@@ -2,7 +2,7 @@
 
 **Status:** Active backlog
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
 This document records worthwhile improvements that are not all part of the current implementation block. It prevents design observations from being lost while keeping active milestone status in `docs/progress.md`.
 
@@ -47,6 +47,12 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 | `PROV-001` | Enrich citations for inspectable UI receipts | Add official source URLs, useful page or section anchors, and concise supporting excerpts or evidence metadata while retaining local checksums and locators. | Presentation iteration | Proposed |
 | `PROV-002` | Distinguish supporting, conflicting, and contextual sources | Prevent renderers from presenting a rejected assertion as support for the selected value; conflict dispositions and source roles must remain visible. | Domain validation and presentation iterations | Proposed |
 | `PROV-003` | Provide audience-appropriate deterministic explanations | Generate staff-facing and public-facing summaries from the same evaluation trace without changing the underlying conclusion. | Presentation iteration | Proposed |
+
+### Presentation and interaction
+
+| ID | Improvement | Intended outcome | Horizon | Status |
+|---|---|---|---|---|
+| `UX-001` | Add conditional structure-specific selection | Reuse the existing exact profile-selection backend when supported standards or evaluation inputs genuinely differ by residential structure; keep the common zone summary as the default while the approved profiles remain semantically equivalent. | A later ruleset or proposal-input phase that introduces a material profile difference | Proposed |
 
 ### Workflow automation and expansion
 

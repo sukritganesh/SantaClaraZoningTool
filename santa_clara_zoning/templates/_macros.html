@@ -37,7 +37,38 @@
 {%- endmacro %}
 
 {% macro quantity(value) -%}
-  {{ value.number }} {{ value.unit }}
+  {{ value.number }}
+  {%- if value.unit == "percent" %} percent
+  {%- elif value.unit == "sq_ft" %} sq ft
+  {%- elif value.unit == "dwelling_units_per_acre" %} dwelling units/acre
+  {%- else %} {{ value.unit | replace("_", " ") }}
+  {%- endif %}
+{%- endmacro %}
+
+{% macro requirement_value(requirement) -%}
+  {% if requirement.kind == "maximum_quantity" %}
+    {{ quantity(requirement.value) }}
+  {% elif requirement.kind == "quantity_range" %}
+    {{ requirement.minimum }}–{{ requirement.maximum }}
+    {%- if requirement.unit == "dwelling_units_per_acre" %} dwelling units/acre
+    {%- else %} {{ requirement.unit | replace("_", " ") }}
+    {%- endif %}
+  {% elif requirement.kind == "distance" %}
+    {{ quantity(requirement) }}
+  {% elif requirement.kind == "lot_area_tiered_maximum" %}
+    <span class="tiered-value">
+      <span class="tier-row">
+        <span>Lots below {{ quantity(requirement.threshold) }}</span>
+        <strong>{{ requirement_value(requirement.below_threshold) }}</strong>
+      </span>
+      <span class="tier-row">
+        <span>Lots at or above {{ quantity(requirement.threshold) }}</span>
+        <strong>{{ requirement_value(requirement.at_or_above_threshold) }}</strong>
+      </span>
+    </span>
+  {% else %}
+    {{ requirement.label }}
+  {% endif %}
 {%- endmacro %}
 
 {% macro setback_value(value) -%}

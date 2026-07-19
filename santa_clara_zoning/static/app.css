@@ -323,6 +323,12 @@ dd {
   font-size: 0.9rem;
 }
 
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
 .permission-card {
   padding: 1.25rem;
   border: 1px solid var(--green-border);
@@ -347,6 +353,44 @@ dd {
   margin: 0.65rem 0 0;
   background: #d4eadb;
   color: var(--green-dark);
+}
+
+.status-label--notice {
+  margin: 0.65rem 0 0;
+  border: 1px solid var(--amber-border);
+  background: var(--amber-bg);
+  color: var(--amber-text);
+}
+
+.profile-note,
+.metric-note,
+.topic-explanation {
+  color: var(--text-muted);
+  font-size: 0.87rem;
+  font-weight: 500;
+}
+
+.profile-note,
+.metric-note {
+  margin: 0.6rem 0 0;
+}
+
+.topic-explanation {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.pathway-card {
+  padding: 1.2rem;
+  border: 1px solid var(--amber-border);
+  border-left: 5px solid #c48c1d;
+  border-radius: var(--radius-md);
+  background: var(--amber-bg);
+}
+
+.pathway-card h3,
+.pathway-card > p {
+  margin-top: 0;
 }
 
 .approval-grid,
@@ -397,7 +441,7 @@ dd {
 }
 
 .standards-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
 }
 
 .standard-card {
@@ -417,6 +461,25 @@ dd {
   font-size: clamp(1.65rem, 3vw, 2.15rem);
   line-height: 1.15;
   letter-spacing: -0.035em;
+}
+
+.tiered-value {
+  display: grid;
+  gap: 0.65rem;
+  font-size: 1rem;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.tier-row {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.tier-row > span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .item-conditions {

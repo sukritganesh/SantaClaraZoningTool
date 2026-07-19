@@ -1,4 +1,4 @@
-{% from "_macros.html" import source_refs, quantity, setback_value, conditions with context %}
+{% from "_macros.html" import source_refs, quantity, requirement_value, setback_value, conditions with context %}
 
 <article class="result result--success" data-result-kind="success" aria-labelledby="result-heading">
   <header class="property-card">
@@ -27,18 +27,46 @@
   </section>
 
   <section class="content-section" aria-labelledby="permissions-heading">
-    <h2 id="permissions-heading">What base zoning permits</h2>
-    {% for permission in view.use_permissions %}
-      <article class="permission-card" data-capability-id="{{ permission.capability_id }}" data-rule-id="{{ permission.rule_id }}">
-        <h3 class="rule-title">
-          <span class="rule-title-text">{{ permission.label }}</span>
-          {{ source_refs(permission.citation_ids, permission.rule_id) }}
-        </h3>
-        <p class="status-label status-label--supported">{{ permission.status_label }}</p>
-        {{ conditions(permission.conditions, true) }}
-      </article>
-    {% endfor %}
+    <h2 id="permissions-heading">{% if view.presentation_contract_version == "1.0.0" %}What base zoning permits{% else %}Residential uses listed in this zone{% endif %}</h2>
+    <div class="permission-grid">
+      {% for permission in view.use_permissions %}
+        <article class="permission-card" data-capability-id="{{ permission.capability_id }}" data-rule-id="{{ permission.rule_id }}">
+          <h3 class="rule-title">
+            <span class="rule-title-text">{{ permission.label }}</span>
+            {{ source_refs(permission.citation_ids, permission.rule_id) }}
+          </h3>
+          <p class="status-label status-label--supported">{{ permission.status_label }}</p>
+          {% if permission.profile_label %}<p class="profile-note">{{ permission.profile_label }}</p>{% endif %}
+          {{ conditions(permission.conditions, true) }}
+        </article>
+      {% endfor %}
+    </div>
   </section>
+
+  {% if view.special_pathways %}
+    <section class="content-section" aria-labelledby="pathways-heading">
+      <h2 id="pathways-heading">Special residential pathways</h2>
+      <p class="section-intro">These source-backed pathways require facts or analysis that this application does not currently evaluate.</p>
+      {% for pathway in view.special_pathways %}
+        <article class="pathway-card" data-capability-id="{{ pathway.capability_id }}" data-rule-id="{{ pathway.rule_id }}">
+          <h3 class="rule-title">
+            <span class="rule-title-text">{{ pathway.label }}</span>
+            {{ source_refs(pathway.citation_ids, pathway.rule_id) }}
+          </h3>
+          <p class="status-label status-label--notice">{{ pathway.status_label }}</p>
+          <p>{{ pathway.permission_status_label }}.</p>
+          {{ conditions(pathway.conditions, true) }}
+          {% if pathway.topics %}
+            <ul class="item-conditions">
+              {% for topic in pathway.topics %}
+                <li><strong>{{ topic.label }}:</strong> {{ topic.explanation }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </section>
+  {% endif %}
 
   <section class="content-section" aria-labelledby="approvals-heading">
     <h2 id="approvals-heading">Required approvals</h2>
@@ -68,7 +96,10 @@
             {{ source_refs(standard.citation_ids, standard.rule_id) }}
           </dt>
           <dd>
-            <strong class="metric-value">{{ quantity(standard.value) }}</strong>
+            <strong class="metric-value">
+              {% if standard.requirement %}{{ requirement_value(standard.requirement) }}{% else %}{{ quantity(standard.value) }}{% endif %}
+            </strong>
+            {% if standard.requirement and standard.requirement.explanation %}<p class="metric-note">{{ standard.requirement.explanation }}</p>{% endif %}
             {{ conditions(standard.conditions, true) }}
           </dd>
         </div>
@@ -99,11 +130,21 @@
                   {{ source_refs(setback.citation_ids, setback.rule_id) }}
                 </span>
               </th>
-              <td><strong>{{ setback_value(setback.base.value) }}</strong></td>
               <td>
-                {% if setback.adjustments %}
+                <strong>
+                  {% if setback.requirement %}
+                    {% if setback.requirement.kind == "setback" %}{{ setback_value(setback.requirement.base.value) }}{% else %}{{ requirement_value(setback.requirement) }}{% endif %}
+                  {% else %}
+                    {{ setback_value(setback.base.value) }}
+                  {% endif %}
+                </strong>
+                {% if setback.requirement and setback.requirement.explanation %}<p class="metric-note">{{ setback.requirement.explanation }}</p>{% endif %}
+              </td>
+              <td>
+                {% set adjustments = setback.requirement.adjustments if setback.requirement and setback.requirement.kind == "setback" else setback.adjustments %}
+                {% if adjustments %}
                   <ul class="table-list">
-                    {% for adjustment in setback.adjustments %}
+                    {% for adjustment in adjustments %}
                       <li>
                         <strong>{{ adjustment.label }}:</strong>
                         {{ setback_value(adjustment.effect.value) }}
@@ -114,7 +155,15 @@
                   <span class="muted-text">None in the supported rule</span>
                 {% endif %}
               </td>
-              <td>{{ conditions(setback.conditions) }}</td>
+              <td>
+                {{ conditions(setback.conditions) }}
+                {% if setback.requirement and setback.requirement.required_sources_or_facts %}
+                  <p><strong>Review requires:</strong></p>
+                  <ul class="item-conditions">
+                    {% for fact in setback.requirement.required_sources_or_facts %}<li>{{ fact }}</li>{% endfor %}
+                  </ul>
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -131,8 +180,8 @@
           <h3>{{ warning.title }}</h3>
           {% if warning.kind == "source_conflict" %}
             <p>
-              <strong>Prototype-selected value:</strong>
-              {{ setback_value(warning.resolution.selected_value) }}.
+              <strong>{% if warning.resolution.presented_value %}Selected ruleset value{% else %}Prototype-selected value{% endif %}:</strong>
+              {% if warning.resolution.presented_value %}{{ requirement_value(warning.resolution.presented_value) }}{% else %}{{ setback_value(warning.resolution.selected_value) }}{% endif %}.
               This is a project resolution pending official clarification, not an official City correction.
             </p>
             <p>{{ warning.resolution.rationale }}</p>
@@ -140,12 +189,12 @@
             <ul>
               {% for assertion in warning.assertions %}
                 <li>
-                  {{ setback_value(assertion.value) }} — {{ assertion.disposition | replace("_", " ") }}
+                  {% if assertion.presented_value %}{{ requirement_value(assertion.presented_value) }}{% else %}{{ setback_value(assertion.value) }}{% endif %} — {{ assertion.disposition | replace("_", " ") }}
                   {{ source_refs(assertion.source_refs, warning.warning_id ~ "-" ~ assertion.assertion_id) }}
                 </li>
               {% endfor %}
             </ul>
-            <p><strong>Decision source:</strong> {{ warning.resolution.decision_source }} ({{ warning.resolution.decision_date }})</p>
+            <p><strong>Decision source:</strong> {{ warning.resolution.decision_source_label if warning.resolution.decision_source_label else warning.resolution.decision_source }} ({{ warning.resolution.decision_date }})</p>
             <p><strong>Status:</strong> {{ warning.resolution.status | replace("_", " ") }}</p>
             <h4>Re-review if</h4>
             <ul>
@@ -162,7 +211,7 @@
   <section class="content-section disclosure-section" aria-labelledby="limitations-heading">
     <h2 id="limitations-heading">Limitations</h2>
     <details class="disclosure-card">
-      <summary>Review topics and additional rules not evaluated by this prototype</summary>
+      <summary>Review topics and additional rules not evaluated</summary>
       {% set exception_warnings = view.warnings | selectattr("kind", "equalto", "not_evaluated_exception") | list %}
       {% if exception_warnings %}
         <h3>Additional rules may apply</h3>
@@ -174,12 +223,19 @@
           {% endfor %}
         </ul>
       {% endif %}
-      <h3>Subjects outside the current scope</h3>
-      <ul>
-        {% for item in view.not_evaluated %}
-          <li>{{ item.topic }} — {{ item.status_label }}</li>
-        {% endfor %}
-      </ul>
+      {% if view.not_evaluated %}
+        <h3>Subjects outside the current scope</h3>
+        <ul>
+          {% for item in view.not_evaluated %}
+            <li>
+              <strong>{{ item.label if item.label else item.topic }}</strong>
+              {% if item.is_conditional %} — Applies to {{ item.applies_to_labels | join(", ") }}{% endif %}
+              — {{ item.status_label }}
+              {% if item.explanation %}<span class="topic-explanation">{{ item.explanation }}</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </details>
   </section>
 </article>

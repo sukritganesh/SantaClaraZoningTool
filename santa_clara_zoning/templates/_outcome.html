@@ -40,8 +40,13 @@
       <summary>Inspect lookup evidence</summary>
       {% if view.evidence.spatial_match_counts %}
         <dl>
-          <div><dt>Matching R1 parcels</dt><dd>{{ view.evidence.spatial_match_counts.r1_parcels }}</dd></div>
-          <div><dt>Matching R1 zoning features</dt><dd>{{ view.evidence.spatial_match_counts.r1_zoning_features }}</dd></div>
+          {% if view.evidence.spatial_match_counts.residential_parcels is defined %}
+            <div><dt>Matching residential parcels</dt><dd>{{ view.evidence.spatial_match_counts.residential_parcels }}</dd></div>
+            <div><dt>Matching residential zoning features</dt><dd>{{ view.evidence.spatial_match_counts.residential_zoning_features }}</dd></div>
+          {% else %}
+            <div><dt>Matching R1 parcels</dt><dd>{{ view.evidence.spatial_match_counts.r1_parcels }}</dd></div>
+            <div><dt>Matching R1 zoning features</dt><dd>{{ view.evidence.spatial_match_counts.r1_zoning_features }}</dd></div>
+          {% endif %}
         </dl>
       {% endif %}
       {% if view.evidence.parcel %}

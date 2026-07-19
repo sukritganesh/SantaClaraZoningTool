@@ -1,4 +1,4 @@
-"""Minimal Flask boundary for the deterministic zoning presentation."""
+"""Minimal Flask boundary for the deterministic residential presentation."""
 
 from __future__ import annotations
 
@@ -12,6 +12,13 @@ from .presentation import (
     present_integrity_error,
     present_pipeline_result,
 )
+from .residential_presentation import (
+    present_residential_integrity_error,
+    present_residential_summary,
+)
+from .residential_summary import (
+    ResidentialZoneSummaryPipeline,
+)
 from .ruleset import RulesetLoadError
 from .standards import StandardsRetrievalError
 
@@ -20,7 +27,7 @@ class AddressAnalyzer(Protocol):
     """Structural interface required by the web route."""
 
     def analyze_address(self, entered_address: str) -> dict[str, Any]:
-        """Return one complete Block 6 pipeline result."""
+        """Return one complete zoning-analysis result."""
 
 
 KnownIntegrityError = Union[
@@ -44,11 +51,22 @@ def create_app(pipeline: Optional[AddressAnalyzer] = None) -> Flask:
     startup_error: Optional[KnownIntegrityError] = None
     if pipeline is None:
         try:
-            pipeline = R1StandardsPipeline.from_defaults()
+            pipeline = ResidentialZoneSummaryPipeline.from_defaults()
         except RulesetLoadError as error:
             startup_error = error
+        except (OSError, ValueError) as error:
+            startup_error = PipelineIntegrityError(
+                "runtime_data_load_error",
+                f"Residential runtime data could not be loaded: {error}",
+            )
 
+    app.extensions["zoning_analyzer"] = pipeline
+    app.extensions["residential_summary_pipeline"] = (
+        pipeline if isinstance(pipeline, ResidentialZoneSummaryPipeline) else None
+    )
+    # Retain the historical extension alias for injected-test and release tooling.
     app.extensions["r1_standards_pipeline"] = pipeline
+    app.extensions["startup_error"] = startup_error
     app.extensions["r1_startup_error"] = startup_error
 
     @app.get("/")
@@ -57,15 +75,21 @@ def create_app(pipeline: Optional[AddressAnalyzer] = None) -> Flask:
         view: Optional[dict[str, Any]] = None
         if entered_address is not None:
             if startup_error is not None:
-                view = present_integrity_error(startup_error)
+                view = present_residential_integrity_error(startup_error)
             else:
                 if pipeline is None:
                     raise RuntimeError("The zoning pipeline was not initialized")
                 try:
                     result = pipeline.analyze_address(entered_address)
-                    view = present_pipeline_result(result)
+                    if isinstance(pipeline, ResidentialZoneSummaryPipeline):
+                        view = present_residential_summary(result)
+                    else:
+                        view = present_pipeline_result(result)
                 except KNOWN_INTEGRITY_ERRORS as error:
-                    view = present_integrity_error(error)
+                    if isinstance(pipeline, ResidentialZoneSummaryPipeline):
+                        view = present_residential_integrity_error(error)
+                    else:
+                        view = present_integrity_error(error)
 
         return render_template(
             "index.html",

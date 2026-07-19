@@ -2,7 +2,7 @@
 
 **Last updated:** July 19, 2026
 
-**Current jurisdictional scope:** City of Santa Clara selected residential zoning expansion; the released runtime remains limited to R1-6L and R1-8L until the residential v3 approval and integration gates pass
+**Current jurisdictional scope:** City of Santa Clara selected residential zones in the approved residential ruleset, including citywide R zones and Patrick Henry designations
 
 This catalog defines the regulation families and supporting behaviors that belong to Santa Clara Zoning Explorer's selected residential scope. It explains what each capability means and where its current implementation stops. It does not define JSON fields or database tables, and it does not store jurisdiction-specific numeric values.
 
@@ -51,7 +51,7 @@ The current Santa Clara work uses only the shared capabilities cataloged below. 
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Approved residential ruleset `2026-07-19.5` encodes the verified complete 12-zone use/profile matrix and selected standards, including gross residential density, two-family and multifamily identities, and explicit no-maximum-listed, FAA-controlled, and plan-dependent dispositions. It is runtime-eligible and now feeds the standalone complete-lineage loader, exact residential GIS lookup, exact profile/pathway retriever, and contract-`2.1.0` pipeline. The default application still uses the released R1 v2 path, and parcel- or proposal-level compliance evaluation remains outside this phase.
+The released Santa Clara R1 rules remain cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, and preserved as the historical regression baseline. Approved residential ruleset `2026-07-19.5` encodes the verified complete 12-zone use/profile matrix and selected standards, including gross residential density, two-family and multifamily identities, and explicit no-maximum-listed, FAA-controlled, and plan-dependent dispositions. It now feeds the complete-lineage loader, exact residential GIS lookup, exact profile/pathway retriever, contract-`2.1.0` pipeline, fail-closed common-zone summary, and default residential application. The interface lists the verified residential use identities separately and presents dimensional standards without a structure selector only when every ordinary profile in that zone has semantically identical supported standards. Parcel- or proposal-level compliance evaluation remains outside this phase.
 
 ## Current supported regulation families
 
@@ -59,31 +59,31 @@ The released Santa Clara R1 rules are cataloged, encoded in approved ruleset v2 
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Retrievable through the standalone residential backend; default-app presentation pending |
-| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Retrievable through the standalone residential backend; default-app presentation pending |
-| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Retrievable through the standalone residential backend; default-app presentation pending |
-| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Retrievable through the standalone residential backend; default-app presentation pending |
-| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Retrievable through the standalone residential backend; default-app presentation pending |
+| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Presented through the default residential application |
+| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Presented through the default residential application |
+| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Presented through the default residential application |
+| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Presented through the default residential application |
+| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Presented through the default residential application |
 
 ### Dimensional standards
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit or explicit FAA-controlled result with measurement, exception, and applicable proximity-transition warnings | Retrievable through the standalone residential backend; default-app presentation pending |
-| `standard.maximum_stories` | Maximum number of stories | Base numeric limit or explicit FAA-controlled result; automated story classification is excluded | Retrievable through the standalone residential backend; default-app presentation pending |
-| `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Retrievable through the standalone residential backend; default-app presentation pending |
-| `standard.gross_residential_density` | Gross residential density range | Base-zone minimum and maximum in dwelling units per acre; parcel yield, plan reconciliation, density bonus, and state-law adjustments are not calculated | Retrievable through the standalone residential backend; default-app presentation pending |
+| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit or explicit FAA-controlled result with measurement, exception, and applicable proximity-transition warnings | Presented through the default residential application |
+| `standard.maximum_stories` | Maximum number of stories | Base numeric limit or explicit FAA-controlled result; automated story classification is excluded | Presented through the default residential application |
+| `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Presented through the default residential application |
+| `standard.gross_residential_density` | Gross residential density range | Base-zone minimum and maximum in dwelling units per acre; parcel yield, plan reconciliation, density bonus, and state-law adjustments are not calculated | Presented through the default residential application |
 
 ### Setbacks
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `setback.front` | Front setback | Base requirement and supported upper-story difference | Retrievable through the standalone residential backend; default-app presentation pending |
-| `setback.rear` | Rear setback | Base requirement, supported story-triggered replacement, or explicit plan-dependent result | Retrievable through the standalone residential backend; default-app presentation pending |
-| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Retrievable through the standalone residential backend; default-app presentation pending |
-| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Retrievable through the standalone residential backend; default-app presentation pending |
-| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Retrievable as embedded behavior in approved v2 and residential v3 rules |
-| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Retrievable as embedded behavior in approved v2 and residential v3 rules |
+| `setback.front` | Front setback | Base requirement and supported upper-story difference | Presented through the default residential application |
+| `setback.rear` | Rear setback | Base requirement, supported story-triggered replacement, or explicit plan-dependent result | Presented through the default residential application |
+| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Presented through the default residential application |
+| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Presented through the default residential application |
+| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Presented as embedded behavior through approved v2 and residential v3 results |
+| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Presented as embedded behavior through approved v2 and residential v3 results |
 
 ## Use and approval capabilities
 

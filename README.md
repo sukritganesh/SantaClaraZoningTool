@@ -2,7 +2,7 @@
 
 **Selected residential zoning standards by address.**
 
-Active development is expanding the released R1 vertical slice to selected citywide and Patrick Henry residential zones, including single-family, two-family, and multifamily choices where verified. The current runnable release, `v0.1.0-r1-prototype`, still covers only Santa Clara's `R1-6L` and `R1-8L` single-family residential zones. Neither the released baseline nor the planned expansion is a complete entitlement analysis or legal/planning determination.
+The development application covers the selected citywide and Patrick Henry residential zones, lists the single-family, two-family, and multifamily uses verified for each zone, and presents their supported common base-zone standards without a mandatory structure selector. The published `v0.1.0-r1-prototype` tag remains the historical two-zone release baseline. Neither version is a complete entitlement analysis or legal/planning determination.
 
 ## Project documents
 
@@ -25,10 +25,10 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Quick start from a fresh clone
 
-The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The released local application uses pinned Flask with server-rendered Jinja templates.
+The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local application uses pinned Flask with server-rendered Jinja templates.
 
 - Python 3.9 or newer
-- Approximately 135 MB of free space for the committed ZIP and its extracted runtime data
+- Approximately 175 MB of free space for the committed ZIPs and their extracted runtime data
 
 From the repository root, create the environment, install the pinned dependencies, and restore the canonical runtime data:
 
@@ -41,17 +41,17 @@ python scripts/bootstrap_demo_data.py
 
 On Windows PowerShell, create and activate the environment with `py -3 -m venv .venv` and `.\.venv\Scripts\Activate.ps1`, then run the same `python -m pip` and bootstrap commands.
 
-Then start the current released R1 application:
+Then start the residential development application:
 
 ```bash
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Useful supported fixtures include `636 Barto Street` (R1-6L) and `108 Brookside Avenue` (R1-8L).
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Useful supported fixtures include `636 Barto Street` (R1-6L), `1240 White Drive` (R2), `1577 Pomeroy Avenue` (R3), `3105 Patrick Henry Drive` (PH-R5), and `4650 Old Ironsides Drive` (UC).
 
-The repository includes a 35,499,787-byte compressed bundle at `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`. The bootstrap command verifies the archive and every included file against `demo-data/bundle-manifest.json`, installs the approved snapshots under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
+The repository preserves the 35,499,787-byte released R1 bundle and adds a 4,186,509-byte residential GIS runtime add-on. The bootstrap command verifies both archives and every included file against their manifests, installs the approved snapshots under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
 
-No database, API key, runtime AI service, or live City GIS request is required to run the released baseline. Internet access is needed only to install Python dependencies if they are not already cached.
+No database, API key, runtime AI service, or live City GIS request is required to run the application. Internet access is needed only to install Python dependencies if they are not already cached.
 
 Run the automated checks with:
 
@@ -67,7 +67,7 @@ node --check santa_clara_zoning/static/app.js
 
 ## Refresh source snapshots for development
 
-The committed bundle is the quickest and canonical way to run the released R1 baseline. The following commands are for researchers or developers who deliberately want to retrieve a new dated source snapshot from Santa Clara's live ArcGIS services; they are not part of normal setup.
+The committed bundles are the quickest and canonical way to run the application. The following commands are for researchers or developers who deliberately want to retrieve a new dated source snapshot from Santa Clara's live ArcGIS services; they are not part of normal setup.
 
 ### Download a selected residential GIS snapshot
 
@@ -163,13 +163,13 @@ The command verifies snapshot checksums, normalizes the address, preserves dupli
 
 This command identifies the parcel and zone only. Use the combined standards pipeline below to attach the approved regulatory ruleset. Neither path produces a complete buildability determination.
 
-The production-independent Block 4 backend can resolve the broader approved residential scope without changing the default Flask application:
+The residential lookup boundary can resolve the broader approved scope independently of presentation:
 
 ```bash
 python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset, LocalResidentialLookup; r = ApprovedResidentialRuleset.load(); lookup = LocalResidentialLookup.from_snapshots(ruleset=r); print(lookup.lookup("1240 White Drive"))'
 ```
 
-`LocalResidentialLookup` requires the validated approved ruleset to define its exact 12-zone identity set, verifies the complete address and July 18 residential manifests, output checksums, feature counts, per-zone counts, cross-layer agreement, and exact excluded-designation preflights, then performs local exact-address and point-in-polygon matching. Ten designations have verified live-address fixtures. R5 and R6 remain supported regulatory identities with explicit zero live GIS features; `R1-6LHT`, `R2-7L`, and `R2HT` remain distinct excluded codes and are never normalized. This lower-level backend identifies a residential zone only. `ResidentialStandardsPipeline` below adds exact selection listing and retrieval without changing the default Flask application.
+`LocalResidentialLookup` requires the validated approved ruleset to define its exact 12-zone identity set, verifies the complete address and July 18 residential manifests, output checksums, feature counts, per-zone counts, cross-layer agreement, and exact excluded-designation preflights, then performs local exact-address and point-in-polygon matching. Ten designations have verified live-address fixtures. R5 and R6 remain supported regulatory identities with explicit zero live GIS features; `R1-6LHT`, `R2-7L`, and `R2HT` remain distinct excluded codes and are never normalized. This lower-level backend identifies a residential zone only. `ResidentialStandardsPipeline` adds exact profile retrieval, and `ResidentialZoneSummaryPipeline` verifies and combines semantically shared standards for the default interface.
 
 ## Validate the R1 regulatory ruleset
 
@@ -229,7 +229,7 @@ The original candidate can still be validated without the runtime requirement by
 
 ## Validate the residential expansion contracts
 
-Residential schemas `3.0.0`, `3.1.0`, and `3.2.0`, result-contract checkpoint `2.0.0`, and runtime-ready successor `2.1.0` are implemented without changing the released R1 application. The accepted v3.0 R1 migration checkpoint remains preserved at:
+Residential schemas `3.0.0`, `3.1.0`, and `3.2.0`, result-contract checkpoint `2.0.0`, and runtime-ready successor `2.1.0` are implemented. The accepted v3.0 R1 migration checkpoint remains preserved at:
 
 ```text
 rulesets/santa_clara/residential/2026-07-19.1/ruleset.json
@@ -300,7 +300,7 @@ Validate the full approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.
 python3 scripts/validate_approved_residential_rules.py --verify-source-files
 ```
 
-The approved `.5` ruleset is consumed by the standalone Block 4 residential loader, lookup, selection retriever, and pipeline. The default Flask application continues to load only the released R1 v2 ruleset until presentation integration is deliberately implemented and validated.
+The approved `.5` ruleset is consumed by the residential loader, lookup, exact selection retriever, and pipeline. The default Flask application now places a fail-closed common-zone summary and presentation boundary over that backend.
 
 Validate all eight nonruntime result-contract fixtures:
 
@@ -316,7 +316,7 @@ Validate the same eight statuses against the approved `.5` ruleset and runtime-r
 python3 scripts/validate_residential_result_contract_v2_1.py
 ```
 
-The `2.1.0` fixtures add the selected use-permission record and its exact provenance, require all ten profile capabilities including gross residential density, preserve five independent version identities, allow address-only evidence outside the filtered residential snapshot, and permit an empty query only for `address_not_found`. They remain static contract fixtures; the production-independent residential pipeline now produces equivalent contract-valid results while the default application remains on the released R1 pipeline.
+The `2.1.0` fixtures add the selected use-permission record and its exact provenance, require all ten profile capabilities including gross residential density, preserve five independent version identities, allow address-only evidence outside the filtered residential snapshot, and permit an empty query only for `address_not_found`. The exact selection pipeline continues to produce equivalent contract-valid results underneath the common-zone interface.
 
 Load the approved residential artifact through its standalone Block 4 backend boundary:
 
@@ -324,9 +324,9 @@ Load the approved residential artifact through its standalone Block 4 backend bo
 python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset; r = ApprovedResidentialRuleset.load(); print(r.version, r.schema_version, r.supported_zones, r.regulation_count)'
 ```
 
-`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. The standalone residential lookup, exact selection retriever, and residential pipeline consume this validated boundary; the default Flask application remains unchanged.
+`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. The residential lookup, exact selection retriever, selection pipeline, common-zone summary, and default Flask application consume this validated boundary.
 
-The released R1 application continues to load its separately approved v2 artifact before serving lookups:
+The released R1 loader and pipeline remain available as a separately protected historical path:
 
 ```bash
 python3 -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Ruleset.load(); print(r.version, r.supported_zones, r.regulation_count)'
@@ -364,7 +364,7 @@ print(list(result["regulations"]))
 
 A supported address returns `r1_standards_found` with parcel and zoning evidence, all approved zone regulations, their referenced provenance, explicit limitations, and GIS/ruleset versions. Unmatched, ambiguous, unsupported, or spatially inconsistent lookups retain their controlled Block 5 outcome and do not receive regulations. Ruleset integrity failures stop the pipeline rather than being mislabeled as parcel-specific planning review.
 
-Run the production-independent residential pipeline to list the exact choices for a resolved zone and retrieve one selected profile:
+The lower-level residential pipeline still lists exact profiles and retrieves a selected branch for tests, future structure-specific behavior, and non-UI consumers:
 
 ```python
 from santa_clara_zoning import ResidentialStandardsPipeline
@@ -382,9 +382,9 @@ print(selected_result["status"])
 print(list(selected_result["regulations"]))
 ```
 
-Selection IDs are exact and case-sensitive. Ordinary `single_family`, `two_family`, and `multifamily` profiles return their approved ten-rule branch when available. A listed special pathway returns `analysis_not_evaluated`; a known profile recorded as `not_listed` returns `selection_not_available`; an unknown or inexact identity raises an error. These are regulatory retrieval results, not parcel- or proposal-level compliance determinations.
+Selection IDs are exact and case-sensitive. Ordinary `single_family`, `two_family`, and `multifamily` profiles return their approved ten-rule branch when available. A listed special pathway returns `analysis_not_evaluated`; a known profile recorded as `not_listed` returns `selection_not_available`; an unknown or inexact identity raises an error. The public interface does not require this choice while all ordinary profiles in a zone share the supported standards; it verifies that equality and fails closed if the profiles diverge.
 
-## Run the released local R1 application
+## Run the local residential application
 
 After completing the quick start, launch the development server from the repository root at any time with:
 
@@ -392,7 +392,7 @@ After completing the quick start, launch the development server from the reposit
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and enter a Santa Clara address. The responsive local interface renders property identity, supported use, approvals, selected standards, setbacks, qualifications, limitations, source receipts, data versions, and controlled non-regulatory outcomes. It uses local server-rendered templates and custom CSS with no frontend build step or external asset dependency.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and enter a Santa Clara address. The responsive local interface renders property identity, verified residential uses, common supported standards, approvals, setbacks, conditional qualifications, special pathways, limitations, source receipts, data versions, and controlled non-regulatory outcomes. It uses local server-rendered templates and custom CSS with no frontend build step or external asset dependency.
 
 The built-in server is for local development only. It binds to the local machine by default; do not expose debug mode or the development server as a production deployment.
 
@@ -424,8 +424,10 @@ python3 scripts/promote_r1_rules_v2.py \
 ├── README.md                         Human-facing setup and runbook
 ├── requirements.txt                  Pinned Python validation dependency
 ├── demo-data/
-│   ├── bundle-manifest.json          Runtime bundle inventory and checksums
-│   └── santa-clara-r1-runtime-…zip   Committed canonical runtime data
+│   ├── bundle-manifest.json          Released R1 bundle inventory and checksums
+│   ├── residential-bundle-manifest.json Residential add-on inventory and checksums
+│   ├── santa-clara-r1-runtime-…zip   Preserved released runtime data
+│   └── santa-clara-residential-runtime-…zip Expanded GIS runtime add-on
 ├── data/
 │   └── raw/                          Ignored, installed immutable snapshots
 ├── contracts/
@@ -470,7 +472,9 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── pipeline.py                    Versioned address-to-standards orchestration
 │   ├── presentation.py                UI-neutral deterministic presentation model
 │   ├── residential_pipeline.py        Contract 2.1 residential orchestration
+│   ├── residential_presentation.py    Common-zone presentation contract
 │   ├── residential_standards.py       Exact profile and pathway retrieval
+│   ├── residential_summary.py         Fail-closed common-profile projection
 │   ├── ruleset.py                     Approved v2 and residential v3 loaders
 │   ├── standards.py                   Pure exact-zone regulation retrieval
 │   ├── templates/                     Server-rendered web templates
@@ -482,6 +486,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── author_patrick_henry_residential_rules.py Non-overwriting Patrick Henry authoring replay
 │   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
 │   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
+│   ├── build_residential_demo_data_bundle.py Deterministic residential add-on builder
 │   ├── download_address_points.py     Citywide address-point downloader
 │   ├── download_residential_gis.py    Selected residential-zone GIS downloader
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
