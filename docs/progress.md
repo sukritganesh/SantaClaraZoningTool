@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 and Block 6.1-6.4 are complete and owner accepted on `codex/residential-zone-expansion`; the tranche 6.5 final release matrix passes, and pull-request preparation is in progress
+**Current position:** Blocks 0-5 and Block 6.1-6.4 are complete and owner accepted on `codex/residential-zone-expansion`; the tranche 6.5 final release matrix passes, and residential expansion PR #2 is open against `main`
 
-**Next action:** Commit and push the final release evidence, open the residential expansion pull request against the verified default branch, and monitor its exact head through CI and review readiness
+**Next action:** Monitor PR #2's exact head through CI, review, and conflict readiness, then present the verified landing plan for explicit owner confirmation
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -658,7 +658,7 @@ Validation evidence:
 - the bundled Node.js runtime accepts `santa_clara_zoning/static/app.js` syntax, and `git diff --check` passes; and
 - hosted clean-checkout run `29707903970` passes every configured step on the report-polish head before this status-only release-evidence update.
 
-The branch is ready for its final status commit and pull request. Pull-request CI and review remain required, and the proposed `v0.2.0` tag and GitHub release remain post-merge actions only.
+PR #2 opened against the verified `main` default branch on July 19, 2026. Pull-request CI, review, conflict readiness, and explicit landing confirmation remain required, and the proposed `v0.2.0` tag and GitHub release remain post-merge actions only.
 
 ## Blocks 0-1 validation evidence
 
