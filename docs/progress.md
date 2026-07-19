@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Block 4 tranche 4.4 is implemented on `codex/residential-zone-expansion` and awaiting project-owner acceptance; tranches 4.1 through 4.3 are owner accepted, exact residential profile/pathway retrieval and contract-`2.1.0` pipeline orchestration now pass across the approved 12-zone scope, and the default application remains unchanged on the released R1 v2 path
+**Current position:** Block 4 tranche 4.5 full-backend technical acceptance passes on `codex/residential-zone-expansion` and is awaiting project-owner acceptance; tranches 4.1 through 4.4 are owner accepted, and the default application remains unchanged on the released R1 v2 path
 
-**Next action:** Review and accept tranche 4.4; after acceptance, perform the Block 4.5 full-backend acceptance gate before beginning any Block 5 presentation or default-application integration
+**Next action:** Review and accept the complete Block 4 backend; after acceptance, begin a read-only Block 5 presentation/interface audit and implementation proposal before changing the default application
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -55,7 +55,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
-| 4. Expand lookup and retrieval | Tranche 4.4 implemented; awaiting owner acceptance | Tranches 4.1-4.3 are accepted; exact selection listing/retrieval and `ResidentialStandardsPipeline` now combine the approved ruleset with the verified lookup under result contract `2.1.0`, while presentation and the default Flask application remain unchanged. |
+| 4. Expand lookup and retrieval | Tranche 4.5 technical gate complete; awaiting owner acceptance | Tranches 4.1-4.4 are owner accepted; the complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates without corrective code. |
 | 5. Generalize presentation and interface | Not started | Active R1/prototype wording and implicit single-family assumptions are removed from the product experience. |
 | 6. Validate and release | Not started | The expanded acceptance matrix and preserved R1 regressions pass; limitations and release identity are recorded. |
 
@@ -454,7 +454,37 @@ Validation evidence:
 - `.venv/bin/python -B -m unittest discover -s tests -q` passes all 324 repository tests; and
 - `git diff --check` passes.
 
-No result-contract fixture, ruleset, ruleset schema, raw snapshot, dependency, presentation component, template, static asset, web route, or default Flask behavior changed. Tranche 4.4 is awaiting project-owner acceptance before the Block 4.5 full-backend acceptance gate.
+No result-contract fixture, ruleset, ruleset schema, raw snapshot, dependency, presentation component, template, static asset, web route, or default Flask behavior changed. The project owner accepted tranche 4.4 on July 19, 2026 and authorized the Block 4.5 full-backend acceptance gate.
+
+## Block 4 tranche 4.5 full-backend acceptance
+
+Tranche 4.5 executed the approved Block 4 acceptance matrix as one combined backend gate. No corrective implementation was required:
+
+- the canonical approved residential `.5` artifact passes complete source, schema, lineage, replay, semantic-preservation, per-record approval, and runtime-eligibility validation;
+- a direct exact-matrix audit covers all 12 supported zone identities, 16 ordinary profiles, both R1 special pathways, and all 18 source-backed unavailable profile selections;
+- the same matrix preserves all eight authored requirement kinds: status, numeric maximum, quantity range, lot-area-tiered maximum, no maximum listed, FAA controlled, setback, and plan dependent;
+- the exact R1-8L, R5, R6, and PH-R5 conflict records and their selected and competing assertions remain in retrieved evidence;
+- the residential runtime suite exercises the ten live GIS designations, synthetic-only R5/R6 behavior, the three exact excluded designations, complete profile/pathway provenance, all eight controlled result statuses, integrity mutations, defensive copies, repeatability, and cross-process byte determinism; and
+- the accepted result-contract `2.0.0` checkpoint and runtime successor `2.1.0` each validate all eight fixture statuses independently.
+
+Released-path protection also passes as an independent gate:
+
+- approved R1 v1 remains valid with 16 rules and its documented conflict;
+- canonical approved R1 v2 `2026-07-17.2` passes source checks, schema and domain validation, complete migration replay, per-record approval, and runtime eligibility with 20 zone-owned regulations;
+- 82 focused released loader, lookup, exact retrieval, pipeline, presentation, web, and vertical-slice tests pass; and
+- `santa_clara_zoning/web.py` still constructs `R1StandardsPipeline`, so no residential backend component is an implicit default-application consumer.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes;
+- `.venv/bin/python -B scripts/validate_residential_result_contract.py` validates all eight preserved contract-`2.0.0` fixtures;
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` validates all eight contract-`2.1.0` fixtures against approved ruleset `.5`;
+- the focused residential loader, lookup, retrieval, pipeline, and contract suite passes all 69 tests;
+- the focused released R1 loader, lookup, retrieval, pipeline, presentation, web, and vertical-slice suite passes all 82 tests;
+- a `unittest` discovery run over `tests/` passes all 324 repository tests with zero failures, errors, skips, or unexpected successes; and
+- `git diff --check` passes.
+
+A path-level audit from the approved Block 4 design commit through the completed backend confirms no changes to dependencies, ruleset schemas, versioned rulesets, raw snapshots, presentation, Flask, templates, CSS, or JavaScript. Block 4.5 therefore changes only this status ledger. The complete Block 4 backend is awaiting project-owner acceptance before any Block 5 presentation or default-application work begins.
 
 ## Blocks 0-1 validation evidence
 
@@ -523,3 +553,5 @@ None currently recorded.
 | 2026-07-19 | Accept result-contract tranche 4.1 and authorize only the approved residential loader tranche 4.2. | The accepted runtime-ready result boundary can now be paired with an exact `.5` loader, while GIS lookup, selection retrieval, pipeline orchestration, and presentation remain independently gated. |
 | 2026-07-19 | Accept approved-loader tranche 4.2 and authorize only residential GIS lookup tranche 4.3. | The complete-lineage `.5` loader can now define the exact snapshot identity boundary, while selection retrieval, pipeline orchestration, presentation, and the default Flask application remain separately gated. |
 | 2026-07-19 | Accept residential GIS lookup tranche 4.3 and authorize only exact selection retrieval and production-independent pipeline tranche 4.4. | All live supported zone identities already pass the immutable snapshot boundary; the next isolated gate can now attach exact approved branches under contract `2.1.0` without changing presentation or the released application. |
+| 2026-07-19 | Accept exact selection retrieval and residential pipeline tranche 4.4 and begin the Block 4.5 full-backend acceptance gate. | The production-independent backend now covers exact approved branches under contract `2.1.0`; the complete matrix and released-path regressions must pass together before any presentation consumer changes. |
+| 2026-07-19 | Complete Block 4.5 as a validation-only tranche and retain the default R1 application boundary. | Every approved backend acceptance case and released-path regression passed without a code correction; changing presentation consumers remains a separately reviewed Block 5 concern. |
