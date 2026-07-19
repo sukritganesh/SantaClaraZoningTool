@@ -2,9 +2,9 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** Block 8.3 complete — offline operation, provenance closure, fail-closed integrity, and cross-process rendering are proven
+**Current position:** Block 8.4 complete — the final validation matrix passes without failures or skips
 
-**Next action:** Execute Block 8.4's final validation matrix
+**Next action:** Execute Block 8.5 closeout and record the prototype's final milestone disposition
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
 
@@ -20,7 +20,7 @@ This is the authoritative project-status ledger. The design and scope remain in 
 | 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
 | 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
 | 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
-| 8. Validate the vertical slice | In progress | Blocks 8.1–8.3 pass: the complete path, offline boundary, provenance closure, safe integrity behavior, and independent-process rendering are proven. |
+| 8. Validate the vertical slice | In progress | Blocks 8.1–8.4 pass: the complete path, offline and integrity boundaries, provenance and determinism proofs, and final validation matrix are clean. |
 
 ## Completed-block evidence
 
@@ -358,6 +358,9 @@ Source-display validation evidence:
 
 node --check santa_clara_zoning/static/app.js
 passed
+
+git diff --check
+passed
 ```
 
 Block 7.4d completes rendered-interface validation in `tests/test_web.py`. The tests exercise canonical R1-6L and R1-8L results, including scalar and paired setbacks, required approvals, limitations, the preserved R1-8L source conflict, and every value exposed by the current presentation contract. A structural HTML parser verifies unique element IDs; address label association; fragment and `aria-controls` closure; exactly one source marker per displayed rule; and an exact match between each marker's popup links and that rule's citation IDs.
@@ -508,12 +511,44 @@ passed
 
 Detailed corrupt-source and candidate-ruleset mutations remain owned by the focused lookup and loader suites. The vertical-slice module proves the final application boundary: an integrity failure renders a safe non-regulatory system-error view with no internal detail, capability cards, regulatory receipts, or ruleset version.
 
+Block 8.4 reran the final matrix from the repository root without modifying production code or authoritative artifacts:
+
+```text
+.venv/bin/python -B scripts/validate_r1_rules_v2.py \
+  --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json \
+  --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json \
+  --verify-source-files \
+  --require-runtime-eligible
+valid: 20 zone-owned regulations, 1 documented conflict,
+complete migration crosswalk; runtime eligibility yes (approved 2026-07-17)
+
+.venv/bin/python -B -m unittest tests.test_vertical_slice -v
+8 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest tests.test_web -v
+20 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -m unittest discover -s tests -v
+151 passed, 0 failed, 0 skipped
+
+.venv/bin/python -B -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Ruleset.load(); print(r.version, r.supported_zones, r.regulation_count)'
+2026-07-17.2 ('R1-6L', 'R1-8L') 20
+
+node --check santa_clara_zoning/static/app.js
+passed
+
+git diff --check
+passed
+```
+
+The canonical local GIS and regulatory artifacts were present, so no acceptance or focused test was skipped. The approved ruleset validator rechecked schema and domain invariants, source-document SHA-256 values, deterministic migration replay, crosswalk completeness, conflict integrity, approval metadata, and runtime eligibility. The dedicated module then rechecked the complete fixture matrix, offline boundary, final provenance closure, safe integrity handling, and independent-process rendered determinism. No defect or acceptance-oracle adjustment was needed.
+
 | Substep | Status | Intended result |
 |---|---|---|
 | 8.1 Approve the acceptance contract and fixture matrix | Complete | The project owner approved the final system boundary, fixtures, evidence requirements, and exclusions. |
 | 8.2 Implement complete-path acceptance tests | Complete | Five dedicated tests exercise the approved matrix through real production composition and canonical artifacts without duplicating internal algorithms. |
 | 8.3 Prove offline, integrity, provenance, and determinism boundaries | Complete | Blocked-socket startup and requests, canonical checksum/version closure, safe integrity adaptation, and opposite-order hash-seeded process render digests all pass. |
-| 8.4 Run the final validation matrix | Pending | Run the dedicated suite, approved ruleset validator, focused web tests, and complete repository suite. |
+| 8.4 Run the final validation matrix | Complete | Approved-v2 validation, 8 acceptance tests, 20 focused web tests, 151 full-suite tests, loader startup, and local JavaScript syntax all pass without skips. |
 | 8.5 Record evidence and close Block 8 | Pending | Record exact artifacts, commands, fixture outcomes, counts, and limitations before final milestone disposition. |
 
 Planning boundaries:
