@@ -8,6 +8,7 @@ The development application covers the selected citywide and Patrick Henry resid
 
 - [Residential expansion plan](docs/residential-expansion-plan.md) — active scope, architecture, migration strategy, implementation blocks, and completion criteria.
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
+- [Manual testing addresses](docs/manual-testing-addresses.md) — concise live-address and controlled-outcome checks for the local application.
 - [Residential rule verification](docs/residential-rule-verification.md) — active source trace, candidate dispositions, GIS acquisition contract, and approval gate for the expanded zones.
 - [Future improvements](docs/future-improvements.md) — the cross-cutting enhancement burndown; active execution remains tracked in the progress ledger.
 - [R1 prototype report](docs/prototype-report.md) — historical plain-language account of the released vertical slice and its validation.
@@ -47,7 +48,7 @@ Then start the residential development application:
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Useful supported fixtures include `636 Barto Street` (R1-6L), `1240 White Drive` (R2), `1577 Pomeroy Avenue` (R3), `3105 Patrick Henry Drive` (PH-R5), and `4650 Old Ironsides Drive` (UC).
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000). The [manual testing address sheet](docs/manual-testing-addresses.md) lists one verified address for every live supported designation plus useful controlled-failure cases.
 
 The repository preserves the 35,499,787-byte released R1 bundle and adds a 4,186,509-byte residential GIS runtime add-on. The bootstrap command verifies both archives and every included file against their manifests, installs the approved snapshots under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
 

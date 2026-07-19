@@ -156,6 +156,7 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
         self.assertIn('tabindex="0"', body)
         self.assertIn('scope="col"', body)
         self.assertIn('scope="row"', body)
+        self.assertNotIn("Return to result", body)
 
 
 if __name__ == "__main__":
