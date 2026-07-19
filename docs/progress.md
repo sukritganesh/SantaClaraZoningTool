@@ -2,11 +2,17 @@
 
 **Last updated:** July 18, 2026
 
-**Current position:** First R1 prototype complete — Blocks 0–8 satisfy the approved vertical-slice criteria
+**Current position:** First R1 prototype complete; release-readiness work has begun with a user-facing project report
 
-**Next action:** Select and approve the next scoped enhancement before beginning another implementation block
+**Next action:** Design the portable canonical-data bundle and fresh-clone quick-start workflow before merge or tag
 
 This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
+
+## Post-prototype release readiness
+
+- `docs/prototype-report.md` provides the completed plain-language account of the prototype, its wider workflow-automation context, accomplishments, trust model, limitations, and future direction.
+- `README.md` links to the report from the user-facing project orientation.
+- The remaining pre-merge distribution task is to make the canonical ignored runtime data reproducibly installable in a fresh clone and then validate that clean-room workflow.
 
 ## Milestone tracker
 

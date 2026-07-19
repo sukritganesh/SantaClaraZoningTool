@@ -6,6 +6,7 @@ The first vertical slice covers Santa Clara's `R1-6L` and `R1-8L` single-family 
 
 ## Project documents
 
+- [Prototype report](docs/prototype-report.md) — a plain-language account of what was built, why it matters, what was validated, and how it supports the longer-term workflow-automation goal.
 - [Current progress](docs/progress.md) — the authoritative record of the current stage, completed blocks, canonical artifacts, and next step.
 - [Future improvements](docs/future-improvements.md) — the cross-cutting enhancement burndown; active execution remains tracked in the progress ledger.
 - [R1 prototype plan](docs/r1-prototype-plan.md) — scope, architecture, source research, proposed data model, and completion criteria.
