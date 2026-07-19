@@ -1,8 +1,10 @@
 # Santa Clara Residential Rule Verification
 
-**Status:** Block 1 technical evidence complete and ready for project-owner approval; new-zone rules are not approved for runtime
+**Status:** Block 1 complete and project-owner approved for Block 2 contract design; new-zone rules are not approved for runtime
 
 **Verified through:** July 18, 2026
+
+**Project-owner approval:** July 19, 2026
 
 **Consolidated-code baseline:** Santa Clara Zoning Code, Title 18 - July 2025
 
@@ -372,15 +374,15 @@ Both live `R4` features were inspected. The selected 1400 Coleman Avenue feature
 
 ## 11. Remaining verification work
 
-- Obtain owner approval for the exact `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and the plan/project-review rear-setback disposition.
 - Preserve any parcel-specific PDO or development-plan material only when a selected project requires it; recreation-space and project-specific plan values remain `not evaluated` in this phase.
 - Decide the Block 2 representation for one two-family structure versus the R1 Chapter 18.24 option for two detached homes, while keeping the latter `not evaluated` in this phase.
 - Decide and document the schema representation for numeric, no-maximum-listed, FAA-controlled, plan-dependent, not-evaluated, and review-required dispositions in Block 2.
-- Obtain project-owner approval of the source matrix and explicit candidate dispositions before ruleset authoring.
+
+The project owner approved the complete source matrix and candidate disposition boundary on July 19, 2026, including the exact `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and the Patrick Henry rear-setback treatment as no universal numeric base value, with plan/project review required and no zero default. This closes source verification for Block 1 and authorizes Block 2 contract design; it does not confer runtime approval on new-zone rules.
 
 ## 12. Block 1 approval gate
 
-Block 1 is not complete until:
+Block 1 required:
 
 1. the authoritative Title 18 baseline and current amendment cutoff are preserved and reproducible;
 2. every target zone/use/structure cell has an exact source citation and explicit disposition;
@@ -392,4 +394,4 @@ Block 1 is not complete until:
 8. R5/R6 and excluded designations receive controlled test treatment; and
 9. the project owner approves the verification record for candidate ruleset authoring.
 
-Items 1 through 4 and 6 through 8 have passed. Items 5 and 9 remain the project-owner approval gate: approve the explicit `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and approve the Patrick Henry rear-setback treatment as no universal numeric base value listed, with plan/project review required and no zero default.
+All nine conditions passed. The project owner supplied the remaining approvals for items 5 and 9 on July 19, 2026. Block 1 is complete; the approved evidence may now be used to design the Block 2 contracts, but no new-zone rule is runtime eligible until the later representation, validation, ruleset-review, and approval gates pass.

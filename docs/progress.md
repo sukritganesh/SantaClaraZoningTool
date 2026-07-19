@@ -1,10 +1,10 @@
 # Residential Zoning Expansion Progress
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
-**Current position:** Block 1 technical evidence is complete on `codex/residential-zone-expansion`; the source matrix, Patrick Henry source, residential GIS snapshot, and fixture inventory are ready for project-owner approval, while new-zone runtime implementation remains intentionally pending
+**Current position:** Block 1 is complete and project-owner approved on `codex/residential-zone-expansion`; the verified source matrix, explicit `HDF` crosswalk, Patrick Henry rear-setback disposition, residential GIS snapshot, and fixture inventory are authorized inputs to Block 2 contract design, while new-zone runtime implementation remains intentionally pending
 
-**Next action:** Obtain project-owner approval of the completed source matrix, the explicit HDF crosswalk, and the Patrick Henry rear-setback disposition; then begin Block 2 contract design without authoring runtime rules prematurely
+**Next action:** Begin Block 2 contract design: define the residential zone/use/structure applicability model, typed nonnumeric dispositions, R1 migration crosswalk, validators, and new result-contract versions without authoring runtime rules prematurely
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -36,7 +36,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | Block | Status | Exit evidence or next result |
 |---|---|---|
 | 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
-| 1. Verify sources and acquire residential GIS | Ready for owner approval | The checked source matrix, Patrick Henry source, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory pass their technical gates. The HDF crosswalk, Patrick Henry rear disposition, and full verification record still require explicit owner approval. |
+| 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
 | 2. Generalize the data and result contracts | Not started | New schema, applicability/disposition semantics, crosswalk, and contract versions are approved and mutation-tested. |
 | 3. Author and approve residential rules | Not started | All target zone/use/structure cells receive explicit verified dispositions and the new ruleset becomes runtime-eligible. |
 | 4. Expand lookup and retrieval | Not started | Exact residential zones and valid use/structure selections return deterministic standards; invalid combinations fail closed. |
@@ -64,7 +64,7 @@ Documentation validation:
 - active instructions and status references resolve to the residential expansion documents; and
 - `git diff --check` passes.
 
-## Block 1 evidence ready for approval
+## Block 1 evidence and approval
 
 Created and reviewed:
 
@@ -157,3 +157,4 @@ None currently recorded.
 | 2026-07-18 | List the source-verified R1 Chapter 18.24 two-unit pathway but keep its dimensional result `not evaluated`. | The applicable standards branch on site eligibility, attached/detached configuration, the ordinary R1 envelope, existing setbacks, and proposal facts the current product does not collect; ordinary single-family rules cannot be applied universally. |
 | 2026-07-18 | Add a separate residential GIS downloader instead of broadening the historical R1 downloader in place. | The released acquisition remains reproducible while the new artifact can enforce the exact 12-designation scope, explicit zeroes, excluded-code preflights, polygon validation, and cross-layer count agreement. |
 | 2026-07-18 | Preserve one real fixture per live target designation and use synthetic fixtures for zero-count or deliberately excluded codes. | Routing coverage stays source-backed without inventing R5/R6 addresses or normalizing distinct legacy and combining designations. |
+| 2026-07-19 | Approve the complete Block 1 residential verification record, including the explicit `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and the Patrick Henry rear-setback treatment as no universal numeric base value, with plan/project review required and no zero default. | The source, GIS, fixture, and disposition evidence passed its technical gates and is authorized to drive Block 2 contract design; this approval does not make new-zone rules runtime eligible. |
