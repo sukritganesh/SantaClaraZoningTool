@@ -374,7 +374,7 @@ The approval successor consumes the exact reviewed bytes of candidate `2026-07-1
 - checksum-pin the candidate, approved target, schema, and shared semantic projection in the approval crosswalk; and
 - prove deterministic target and crosswalk replay before the artifact is eligible for application integration.
 
-Runtime eligibility authorizes `.5` as regulatory input. Block 4's standalone `ApprovedResidentialRuleset` now accepts it only after the complete lineage passes; the default application remains on the released R1 loader until the later lookup, retrieval, and presentation gates are accepted.
+Runtime eligibility authorizes `.5` as regulatory input. Block 4's standalone `ApprovedResidentialRuleset` accepts it only after the complete lineage passes, and `LocalResidentialLookup` uses its exact zone identities to validate the filtered GIS scope. The default application remains on the released R1 path until the later retrieval, pipeline, and presentation gates are accepted.
 
 ## Authoring workflow
 

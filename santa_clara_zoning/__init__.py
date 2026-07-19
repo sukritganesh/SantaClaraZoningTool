@@ -1,6 +1,6 @@
 """Deterministic lookup and regulatory-data components for Santa Clara zoning."""
 
-from .lookup import LocalR1Lookup
+from .lookup import LocalR1Lookup, LocalResidentialLookup
 from .pipeline import (
     CONTRACT_VERSION,
     PipelineIntegrityError,
@@ -29,6 +29,7 @@ __all__ = [
     "ApprovedResidentialRuleset",
     "CONTRACT_VERSION",
     "LocalR1Lookup",
+    "LocalResidentialLookup",
     "PRESENTATION_CONTRACT_VERSION",
     "PipelineIntegrityError",
     "PresentationIntegrityError",

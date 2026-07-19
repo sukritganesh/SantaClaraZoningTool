@@ -163,6 +163,14 @@ The command verifies snapshot checksums, normalizes the address, preserves dupli
 
 This command identifies the parcel and zone only. Use the combined standards pipeline below to attach the approved regulatory ruleset. Neither path produces a complete buildability determination.
 
+The production-independent Block 4 backend can resolve the broader approved residential scope without changing the default Flask application:
+
+```bash
+python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset, LocalResidentialLookup; r = ApprovedResidentialRuleset.load(); lookup = LocalResidentialLookup.from_snapshots(ruleset=r); print(lookup.lookup("1240 White Drive"))'
+```
+
+`LocalResidentialLookup` requires the validated approved ruleset to define its exact 12-zone identity set, verifies the complete address and July 18 residential manifests, output checksums, feature counts, per-zone counts, cross-layer agreement, and exact excluded-designation preflights, then performs local exact-address and point-in-polygon matching. Ten designations have verified live-address fixtures. R5 and R6 remain supported regulatory identities with explicit zero live GIS features; `R1-6LHT`, `R2-7L`, and `R2HT` remain distinct excluded codes and are never normalized. This backend identifies a residential zone only; selection retrieval and pipeline orchestration remain separately gated.
+
 ## Validate the R1 regulatory ruleset
 
 The first approved prototype ruleset is:
@@ -316,7 +324,7 @@ Load the approved residential artifact through its standalone Block 4 backend bo
 python3 -c 'from santa_clara_zoning import ApprovedResidentialRuleset; r = ApprovedResidentialRuleset.load(); print(r.version, r.schema_version, r.supported_zones, r.regulation_count)'
 ```
 
-`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. This loader does not yet perform residential GIS lookup or selection retrieval and is not used by the default Flask application.
+`ApprovedResidentialRuleset.load()` reads the complete approved-v2 → v3.0 → v3.1 → density-v3.2 → 12-zone-v3.2 → approved-v3.2 lineage once, runs every source, schema, GIS-fixture, replay, semantic-preservation, per-record approval, and runtime-eligibility gate, then recursively freezes the exact validated `.5` object. `as_dict()` returns defensive mutable copies. The standalone residential lookup consumes this validated identity boundary, but selection retrieval is not yet wired and the default Flask application remains unchanged.
 
 The released R1 application continues to load its separately approved v2 artifact before serving lookups:
 
