@@ -2,9 +2,9 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 and Block 6.1 are complete and owner accepted on `codex/residential-zone-expansion`; Block 6.2 consolidated residential acceptance automation and its clean-checkout technical gates are complete, with owner acceptance pending before CI begins
+**Current position:** Blocks 0-5 and Block 6.1-6.2 are complete and owner accepted on `codex/residential-zone-expansion`; the Block 6.3 clean-checkout CI workflow is implemented locally and awaits its first GitHub-hosted validation run
 
-**Next action:** Review and accept Block 6.2, then begin Block 6.3 clean-checkout continuous integration
+**Next action:** Push the Block 6.3 workflow, inspect its actual GitHub Actions result, correct any real runner issue, and record the remote evidence before beginning release reporting
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -61,7 +61,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Tranche 6.2 technical gate complete; owner acceptance pending | Accepted tranche 6.1 repairs clean-checkout source packaging. A new release-level vertical-slice harness now closes the live and synthetic zone matrix, released R1 semantics, controlled outcomes, provenance, offline behavior, and structured/presented/rendered determinism; its committed-only checkout passes all 354 tests. CI, reporting, and release identity remain. |
+| 6. Validate and release | Tranche 6.3 implemented; remote validation pending | Accepted tranches 6.1-6.2 repair source packaging and consolidate release acceptance. A minimal read-only GitHub Actions workflow now reproduces bundle bootstrap and generation, all regulatory and result validators, the release harness, the 354-test complete suite, JavaScript syntax, and whitespace integrity on clean Python 3.9 runners; its first hosted run remains pending. |
 
 ## Block 0 evidence
 
@@ -588,6 +588,23 @@ Validation evidence:
 
 Tranche 6.2 adds tests and status evidence only. It does not change production code, rulesets, schemas, contracts, source snapshots, runtime bundles, dependencies, commands, presentation, or user-visible behavior.
 
+### Tranche 6.3 clean-checkout continuous integration
+
+The project owner accepted tranche 6.2 and authorized continued Block 6 work on July 19, 2026. `.github/workflows/ci.yml` defines one bounded **Residential release validation** workflow for pushes, pull requests, and explicit manual dispatches. It grants only `contents: read`, cancels superseded runs on the same ref, uses a 15-minute timeout, and performs no write, release, deployment, issue, pull-request, or external-service action.
+
+The Python 3.9 clean-checkout job:
+
+1. checks out the repository with `actions/checkout@v6.0.1` and configures Python with `actions/setup-python@v6.2.0` plus the exact-pinned `requirements.txt` cache key;
+2. installs the pinned dependencies and runs `pip check`;
+3. bootstraps both selected runtime bundles twice, proving empty-checkout installation and idempotent checksum matching;
+4. rebuilds source-complete residential bundle `.2` and rejects any archive or manifest byte drift;
+5. runs the approved 12-zone source/lineage/runtime validator and both residential result-contract validators;
+6. runs the six-test residential release harness and the complete repository suite;
+7. checks the unchanged JavaScript enhancement with Node and runs `git diff --check`; and
+8. fails immediately on any unexplained error because no step uses `continue-on-error` or an allowed-failure path.
+
+Local workflow-file evidence currently passes YAML parsing and `git diff --check`. The workflow's technical gate remains open until the committed workflow runs successfully on GitHub's hosted runner; local command success is not substituted for remote CI evidence.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -665,3 +682,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-19 | Preserve residential GIS-only add-on `.1` and its manifest, and create source-complete successor `.2` with a separate version-specific manifest. | The accepted predecessor remains reproducible while fresh clones receive the Patrick Henry authoritative source required by the unchanged complete-lineage validator. |
 | 2026-07-19 | Accept Block 6.1 and proceed to the consolidated residential acceptance harness. | The source-complete successor repairs fresh-clone startup, preserves every earlier artifact, and passes the approved validator and complete suite from committed-only data. |
 | 2026-07-19 | Keep Block 6.2 test-only and consolidate release evidence without replacing focused tests. | Focused suites remain better diagnostics, while one product-level gate makes the complete offline, regression, provenance, failure, and determinism claim directly executable. |
+| 2026-07-19 | Accept Block 6.2 and proceed to clean-checkout CI. | The consolidated gate passes in working and committed-only trees and makes the release claims executable without changing product behavior. |
+| 2026-07-19 | Use one read-only Python 3.9 CI job before considering broader version matrices or deployment automation. | The immediate release risk is clean-checkout reproducibility on the supported baseline; extra runtime matrices and deployment systems would expand scope without strengthening the current regulatory acceptance contract. |
