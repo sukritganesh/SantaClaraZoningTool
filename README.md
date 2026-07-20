@@ -2,7 +2,7 @@
 
 **Selected residential zoning standards by address.**
 
-The development application covers the selected citywide and Patrick Henry residential zones, lists the single-family, two-family, and multifamily uses verified for each zone, and presents their supported common base-zone standards without a mandatory structure selector. The published `v0.1.0-r1-prototype` tag remains the historical two-zone release baseline. Neither version is a complete entitlement analysis or legal/planning determination.
+Release `v0.2.0` covers the selected citywide and Patrick Henry residential zones, lists the single-family, two-family, and multifamily uses verified for each zone, and presents their supported common base-zone standards without a mandatory structure selector. The published `v0.1.0-r1-prototype` tag remains the historical two-zone release baseline. Neither release is a complete entitlement analysis or legal/planning determination.
 
 ## Project documents
 

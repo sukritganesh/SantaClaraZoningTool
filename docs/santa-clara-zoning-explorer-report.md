@@ -226,7 +226,7 @@ Manual review also covered the default interface, source disclosures, controlled
 | Component | Current identity | What it identifies |
 |---|---|---|
 | Released baseline | `v0.1.0-r1-prototype` | The preserved two-zone R1 release merged through PR #1 |
-| Proposed next release | `v0.2.0` | The residential expansion release identity, subject to final review, PR, merge, and tag gates |
+| Current release | `v0.2.0` | The validated residential expansion described by this report |
 | Address data | Snapshot dated July 16, 2026 | The citywide address records used for exact matching |
 | Residential parcel and zoning data | Snapshot dated July 18, 2026 | The filtered parcel and current-zoning evidence for the 12 exact target designations |
 | Regulatory sources | July 2025 Title 18 baseline, audited through July 18, 2026 | The consolidated code and later-legislation review used for the expansion |
@@ -235,7 +235,7 @@ Manual review also covered the default interface, source disclosures, controlled
 | Residential result contract | `2.1.0` | The versioned address-to-standards result passed through the backend |
 | Source-complete residential add-on | `2026-07-19.2` | The reproducible GIS and Patrick Henry source package used with the preserved R1 runtime bundle |
 
-The proposed release title is **Santa Clara Zoning Explorer v0.2.0 — Residential Expansion**. No tag or GitHub release should be created until the remaining review, pull-request, merge, and post-merge gates are complete.
+The release title is **Santa Clara Zoning Explorer v0.2.0 — Residential Expansion**. Its tag identifies the validated `main` commit containing the final release record; the preserved `v0.1.0-r1-prototype` tag continues to identify the historical R1 baseline.
 
 ## What the product does not determine
 
@@ -266,9 +266,7 @@ That pattern is reusable. Common concepts such as height, setbacks, use classifi
 
 ## Sensible next steps
 
-The immediate next step is to complete review of this report and the final release matrix, then take the residential expansion through its pull request, merge, and `v0.2.0` tag gates.
-
-Later product improvements can remain incremental:
+The residential expansion phase is complete. Future work can remain incremental:
 
 - ask for a structure selection only when supported standards materially differ;
 - add proposal facts and evaluate one additional regulation family at a time;
