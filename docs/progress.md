@@ -2,16 +2,17 @@
 
 **Last updated:** July 19, 2026
 
-**Current position:** Blocks 0-5 and Block 6.1-6.4 are complete and owner accepted on `codex/residential-zone-expansion`; the tranche 6.5 final release matrix passes, and residential expansion PR #2 is open against `main`
+**Current position:** Blocks 0-6 are complete and owner accepted; residential expansion PR #2 is merged into `main`, its post-merge clean-checkout gate passes, and the final product release identity is `v0.2.0`
 
-**Next action:** Monitor PR #2's exact head through CI, review, and conflict readiness, then present the verified landing plan for explicit owner confirmation
+**Next action:** No work remains in the residential expansion phase; begin any later product work by promoting a deliberately scoped backlog item into a new active phase
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
 ## Baseline and active scope
 
 - Released baseline: `v0.1.0-r1-prototype`, merged through PR #1.
-- Development branch: `codex/residential-zone-expansion`.
+- Current product release: `v0.2.0`, with the residential implementation merged through PR #2 and the final release record tagged from `main`.
+- Completed expansion branch: `codex/residential-zone-expansion`.
 - Target citywide zones: `R1-6L`, `R1-8L`, `R2`, `R3`, `R4`, `R5`, and `R6`.
 - Target Patrick Henry designations: `PH-R5`, `UV`, `VR`, `UC`, and GIS designation `HDF`.
 - Target structure identities: single-family, two-family, and multifamily primary structures.
@@ -62,7 +63,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
-| 6. Validate and release | Tranches 6.1-6.4 accepted; tranche 6.5 final matrix complete, PR gate in progress | Source-complete startup, consolidated release acceptance, clean-checkout CI, and the accessible report are accepted. The final local matrix reproduces the bundles, closes every validator, preserves the released R1 baseline, and passes the six-test product gate plus all 354 tests; no tag or release exists before the normal PR, merge, and post-merge gates. |
+| 6. Validate and release | Complete and owner accepted | Source-complete startup, consolidated release acceptance, clean-checkout CI, the accessible report, the final local matrix, PR #2, and post-merge `main` validation all pass. Release `v0.2.0` records the resulting Santa Clara Zoning Explorer residential product without modifying the preserved R1 baseline. |
 
 ## Block 0 evidence
 
@@ -658,7 +659,15 @@ Validation evidence:
 - the bundled Node.js runtime accepts `santa_clara_zoning/static/app.js` syntax, and `git diff --check` passes; and
 - hosted clean-checkout run `29707903970` passes every configured step on the report-polish head before this status-only release-evidence update.
 
-PR #2 opened against the verified `main` default branch on July 19, 2026. Pull-request CI, review, conflict readiness, and explicit landing confirmation remain required, and the proposed `v0.2.0` tag and GitHub release remain post-merge actions only.
+PR #2 passed both exact-head clean-checkout jobs with no unresolved review thread or conflict. After the project owner confirmed the canonical guarded landing plan for head `98c6907edc86cecf5057cf097dd4352db8c1811f`, GitHub merged it through merge commit `9fb112066420e40390a50380d1220d4100a57b66` on July 19, 2026. Post-merge `main` run `29708903702` then passed the complete clean-checkout workflow against that merge commit.
+
+### Tranche 6.6 post-merge release finalization
+
+The final release-only record assigns semantic version `v0.2.0` and title **Santa Clara Zoning Explorer v0.2.0 — Residential Expansion** to the validated product. The tag points to the `main` commit containing this record, after its own pull-request checks and guarded merge. The GitHub release is a normal release rather than a draft or prerelease.
+
+The release uploads no redundant binary assets. The checksum-pinned R1 and residential runtime ZIPs remain versioned repository artifacts and are included in GitHub's tagged source archives; fresh clones install them through the documented bootstrap command.
+
+This tranche updates release status in the progress ledger, README, and whole-project report only. It does not change production code, regulatory values, rulesets, schemas, contracts, source snapshots, runtime packages, dependencies, tests, application behavior, or the preserved `v0.1.0-r1-prototype` release.
 
 ## Blocks 0-1 validation evidence
 
@@ -743,3 +752,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-19 | Preserve the R1 prototype report and create a separate Santa Clara Zoning Explorer whole-project report. | The historical report accurately records the first release, while the new report can tell the complete R1-to-residential story and update the architecture diagram without rewriting release provenance. |
 | 2026-07-19 | Accept Block 6.4 and proceed through the final release matrix and pull-request workflow. | The owner accepted the accessible whole-project report after its vertical-flow and visual-routing refinements; release readiness can now be proved against the exact branch. |
 | 2026-07-19 | Treat the passing tranche 6.5 matrix as PR readiness, not as a release or landing decision. | Local and hosted evidence closes the agreed acceptance scope, while PR CI, review, explicit landing confirmation, merge verification, and post-merge tag gates remain separate safeguards. |
+| 2026-07-19 | Land residential expansion PR #2 through a merge commit at its exact approved head. | Both PR checks passed, the branch was clean and mergeable, the owner confirmed the guarded landing warning for head `98c6907edc86cecf5057cf097dd4352db8c1811f`, and post-merge `main` validation passed at merge commit `9fb112066420e40390a50380d1220d4100a57b66`. |
+| 2026-07-19 | Publish `v0.2.0` as the first normal Santa Clara Zoning Explorer residential release. | The broader product is no longer a narrow prototype; the historical `v0.1.0-r1-prototype` prerelease remains preserved, while the accepted 12-zone product has passed local, PR, merge, and post-merge gates. |
