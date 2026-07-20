@@ -1,676 +1,745 @@
-# R1 Prototype Progress
+# Residential Zoning Expansion Progress
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
-**Current position:** First R1 prototype complete; user-facing report and portable fresh-clone runtime bundle are ready
+**Current position:** Blocks 0-5 and Block 6.1-6.4 are complete and owner accepted on `codex/residential-zone-expansion`; the tranche 6.5 final release matrix passes, and residential expansion PR #2 is open against `main`
 
-**Next action:** Review the completed branch for merge and decide whether to create a prototype release tag
+**Next action:** Monitor PR #2's exact head through CI, review, and conflict readiness, then present the verified landing plan for explicit owner confirmation
 
-This is the authoritative project-status ledger. The design and scope remain in `docs/r1-prototype-plan.md`; setup and commands remain in `README.md`.
+This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
-## Post-prototype release readiness
+## Baseline and active scope
 
-- `docs/prototype-report.md` provides the completed plain-language account of the prototype, its wider workflow-automation context, accomplishments, trust model, limitations, and future direction.
-- `README.md` links to the report from the user-facing project orientation.
-- `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip` packages the 17 canonical runtime files needed by the accepted vertical slice. Its committed manifest records each file path, size, and SHA-256 digest.
-- `scripts/bootstrap_demo_data.py` verifies the outer archive and every inner file, rejects unsafe or undeclared paths, refuses to overwrite different local data, and restores the ignored `data/raw/` tree idempotently.
-- `scripts/build_demo_data_bundle.py` reproduces the ZIP from an explicit file inventory with fixed archive metadata. Consecutive builds produced identical bytes.
-- The final archive is 35,499,787 bytes with SHA-256 `72df24984f3f614131b67827eef3d09ddea8a6496b420ca21b9d0d7328a3a16c`, below the approved 50 MB Git threshold. Raw ArcGIS response chunks remain excluded.
-- Eight focused bundle tests cover empty-repository installation, the size policy, manifest closure, idempotency, traversal and undeclared-entry rejection, checksum failures, and conflict-safe no-overwrite behavior.
-- The complete post-bundle suite passes 159 tests with no skips; approved-v2 validation, JavaScript syntax, and whitespace validation also pass.
-- A clean checkout reconstructed only from the staged Git index successfully installed all 17 files, rendered the real Barto result with APN `293-16-045` and R1-6L, passed the approved ruleset gate, and passed all 159 tests without artifact-related skips.
+- Released baseline: `v0.1.0-r1-prototype`, merged through PR #1.
+- Development branch: `codex/residential-zone-expansion`.
+- Target citywide zones: `R1-6L`, `R1-8L`, `R2`, `R3`, `R4`, `R5`, and `R6`.
+- Target Patrick Henry designations: `PH-R5`, `UV`, `VR`, `UC`, and GIS designation `HDF`.
+- Target structure identities: single-family, two-family, and multifamily primary structures.
+- Target regulations: the existing use, approval, height, stories, coverage, and four setback families plus the approved base-zone gross residential density range, with only the minimum additional dispositions needed for no maximum listed, FAA-controlled, plan-dependent, not evaluated, and review-required results.
+- Commercial analysis and additional regulation families remain outside the phase.
+
+## Canonical artifacts
+
+- Citywide address snapshot: `data/raw/2026-07-16/santa_clara_address_points/manifest.json`
+- Released R1 parcel and zoning snapshot: `data/raw/2026-07-14/santa_clara_r1_gis/manifest.json`
+- Residential parcel and zoning snapshot: `data/raw/2026-07-18/santa_clara_residential_gis/manifest.json`
+- Released zoning-code and amendment snapshot: `data/raw/2026-07-16/santa_clara_zoning_code/manifest.json`
+- Adopted Patrick Henry plan snapshot: `data/raw/2026-07-18/patrick_henry_drive_specific_plan/manifest.json`
+- Approved R1 ruleset: `rulesets/santa_clara/r1/2026-07-17.2/ruleset.json`
+- Accepted R1 migration schema: `rulesets/schema/ruleset-v3.schema.json`
+- Additive citywide schema: `rulesets/schema/ruleset-v3.1.schema.json`
+- Additive density schema: `rulesets/schema/ruleset-v3.2.schema.json`
+- Nonruntime migrated R1 v3 candidate: `rulesets/santa_clara/residential/2026-07-19.1/ruleset.json`
+- Approved-v2-to-candidate-v3 crosswalk: `rulesets/santa_clara/residential/2026-07-19.1/migration-crosswalk.json`
+- Nonruntime R1-R6 v3.1 candidate: `rulesets/santa_clara/residential/2026-07-19.2/ruleset.json`
+- R1-candidate-to-citywide expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.2/citywide-expansion-crosswalk.json`
+- Nonruntime R1-R6 v3.2 density candidate: `rulesets/santa_clara/residential/2026-07-19.3/ruleset.json`
+- Citywide-candidate-to-density expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.3/density-expansion-crosswalk.json`
+- Patrick Henry source and decision supplement: `docs/patrick-henry-rule-verification-supplement.md`
+- Complete nonruntime 12-zone v3.2 candidate: `rulesets/santa_clara/residential/2026-07-19.4/ruleset.json`
+- Density-candidate-to-Patrick-Henry expansion crosswalk: `rulesets/santa_clara/residential/2026-07-19.4/patrick-henry-expansion-crosswalk.json`
+- Approved runtime-eligible 12-zone v3.2 ruleset: `rulesets/santa_clara/residential/2026-07-19.5/ruleset.json`
+- Candidate-to-approved promotion crosswalk: `rulesets/santa_clara/residential/2026-07-19.5/approval-crosswalk.json`
+- Accepted residential result-contract checkpoint: `contracts/residential-result-contract-2.0.0.schema.json`
+- Runtime-ready residential result contract: `contracts/residential-result-contract-2.1.0.schema.json`
+- Reproducible runtime bundle: `demo-data/santa-clara-r1-runtime-data-2026-07-18.1.zip`
+- Preserved residential GIS-only add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.1.zip`
+- Preserved residential GIS-only add-on manifest: `demo-data/residential-bundle-manifest.json`
+- Source-complete residential runtime add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.2.zip`
+- Source-complete residential add-on manifest: `demo-data/residential-bundle-manifest-2026-07-19.2.json`
+- Whole-project report: `docs/santa-clara-zoning-explorer-report.md`
+- Full R1 validation and decision record: `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
+
+The released R1 artifacts remain the immutable inherited baseline. The Patrick Henry and residential GIS snapshots are Block 1 expansion artifacts and must likewise remain immutable.
 
 ## Milestone tracker
 
-| Block | Status | Exit evidence |
+| Block | Status | Exit evidence or next result |
 |---|---|---|
-| 0. Define the R1 vertical slice | Complete | Scope and completion criteria recorded in the prototype plan. |
-| 1. Verify authoritative sources | Complete | Zoning-code and live ArcGIS findings recorded in the prototype plan. |
-| 2. Download R1 parcel and zoning GIS | Complete | Two validated 16,193-feature layers and a complete manifest exist. |
-| 3. Download and inspect address-point data | Complete | A validated 67,243-feature citywide snapshot and schema report exist. |
-| 4. Approve and structure initial R1 rules | Complete | Versioned ruleset, executable schema validation, domain checks, source checksum validation, and regression tests pass. |
-| 5. Implement address-to-parcel-to-zone lookup | Complete | Checksum-verified local lookup and all address, spatial, ambiguity, and failure fixtures pass. |
-| 6. Implement deterministic standards retrieval | Complete | All five exit conditions pass across canonical fixtures, integrity gates, and deterministic repeatability checks. |
-| 7. Present a simple result | Complete | All presentation-contract, interface, browser-state, accessibility, visual-wording, provenance, deterministic-rendering, setup, and regression exit conditions pass. |
-| 8. Validate the vertical slice | Complete | All nine exit conditions pass across the approved fixture matrix, offline and integrity boundaries, provenance and determinism proofs, and final validation matrix. |
+| 0. Establish the transition contract | Complete | The R1 ledger is archived; the expansion plan, fresh active ledger, and durable instructions establish the new phase without code or runtime-data changes. |
+| 1. Verify sources and acquire residential GIS | Complete | The checked source matrix, Patrick Henry source, explicit `HDF` crosswalk, Patrick Henry rear disposition, immutable 18,677-feature-per-layer GIS snapshot, and real/synthetic fixture inventory passed their technical gates and received project-owner approval on July 19, 2026. |
+| 2. Generalize the data and result contracts | Complete and owner accepted | Schema v3, domain and GIS-fixture gates, the deterministic 20-rule R1 migration and crosswalk, structured limitations, special pathways, result contract `2.0.0`, eight executable status fixtures, and 38 focused tests passed; the project owner accepted the implementation on July 19, 2026. |
+| 3. Author and approve residential rules | Complete and owner accepted | The accepted `.4` candidate was promoted without semantic change into immutable ruleset `2026-07-19.5`; all 196 rules and two pathways are approved, the complete lineage replays, and runtime eligibility passes. |
+| 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
+| 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
+| 6. Validate and release | Tranches 6.1-6.4 accepted; tranche 6.5 final matrix complete, PR gate in progress | Source-complete startup, consolidated release acceptance, clean-checkout CI, and the accessible report are accepted. The final local matrix reproduces the bundles, closes every validator, preserves the released R1 baseline, and passes the six-test product gate plus all 354 tests; no tag or release exists before the normal PR, merge, and post-merge gates. |
 
-## Completed-block evidence
+## Block 0 evidence
 
-### Blocks 0–1: scope and source verification
+Created or transitioned:
 
-- Design, source findings, candidate standards, limitations, and completion criteria: `docs/r1-prototype-plan.md`.
-- Shared zoning-code and planning sources: `GOOGLE_DRIVE_SOURCE.txt`.
+- `docs/residential-expansion-plan.md`
+- `docs/progress.md`
+- `docs/progress-archive/2026-07-18-r1-prototype-progress.md`
+- `AGENTS.md`
+- the R1 prototype report's link to its archived validation ledger
 
-### Block 2: R1 GIS acquisition
+Historical R1 plans, verification records, rulesets, schemas, scripts, tests, and release artifacts retain their existing names and contents. Their R1/prototype terminology identifies the released baseline and is not active product copy to be mechanically renamed.
 
-Canonical snapshot:
+No application code, ruleset, schema, source snapshot, dependency, command, or runtime behavior changed in Block 0.
 
-```text
-data/raw/2026-07-14/santa_clara_r1_gis/
-```
+Documentation validation:
 
-Validation summary:
+- the archived ledger body matches the former active ledger from `## Post-prototype release readiness` through the final decision-log entry;
+- the prototype report now links to the archived R1 validation record;
+- active instructions and status references resolve to the residential expansion documents; and
+- `git diff --check` passes.
 
-| Layer | R1-6L | R1-8L | Total | Validation |
-|---|---:|---:|---:|---|
-| Parcels | 15,757 | 436 | 16,193 | Feature and unique object-ID counts match the source response. |
-| Current zoning | 15,757 | 436 | 16,193 | Feature and unique object-ID counts match the source response. |
+## Block 1 evidence and approval
 
-Key artifacts:
+Created and reviewed:
 
-- `manifest.json` — source URLs, filter, counts, output files, SHA-256 checksums, and validation status.
-- `parcels_r1.geojson` — parcel polygons and attributes including APN.
-- `current_zoning_r1.geojson` — current parcel-level zoning polygons and attributes.
-- `scripts/download_r1_gis.py` — reproducible downloader.
+- `docs/residential-rule-verification.md`, the active new-zone source trace and approval gate;
+- an exact 12-designation citywide and Patrick Henry target map, including an explicit candidate `HD Flex`/`HD-Flex` to `HDF` crosswalk;
+- the legal-use and primary-structure matrix for single-family, two-family, and multifamily selections;
+- base height, story, coverage, and setback assertions from the correct Table 2-3 and Table 2-4 columns;
+- explicit candidate handling for no maximum listed, FAA-controlled, plan-dependent, `not evaluated`, and review-required outcomes;
+- a complete residential GIS acquisition contract covering exact filters, object IDs, batch limits, raw responses, checksums, zero-count zones, excluded designations, cross-layer count agreement, and failed manifests; and
+- a fixture-selection contract that separates real-address coverage from synthetic ruleset coverage.
 
-Block 2 created no database, address snapshot, normalization, spatial join, rules engine, API, or UI.
+Source work performed:
 
-### Block 3: address-point acquisition
+- read the candidate Google Drive Residential Zoning Research, Rule Inventory, and supplemental watchlist without treating them as approval sources;
+- checked the preserved 497-page July 2025 Title 18 PDF, including visually verifying Tables 2-1 through 2-4 against their correct zone columns;
+- rechecked later Title 18 legislation through July 18 and created `docs/residential-title18-amendment-audit.md` for multifamily applicability and the proposed `TN`-to-`R6` map trigger, while preserving the checksum-pinned R1 audit byte-for-byte;
+- checked the official Patrick Henry page and adopted-plan identity;
+- retrieved the project-owner-provided official Patrick Henry plan from Google Drive, preserved its 21,816,482 bytes and 191 pages in a non-overwriting raw snapshot, verified SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87`, and visually checked the controlling Table 4.2 and Table 4.3 columns;
+- verified Chapter 18.24 and the Title 18 dwelling, primary-structure, and structure-coverage definitions, including the distinction between one two-family structure and the R1 pathway's attached-or-detached two-home configurations; and
+- queried both official ArcGIS zoning-bearing layers with the exact proposed residential filter.
 
-Canonical snapshot:
+Implemented and preserved:
 
-```text
-data/raw/2026-07-16/santa_clara_address_points/
-```
+- `scripts/download_residential_gis.py`, a new non-overwriting multi-zone acquisition path that leaves the released R1 downloader intact;
+- `tests/test_residential_gis_downloader.py`, covering exact scope, GET batch bounds, complete evidence, duplicate and unexpected data, cross-layer disagreement, failure manifests, overwrite refusal, and fixture closure;
+- `data/raw/2026-07-18/santa_clara_residential_gis/manifest.json`, the ignored immutable raw snapshot with 18,677 validated features in each source layer;
+- `tests/fixtures/residential_gis_fixture_inventory.json`, with one source- and geometry-verified real address for every live target designation, synthetic zero-count R5/R6 fixtures, and synthetic negative fixtures for the three excluded exact codes; and
+- README commands and repository orientation for the residential downloader, while retaining the historical R1 downloader and released runtime instructions.
 
-Validation summary:
+July 18 immutable ArcGIS evidence:
 
-- All 67,243 source object IDs produced 67,243 features and unique downloaded object IDs.
-- Every feature is a point in EPSG:4326; the consolidated GeoJSON and schema-report checksums match the manifest.
-- `CSCADDR`, `ADDRNUM`, `STRNAME`, `ADDRCITY`, and `ADDRZIP5` have no missing values.
-- The layer contains 36,793 records with unit values and 45 duplicated full-address values. Exact-address lookup must therefore preserve multiple matches.
+- both layers returned 18,677 target features and identical per-zone counts;
+- exact counts included `R1-6L: 15,757`, `R1-8L: 436`, `R2: 752`, `R3: 1,685`, `R4: 2`, `PH-R5: 2`, `UV: 9`, `VR: 27`, `UC: 2`, and `HDF: 5`;
+- exact `R5` and `R6` counts were zero in both layers; they remain legal and synthetic rule targets, not real-address fixtures;
+- deliberately excluded exact designations were also observed in both layers: `R1-6LHT: 14`, `R2-7L: 1`, and `R2HT: 2`; and
+- the matching preflight observations were not used as hardcoded acceptance values; the immutable acquisition independently preserved and validated the source results returned at retrieval time.
 
-Key artifacts:
+The completed snapshot reproduced those observations exactly. It preserved 187 GET feature batches per layer plus metadata, object-ID responses, and 15 per-designation count responses per layer. Independent post-download verification re-read all 410 recorded evidence files and found no size or checksum mismatch. Canonical outputs are:
 
-- `manifest.json` — source, query method, counts, checksums, and validation status.
-- `address_points.geojson` — complete citywide address-point layer.
-- `schema_report.json` — field inventory, completeness counts, value distributions, duplicate summary, and coordinate bounds.
-- `scripts/download_address_points.py` — reproducible downloader.
-- `scripts/arcgis_snapshot.py` — shared ArcGIS request, serialization, batching, and checksum utilities.
+- `parcels_residential.geojson`: 14,191,101 bytes; SHA-256 `e31ce5afb81c717ddcbd639c17b57a4625bcf257175a14cc03a09bfc90f5ecc3`;
+- `current_zoning_residential.geojson`: 16,554,895 bytes; SHA-256 `cb18cf0a8f7b2ebc8754334285b0f73e3160ca7d7f3fc64eeb6df3963b23f862`; and
+- `manifest.json`: SHA-256 `f71138d11eabdff773cb3f8fe156a41d0940b1adde72370f9bbab74a397aeb38`.
 
-The canonical raw input is citywide rather than R1-only. Address resolution precedes parcel and zoning classification, and the complete source supports controlled unsupported-zone outcomes.
+Selected real-address fixtures are 636 Barto Street (`R1-6L`), 108 Brookside Avenue (`R1-8L`), 1240 White Drive (`R2`), 1577 Pomeroy Avenue (`R3`), 1400 Coleman Avenue (`R4`), 3105 Patrick Henry Drive (`PH-R5`), 3200 Patrick Henry Drive (`UV`), 4701 Patrick Henry Drive (`VR`), 4650 Old Ironsides Drive (`UC`), and 4633 Old Ironsides Drive (`HDF`). Each address point intersects exactly one parcel and current-zoning feature with matching exact designations. Both R4 features and every small Patrick Henry group were inspected before selection; fixtures test routing and do not establish legal permission.
 
-Initial lookup fixtures identified from the local snapshots:
+The source and acquisition work added developer tooling and fixture data, but did not change application runtime code, schemas, rulesets, dependencies, or user-visible behavior. The Block 1 evidence is project-owner approved as input to contract design; new-zone assertions remain non-runtime candidate data until the later representation, validation, rule-authoring, and approval gates pass.
 
-| Case | Address | Expected acquisition/spatial result |
-|---|---|---|
-| R1-6L | 636 Barto Street | One address point; APN `293-16-045`; R1-6L. |
-| R1-8L | 108 Brookside Avenue | One address point; APN `303-22-022`; R1-8L. |
-| Unsupported zone | 1500 Warburton Avenue | One address point; outside the downloaded R1 polygons; previously verified as PQP. |
-| Unit address | 1577 Pomeroy Avenue 202 | One unit-bearing address record with a sub-address identifier. |
-| Duplicate full address | 324 Los Padres Boulevard | Two source records; lookup must not silently select one. |
-| Unmatched | 99999 No Such Street | No local address-point match. |
+## Block 2 contract audit, design, and implementation
 
-Block 3 itself created no normalization, parcel join, database, rules engine, API, or UI; address and spatial lookup were added later in Block 5.
+The read-only audit covered:
 
-### Block 4 source baseline and amendment audit
+- `rulesets/schema/ruleset-v2.schema.json` and the immutable approved R1 v2 ruleset and crosswalk;
+- `scripts/migrate_r1_rules_v2.py` and `scripts/validate_r1_rules_v2.py`;
+- the approved capability catalog and ruleset authoring guide;
+- runtime ruleset loading, exact-zone retrieval, lookup orchestration, pipeline result contract, deterministic presenter, Flask boundary, and rendered templates; and
+- schema, domain, migration, loader, retrieval, pipeline, presentation, web, and vertical-slice tests.
 
-Canonical local source snapshot:
+The audit found that the reusable v2 foundations are zone ownership, independent rule identities, shared provenance, typed setbacks, conflict preservation, runtime eligibility, immutable loading, defensive copies, and fail-closed behavior. The expansion pressure comes from closed assumptions around exactly two zones, one structure type, ten rules per zone, numeric maximums and setbacks, immediate retrieval after address lookup, fixed R1 statuses, a single-family presentation summary, and global prose-only limitations.
 
-```text
-data/raw/2026-07-16/santa_clara_zoning_code/
-```
+The approved design is recorded in Section 10 of `docs/residential-expansion-plan.md`. It establishes:
 
-Completed evidence:
+- a separate residential ruleset/schema `3.0.0` lineage, preserving v1, v2, and the approved R1 artifact;
+- exact zone-owned `use_permissions`, ordinary `analysis_profiles`, and separate `special_pathways`;
+- one explicit `permitted_by_right` or `not_listed` use-permission treatment for every single-family, two-family, and multifamily matrix cell, with special pathways represented separately from permission status;
+- independent profile-owned approvals and dimensional rules selected through one exact profile ID;
+- typed no-maximum-listed, FAA-controlled, plan-dependent, not-evaluated, and review-required requirement kinds within the existing regulation families;
+- structured, profile-specific not-evaluated topics without promoting deferred standards into evaluated capabilities;
+- pipeline result contract `2.0.0`, separating address/zone resolution from an explicit analysis selection; and
+- an exhaustive approved-v2-to-v3 R1 crosswalk and semantic equivalence gate.
 
-- Preserved the 497-page July 2025 zoning-code PDF with SHA-256 `d6461e366cd214beb5c96ee8abe7498d80464879ac63f216119db7c3af6c9c35`.
-- Verified the R1 source location as Chapter 18.10, Section 18.10.030, Table 2-3.
-- Preserved adopted Ordinances 2085 and 2086 and the proposed Cleanup #3 tables with checksums in the snapshot manifest.
-- Audited post-July-2025 adoption and pending-amendment records through July 16, 2026.
-- Found no adopted later amendment changing the selected R1-6L or R1-8L Table 2-3 numeric values.
-- Recorded the unresolved Chapter 18.27 collision between Ordinances 2085 and 2086.
+The project owner approved this proposal on July 19, 2026. Implementation remains gated so that a schema-valid partial candidate can exercise migration and contract semantics without becoming runtime eligible; the later runtime-eligibility gate requires the complete exact 12-zone matrix and project approval.
 
-Human-readable audit: `docs/title18-amendment-audit.md`.
+No application code, schema, validator, ruleset, migration, source snapshot, dependency, command, test behavior, or user-visible output changed during the preceding audit and proposal step.
 
-Rule-level verification is recorded in `docs/r1-rule-verification.md`. It traces use permission, approval requirements, definitions, measurement methods, exceptions, cross-references, nonconformity effects, and deferrals for the selected R1 standards.
+Proposal validation evidence:
 
-Important findings:
+- `git diff --check` passes;
+- `.venv/bin/python -m unittest discover -s tests -q` passes all 167 tests;
+- `.venv/bin/python scripts/validate_r1_rules_v2.py --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json --verify-source-files --require-runtime-eligible` confirms all 20 approved R1 regulations, the preserved conflict, complete migration crosswalk, source checksums, and runtime eligibility; and
+- focused stale-state scans find no remaining claim in the active plan or ledger that Block 2 is unstarted, Block 1 still awaits approval, `special_pathway` is a use-permission status, or a source-table `not_listed` cell means prohibited.
 
-- The 25-foot height, two-story limit, 40-percent structure coverage, and most setback cells are verified as base-zone values.
-- Base setbacks cannot yet be converted into a parcel-specific building envelope because averaging, encroachments, official plan lines, alley credit, narrow historical parcels, and nonconformities may apply.
-- Table 2-3 gives a 10-foot first-story corner-side setback for R1-8L, while Section 18.10.040(B)(1) requires at least 15 feet. The prototype now uses 15 feet under the specific written provision and Section 18.04.020(G), while preserving both source assertions and marking the resolution as pending official clarification.
-- `Permitted by right` does not mean approval-free: Zoning Clearance and Architectural Review paths remain applicable.
+Implementation artifacts and behavior:
 
-Canonical ruleset artifacts:
+- `docs/regulations/residential-ruleset-authoring-guide.md` preserves the released v2 guide and owns the active v3 representation, authoring, migration, and approval contract;
+- `rulesets/schema/ruleset-v3.schema.json` closes the zone/use/profile/pathway hierarchy and the numeric and nonnumeric requirement shapes;
+- `scripts/validate_residential_rules_v3.py` enforces exact target identities, the complete approved use/profile matrix for every included zone, capability-compatible requirement kinds, provenance and conflict closure, partial-candidate versus complete-runtime gates, R5/R6 zero-count fixtures, and excluded-designation handling;
+- `scripts/migrate_r1_rules_v3.py` deterministically consumes the immutable approved v2 ruleset and emits the nonoverwriting `2026-07-19.1` candidate and exhaustive crosswalk;
+- the candidate contains two R1 zones, six explicit use-permission records, 18 ordinary single-family profile regulations, two Chapter 18.24 special pathways, 11 structured not-evaluated topics, and the preserved R1-8L conflict;
+- the crosswalk maps all 20 approved v2 rules and all ten predecessor scope limitations exactly once, records the new contract-only records, and proves byte-identical replay plus canonical R1 semantic equivalence;
+- `contracts/residential-result-contract-2.0.0.schema.json`, `scripts/validate_residential_result_contract.py`, and `tests/fixtures/residential_result_contract_cases.json` encode all eight approved result statuses and bar regulations from every outcome except an exact selected ordinary profile; and
+- no R2-R6 or Patrick Henry numeric value was authored, no production module was changed, no residential GIS snapshot was loaded at runtime, and no user-visible output changed.
 
-```text
-rulesets/santa_clara/r1/2026-07-16/ruleset.json
-rulesets/schema/r1-ruleset.schema.json
-scripts/validate_r1_rules.py
-tests/test_r1_rules.py
-```
+Canonical Block 2 checksums:
+
+- schema v3: `5368aeb987caab94d7e8cafe5f4d34bc9f637661b7077bfb03108ea1129ecd8c`;
+- migrated candidate: `ad8f0ddb3eda82c724ae0c50fb23a89591ae78b72fab58e10868698eac4ed2ff`;
+- migration crosswalk: `084d3da4c34ead935f8b33c44df7821d69c7751b1f696108b9b7b898317c8c69`;
+- result-contract schema: `d1b74bd2df940d3dab8c9d36c03577e5467d2d1abb1903cbd4ac3d442b7a41d1`; and
+- executable case inventory: `bb3bb3d595575b6e00176e37bceef36e7d74999ffad63af0c6e6e26f96bc4438`.
+
+Implementation validation evidence:
+
+- `.venv/bin/python -B scripts/validate_residential_rules_v3.py --verify-source-files` passes schema, domain, source checksum, GIS-fixture, complete crosswalk, deterministic replay, and R1 semantic-equivalence gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because the candidate lacks ten target zones, runtime approval, approved records, and approved pathways;
+- `.venv/bin/python -B scripts/validate_residential_result_contract.py` passes all eight nonruntime result fixtures;
+- `.venv/bin/python -B -m unittest discover -s tests` passes all 205 tests, including 38 new v3 schema, domain-mutation, GIS-fixture, migration, equivalence, and result-contract tests;
+- the released R1 v2 validator continues to pass all schema, domain, source, migration, and runtime-eligibility gates; and
+- `git diff --check` passes.
+
+## Block 3 citywide R2-R6 authoring evidence
+
+The citywide tranche is implemented as a new direct successor rather than an edit to the accepted Block 2 checkpoint:
+
+- `rulesets/schema/ruleset-v3.1.schema.json` preserves the closed v3 hierarchy and adds only `lot_area_tiered_maximum` within maximum structure coverage, plus exact source-document verification statuses for the approved matrix and adopted enactment;
+- `scripts/author_citywide_residential_rules.py` consumes immutable candidate `2026-07-19.1`, preserves its R1 zones and inherited records, and deterministically authors nonoverwriting candidate `2026-07-19.2` plus its expansion crosswalk;
+- `scripts/validate_citywide_residential_rules.py` validates the entire approved-v2-to-v3.0-to-v3.1 lineage, both schema/domain contracts, local source checksums, deterministic replays, exact inherited R1 preservation, and the GIS fixture contract;
+- candidate `2026-07-19.2` contains seven exact zones, 21 explicit use-permission records, 11 ordinary profiles, 99 profile regulations, two preserved R1 special pathways, 17 structured not-evaluated topics, and the preserved R1-8L conflict;
+- the added citywide tranche contributes 15 use-permission records, nine ordinary profiles, and 81 independent profile regulations while retaining the same nine supported regulation families per profile;
+- R2 includes single-family, two-family, and multifamily profiles; R3 and R4 include two-family and multifamily profiles; R5 and R6 include multifamily only, while all zones retain three explicit source-table permission cells;
+- R3 and R4 coverage preserves separate outcomes below and at or above 10,000 square feet; R5 and R6 preserve `no_maximum_listed` rather than zero, infinity, or “unlimited”;
+- the R1/R2 32-foot proximity transition is attached as `not evaluated` to R3-R6 profiles, and Ordinance 2085 Objective Design Standards are attached as `not evaluated` only to multifamily profiles; neither becomes a new evaluated regulation;
+- R5 and R6 remain legal and synthetic contract targets with no invented address despite their zero live-feature counts; and
+- the production loader, GIS lookup, standards retrieval, pipeline, presenter, templates, and frontend remain unchanged, so the released R1 application still loads only approved v2 data.
+
+Canonical citywide-tranche checksums:
+
+- schema v3.1: `7fa85189f1c8a1c5dbee3537cb494f2661ad80f77a1e9bda50e050f6f68e8103`;
+- R1-R6 candidate: `57166a693fbab477fec631e251cc909541db912ee01e2a3ef2345dbbc06f0d94`; and
+- citywide expansion crosswalk: `c8b7fcdba8ef4081cb2d02b68dd0c483f0812835a7074f33cc91fc57b1337c07`.
 
 Validation evidence:
 
-- The validator applies the Draft 2020-12 schema and then accepts all 16 approved rules and the documented conflict record under additional domain invariants.
-- Source-file verification confirms the recorded SHA-256 digests for the July 2025 zoning-code PDF and amendment audit.
-- Twelve regression tests confirm the selected values, R1-8L paired side yards, approval-path separation, deferred subjects, required fields, enums, malformed-input handling, and conflict integrity.
-- The conflict mutation test rejects drift between the selected R1-8L 15-foot rule and its resolution record.
-
-### Block 5: local address-to-parcel-to-zone lookup
-
-Canonical implementation:
-
-```text
-santa_clara_zoning/addressing.py
-santa_clara_zoning/geometry.py
-santa_clara_zoning/lookup.py
-scripts/lookup_r1_zone.py
-```
-
-Completed evidence:
-
-- Address normalization handles suffix variants, locality text, ZIP codes, punctuation, and unit markers without fuzzy or AI matching.
-- Exact duplicate source records remain ambiguous rather than being silently deduplicated.
-- Snapshot loading verifies manifests, feature counts, EPSG:4326, SHA-256 checksums, and R1 designation scope.
-- Bounding-box-prefiltered point-in-polygon checks support Polygon, MultiPolygon, holes, and boundaries.
-- Parcel and current-zoning designations must agree before a supported result is returned.
-- Barto and Brookside resolve to their expected APNs and R1 zones; Warburton, Pomeroy unit 202, Los Padres, and the unmatched fixture return their expected controlled outcomes.
-- The full suite passes 29 tests, including synthetic designation-mismatch and incomplete-spatial-match cases.
-
-The local polygon snapshot contains only R1-6L and R1-8L. An address with no R1 polygon match is therefore labeled `outside_supported_r1_snapshot`; its exact non-R1 zone is not inferred. Split-zone parcel-area analysis remains deferred.
-
-## Pre-Block 6 ruleset v2 redesign
-
-Block 6 is intentionally paused while the regulatory data model is improved before it becomes a runtime dependency.
-
-| Step | Status | Evidence or next result |
-|---|---|---|
-| 1. Create the supported-regulations catalog | Complete | `docs/regulations/supported-regulations.md` defines capability stages, current regulation families, boundaries, and deferred items without prescribing schema fields. |
-| 2. Change the canonical hierarchy to zone-first | Complete | The approved guide and v2 schema provide direct `zones[zone].regulations[capability]` lookup. |
-| 3. Give each zone separate rule identities | Complete | The v2 schema requires convention-compliant zone-owned rule records without multi-zone applicability fields. |
-| 4. Redesign setback representation | Complete | The v2 schema enforces typed base values, story or height triggers, total or additional effects, paired distances, and precedence for multiple adjustments. |
-| 5. Preserve shared reference data | Complete | The v2 schema provides ID-keyed sources, citations, definitions, and exception families plus top-level conflicts. |
-| 6. Migrate approved R1 data | Complete | A separate schema-valid candidate contains 20 zone-owned regulations, all 16 v1 rules have explicit crosswalk targets, and v1 remains unchanged. |
-| 7. Expand v2 validation | Complete | V2 domain, source, migration, replay, conflict, scope, and runtime-eligibility gates pass 29 focused tests; after approval coverage, the complete 77-test suite passes. |
-
-The project owner approved the authoring contract on July 16, 2026. `rulesets/schema/ruleset-v2.schema.json` implements its local structural requirements, and the July 17 candidate migrates every approved v1 rule without changing v1. R1-6L preserves a 10-foot street-side base and 15-foot second-story total; R1-8L selects a 15-foot base for all stories while retaining both the 10-foot table assertion and 15-foot written assertion in its conflict record.
-
-The v2 validator now distinguishes candidate validity from runtime eligibility. It enforces the exact supported zones and capabilities, rule identities, capability-specific status and unit semantics, source and exception references, source checksums, story-based adjustments, paired-yard integrity, conflict backlinks and selected-value consistency, complete migration targets, manifest checksums, deterministic replay, and the approved-status plus approval-date runtime gate.
-
-Step 7 found and corrected one migration-crosswalk defect: the R1-8L paired interior-side adjustment was stored correctly in the ruleset but its crosswalk component omitted the `-pair` suffix. No regulatory value changed.
-
-The project owner approved the reviewed v2 data on July 17, 2026. The candidate remains unchanged at `2026-07-17.1`; promotion created immutable version `2026-07-17.2` with only the version, status, and approval date changed. The approved artifact passes domain and source validation, complete migration replay, and the runtime-eligibility gate. Seven approval-specific regressions bring the complete suite to 77 passing tests.
-
-Steps 6–7 artifacts:
-
-```text
-scripts/migrate_r1_rules_v2.py
-rulesets/santa_clara/r1/2026-07-17/ruleset.json
-rulesets/santa_clara/r1/2026-07-17/migration-crosswalk.json
-tests/test_r1_rules_v2_migration.py
-scripts/validate_r1_rules_v2.py
-tests/test_r1_rules_v2.py
-scripts/promote_r1_rules_v2.py
-rulesets/santa_clara/r1/2026-07-17.2/ruleset.json
-rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json
-tests/test_r1_rules_v2_approval.py
-```
-
-## Block 6 after the redesign gate
-
-Block 6.1 is complete as a design step. The approved contract direction separates a pure zone retriever from address orchestration, uses result-contract version `1.0.0`, preserves the existing Block 5 controlled outcomes, returns approved regulations without flattening their typed structures, includes only referenced shared provenance, and defers proposal evaluation and UI formatting.
-
-Implementation sequence:
-
-| Substep | Status | Intended result |
-|---|---|---|
-| 6.1 Define retrieval contract and test matrix | Complete | Contract direction, failure behavior, scope boundary, and fixtures are recorded in the prototype plan. |
-| 6.2 Load the approved ruleset | Complete | `ApprovedR1Ruleset` validates every canonical artifact, freezes trusted data, exposes safe metadata, and returns defensive copies. |
-| 6.3 Retrieve rules by exact zone | Complete | Exact R1-6L/R1-8L keys return all ten approved rules plus their transitive provenance closure. |
-| 6.4 Connect Block 5 lookup | Complete | `R1StandardsPipeline` produces the combined contract only after an unambiguous supported-zone lookup. |
-| 6.5 Validate Block 6 | Complete | Acceptance audit passes the approved matrix and all five exit conditions; the complete suite passes 105 tests. |
-
-Approved Block 6 test matrix:
-
-- Barto Street returns APN `293-16-045`, R1-6L, and the exact approved R1-6L capability set.
-- Brookside Avenue returns APN `303-22-022`, R1-8L, paired side yards, and the documented street-side conflict.
-- Warburton, duplicated Los Padres, and the unmatched address preserve their existing controlled Block 5 outcomes.
-- Candidate, incomplete, corrupted, or otherwise runtime-ineligible rulesets are rejected.
-- Missing required capabilities or broken references cannot produce partial success.
-- Repeated execution against identical snapshots and ruleset version produces identical structured output.
-
-Block 6.2 implementation:
-
-```text
-santa_clara_zoning/ruleset.py
-tests/test_ruleset_loader.py
-```
-
-The loader reads the approved ruleset, schema, crosswalk, and source v1 artifact once, then runs schema and domain validation, local source checksum verification, migration completeness and replay, and runtime eligibility. Its internal JSON tree is recursively frozen; public metadata is immutable or copied, and `as_dict()` returns a defensive copy for later retrieval code. Nine focused tests reject the candidate, missing capabilities, changed regulatory values, bad source checksums, broken crosswalks, and missing files while proving repeatable loading and mutation isolation. The complete suite passes 86 tests.
-
-Block 6.3 implementation:
-
-```text
-santa_clara_zoning/standards.py
-tests/test_zone_standards.py
-```
-
-`retrieve_zone_standards()` accepts only an exact zone key and a validated loader, returns all ten approved zone-owned regulations without flattening them, and constructs the transitive closure of rule, exception-family, conflict, citation, and source-document references. R1-6L returns 12 citations, nine exception families, two source documents, and no conflicts; R1-8L returns 14 citations, nine exception families, two source documents, and the preserved street-side conflict. Nine focused tests cover exact matching, completeness, paired yards, vertical adjustments, corner applicability, missing references, mutation isolation, and byte-equivalent repeatability. The complete suite passes 95 tests.
-
-Corner-lot classification is not currently implemented. Retrieval returns the street-side regulation with `applicability.lot_context: corner`; it does not claim that a particular parcel is a corner lot.
-
-Block 6.4 implementation:
-
-```text
-santa_clara_zoning/pipeline.py
-tests/test_standards_pipeline.py
-```
-
-`R1StandardsPipeline.from_defaults()` loads the approved ruleset and checksum-verified local GIS lookup once. `analyze_address()` adds result-contract version `1.0.0`, calls exact-zone retrieval only after `r1_zone_found`, and returns `r1_standards_found` with the parcel, zoning, regulations, provenance, limitations, and combined GIS/ruleset versions. Existing lookup failures retain their status and evidence without acquiring regulations. Inconsistent success evidence, incomplete regulatory results, and regulatory integrity failures stop the pipeline rather than becoming misleading planning-review outcomes.
-
-The initial eight focused tests covered the Barto R1-6L and Brookside R1-8L pipelines, paired yards, the documented street-side conflict, controlled Warburton/Los Padres/unmatched outcomes, no retrieval after lookup failure, fail-closed component boundaries, and byte-equivalent repeatability.
-
-Block 6.5 acceptance evidence:
-
-| Exit condition | Executable evidence |
-|---|---|
-| Load an approved runtime regulatory source | The v2 validator passes schema, domain, local source checksum, migration replay, approval-date, and runtime-eligibility gates for version `2026-07-17.2`; loader mutation tests reject candidate, incomplete, or corrupted artifacts. |
-| Select the exact approved rules for the resolved zone | End-to-end R1-6L and R1-8L tests assert the exact ten capability IDs, independent zone-owned rule IDs, approval flags, status requirements, numeric values, and zone-specific setback structures. |
-| Produce one versioned parcel/zoning/regulatory contract | Barto resolves to APN `293-16-045` and R1-6L; Brookside resolves to APN `303-22-022` and R1-8L. Both results carry contract `1.0.0`, GIS snapshot dates, ruleset version, and source URLs. |
-| Preserve evidence, uncertainty, and controlled failures | Success tests assert source documents, citations, exception families, conditions, conflicts, `not_evaluated`, and the disclaimer. Warburton, Los Padres, unmatched, and synthetic review outcomes remain unchanged apart from `contract_version` and receive no regulations. |
-| Reproduce identical output from identical inputs | Both supported zones pass repeated canonical-byte comparisons, mutation isolation, and separate-process comparisons under different Python hash seeds. |
-
-The acceptance pass strengthened `tests/test_standards_pipeline.py` from eight to ten tests rather than adding arbitrary same-zone parcel fixtures. Additional lots would repeat the same regulatory branch after zoning resolution; one canonical real address per supported zone provides the meaningful regulatory coverage, while the existing negative and synthetic cases exercise distinct lookup and integrity paths.
-
-Final Block 6 validation on July 18, 2026:
-
-```text
-Approved v2 runtime eligibility: yes
-Approved v2 zone-owned regulations: 20
-Documented conflicts: 1
-Complete repository tests: 105 passed, 0 failed, 0 skipped
-```
-
-Block 6 exit conditions:
-
-1. Load and validate the approved R1 ruleset as the runtime regulatory source.
-2. Select only approved rules whose applicability includes the resolved R1 zone.
-3. Combine parcel, zoning, and base-standard records in a versioned structured result contract.
-4. Preserve citations, conditions, exception-family warnings, conflict status, and `not evaluated` topics.
-5. Verify deterministic output for the R1-6L and R1-8L fixtures without adding proposal-level calculations or a UI.
-
-## Block 7 presentation
-
-The Block 7 plan is recorded in `docs/r1-prototype-plan.md`. It introduces a pure deterministic presenter between the accepted Block 6 result and the first interface. The presenter will build a UI-neutral, versioned view model without changing authoritative values or using runtime AI.
-
-The initial overview will remain intentionally brief. It may compose the exact zone, supported single-family use, required approvals, ruleset scope, and disclaimer, but it will not interpret the `6L` or `8L` suffix or invent a per-zone narrative. Richer source-backed zone profiles are deferred.
-
-The presentation contract will also establish the product's reuse boundary: shared capabilities use common deterministic mappings, while a future jurisdiction-specific capability must have an explicit registered extension path. Unknown capabilities or requirement shapes must fail visibly and may not be silently dropped. This safeguard does not add new regulations to the current R1 scope.
-
-The project owner approved Block 7.1 on July 18, 2026. Presentation contract `1.0.0` fixes the successful top-level model; controlled `success`, `lookup_failure`, `review_required`, and `system_error` outcomes; deterministic wording; display order; rule and citation linkage; source-receipt behavior; and version mapping. The normative design is in `docs/r1-prototype-plan.md`; executable behavior and validation are implemented in Blocks 7.2 and 7.3.
-
-Block 7.2 is implemented in `santa_clara_zoning/presentation.py`. `present_pipeline_result()` maps complete Block 6 results through an explicit supported-capability registry and typed handlers for status, maximum-quantity, scalar-setback, paired-setback, and story-based total-minimum records. `present_integrity_error()` separately maps known internal integrity failures to safe `system_error` views so the pure presenter does not swallow malformed data.
-
-The presenter preserves rule identity, applicability, conditions, exception families, source conflicts, citations, GIS sources, limitations, and versions. It uses fixed ordering, constructs independent output objects, rejects unknown capabilities and requirement shapes, and attaches no regulations to controlled lookup or review outcomes. Real local checks produced successful R1-6L and R1-8L views plus controlled non-R1, ambiguous, and unmatched views.
-
-Block 7.3 hardens that boundary with real-pipeline acceptance tests for Barto and Brookside plus Warburton, Los Padres, unmatched, empty-input, and review-required outcomes. Contract-shape, JSON-serialization, wording, display-order, conditional-applicability, provenance-closure, source-link, mutation-isolation, input-order, and cross-process repeatability checks pass. Mutation tests prove that numeric and zone values flow from authoritative input, while removed conflicts, unsupported statuses, malformed paired setbacks, and unsupported adjustment effects fail closed. A project-resolved rule now cannot be presented without its conflict reference.
-
-The project owner approved the initial Block 7.4 interface direction on July 18, 2026. It is a lightweight, scroll-first local web application with persistent address search; property identity and zoning; supported use; separate approvals; compact standards; a setback table; visible warnings; expandable limitations; and superscript references leading to a bottom source-and-version section. Error states preserve the entered address, provide a direct retry path, and never attach regulatory cards.
-
-The project owner also approved Flask `3.1.3`, server-rendered Jinja, custom CSS, minimal JavaScript, one `GET /?address=...` route, an application-factory boundary that loads or accepts the pipeline once, semantic template partials, and Flask test-client coverage within the existing `unittest` suite. The approved 7.4a–7.4d sequence is Flask shell, semantic templates, visual implementation, and web validation. The complete architecture and test boundary are in `docs/r1-prototype-plan.md`.
-
-Block 7.4a is implemented in `santa_clara_zoning/web.py` and `santa_clara_zoning/templates/index.html`. Flask `3.1.3` is pinned in `requirements.txt`; `create_app()` loads or accepts one pipeline instance, exposes only `GET /`, skips analysis for the initial landing state, calls the pipeline and presenter once per submitted address, converts only known integrity failures to safe system views, and leaves unexpected exceptions visible as server failures. The minimum template proves Jinja autoescaping and the presentation-kind boundary without implementing the semantic result sections or approved styling early.
-
-`tests/test_web.py` adds eight isolated shell/error tests and one canonical Barto smoke test. Flask route discovery reports only the application route and Flask's static-file route. The README records the local development command and identifies the shell as intentionally incomplete pending Blocks 7.4b and 7.4c.
-
-Block 7.4a validation evidence:
-
-```text
-.venv/bin/python -B -m unittest tests.test_web -v
-9 passed, 0 failed, 0 skipped
-
-.venv/bin/python -B -m unittest discover -s tests -v
-132 passed, 0 failed, 0 skipped
-
-.venv/bin/python -m flask --app santa_clara_zoning.web routes
-index GET /; static GET /static/<path:filename>
-```
-
-Block 7.4b is implemented in `santa_clara_zoning/templates/`. `base.html` provides the page landmarks and skip link; `index.html` retains the persistent address search and dispatches only on presentation kind; `_success.html` renders property identity, overview, use, approvals, standards, setbacks, qualifications, and limitations; `_outcome.html` renders controlled non-regulatory outcomes and available evidence; `_sources.html` renders linked regulatory receipts, GIS layers, and versions; and `_macros.html` centralizes typed quantities, paired setbacks, conditions, and citation references.
-
-The semantic layer contains no zone-specific values, regulatory calculations, CSS framework, or runtime AI. Scalar and paired setbacks remain distinct, second-story values remain total minimums, street-side applicability remains conditional, and the R1-8L conflict remains a visible project resolution with both assertions and re-review triggers. Every non-success kind uses the outcome template and renders no regulatory sections.
-
-Block 7.4b validation evidence:
-
-```text
-.venv/bin/python -B -m unittest tests.test_web -v
-14 passed, 0 failed, 0 skipped
-
-.venv/bin/python -B -m unittest discover -s tests -v
-137 passed, 0 failed, 0 skipped
-```
-
-Block 7.4c is implemented in `santa_clara_zoning/static/app.css` with CSS-oriented hooks in the existing Jinja templates. The interface now uses a responsive gray-green page shell, forest-green actions and supported-use treatment, white content surfaces, compact approval and standards cards, a keyboard-scrollable setback table, amber qualification and conflict treatments, expandable limitations and source receipts, and distinct neutral, review-required, and system-error outcomes. The implementation uses system fonts, native controls, and no external assets, CSS framework, JavaScript, or new runtime dependency.
-
-Styling does not change presentation order or regulatory meaning. Paired setbacks remain smaller/larger values, the street-side rule remains conditionally applicable, second-story values remain total minimums, source references remain linked, and non-success outcomes still receive no regulatory sections. Responsive browser, keyboard, disclosure, and visual-polish review remains in Block 7.5 rather than being inferred from stylesheet presence.
-
-Block 7.4c validation evidence:
-
-```text
-.venv/bin/python -W error::ResourceWarning -B -m unittest tests.test_web -v
-15 passed, 0 failed, 0 skipped
-
-.venv/bin/python -B -m unittest discover -s tests -v
-138 passed, 0 failed, 0 skipped
-```
-
-The post-7.4c source-display review consolidated repeated citation-number clusters into one source marker per regulation. Each marker exposes the complete rule-level source list on hover or keyboard focus, remains available on click for mouse and touch use, and links to the unchanged full receipts below. Setback base values and story adjustments no longer repeat the same citations because the presenter already supplies their verified rule-level citation union. The interaction uses a small progressive-enhancement script and retains source access when scripting is unavailable through the bottom receipts.
-
-The corner-lot qualification and its architecture were deliberately unchanged. The street-side rule remains visible with `lot_context: corner`, and the interface continues to warn that the current pipeline does not classify the selected parcel as a corner lot.
-
-Source-display validation evidence:
-
-```text
-.venv/bin/python -W error::ResourceWarning -B -m unittest tests.test_web -v
-16 passed, 0 failed, 0 skipped
-
-.venv/bin/python -B -m unittest discover -s tests -v
-139 passed, 0 failed, 0 skipped
-
-node --check santa_clara_zoning/static/app.js
-passed
-
-git diff --check
-passed
-```
-
-Block 7.4d completes rendered-interface validation in `tests/test_web.py`. The tests exercise canonical R1-6L and R1-8L results, including scalar and paired setbacks, required approvals, limitations, the preserved R1-8L source conflict, and every value exposed by the current presentation contract. A structural HTML parser verifies unique element IDs; address label association; fragment and `aria-controls` closure; exactly one source marker per displayed rule; and an exact match between each marker's popup links and that rule's citation IDs.
-
-The same suite proves that the route contains no hidden regulatory constants by injecting sentinel presenter values, passes entered addresses to the pipeline once, passes pipeline output to the presenter once, and escapes both entered and presenter-supplied hostile markup. Repeated Barto rendering remains byte-equivalent even after an intervening Brookside request. Lookup failures, review-required views, startup failures, and known integrity failures remain non-regulatory: they render no capabilities, rule IDs, source markers, regulatory receipts, or ruleset version.
-
-Block 7.4d deliberately makes no browser-interaction, responsive-layout, keyboard-behavior, or visual-polish claim. Those checks remain the acceptance boundary for Block 7.5.
-
-Block 7.4d validation evidence:
-
-```text
-.venv/bin/python -W error::ResourceWarning -B -m unittest tests.test_web -v
-20 passed, 0 failed, 0 skipped
-
-.venv/bin/python -B -m unittest discover -s tests -v
-143 passed, 0 failed, 0 skipped
-
-node --check santa_clara_zoning/static/app.js
-passed
-
-git diff --check
-passed
-```
-
-Block 7.5a startup reproduction was completed by the project owner on July 18, 2026. From a local terminal, the documented environment and Flask startup path launched the application successfully against the existing canonical snapshots. Additional Python validation commands completed successfully, normal application use showed no browser-console or server errors, and no data re-download was required. The README startup instructions therefore require no correction. Browser-state, responsive-layout, keyboard, source-interaction, contrast, and visual-polish validation remain pending in Blocks 7.5b–7.5f.
-
-Block 7.5b browser-state and responsive-layout validation was completed on July 18, 2026 using the real local application. The landing page, canonical R1-6L Barto result, canonical R1-8L Brookside result, unsupported Warburton result, ambiguous Los Padres result, and unmatched-address result were each rendered at 1440-by-1000, 768-by-1024, and 390-by-844 CSS-pixel viewports.
-
-All 18 state-and-viewport combinations produced the expected presentation kind, retained the submitted address, kept the search form visible, rendered one page heading, and avoided document-level horizontal overflow or out-of-viewport primary containers. Both successful results retained all ten supported regulatory elements. At 768 and 390 pixels, the 928-pixel setback table overflowed only inside its labeled scroll region; the document itself remained viewport-width. Each unsuccessful result rendered zero regulatory elements and its correct controlled heading. The R1-8L conflict remained fully visible at tablet width with its selected value, competing assertions, and re-review trigger. A three-source setback popup remained entirely inside the 390-by-844 viewport. Browser logs and the temporary Flask server showed no warning, error, or failed application request.
-
-Visual inspection confirmed readable desktop hierarchy, clean tablet stacking, contained mobile table scrolling, legible conflict qualifications, and a clear mobile ambiguity state. No Block 7.5b presentation defect was found, so no production, test, or README change was required. Keyboard behavior, focus order, disclosure operation, popup dismissal, contrast, touch-target sizing, and reduced-motion checks remain assigned to Block 7.5c rather than inferred from this responsive pass.
+- `.venv/bin/python -B scripts/validate_citywide_residential_rules.py --verify-source-files` passes the complete chained lineage, schema, domain, source-checksum, matrix, replay, R1-preservation, and GIS-fixture gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because `PH-R5`, `UV`, `VR`, `UC`, and `HDF` are absent, the candidate is not approved, and every candidate record remains unapproved;
+- `.venv/bin/python -B scripts/validate_residential_rules_v3.py --verify-source-files` continues to validate accepted candidate `2026-07-19.1` and its original R1 migration byte-for-byte;
+- `.venv/bin/python -B scripts/validate_r1_rules_v2.py --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json --verify-source-files --require-runtime-eligible` continues to validate the released 20-rule R1 artifact as runtime eligible;
+- `.venv/bin/python -B scripts/validate_residential_result_contract.py` continues to pass all eight nonruntime result fixtures;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 219 tests, including 14 new citywide matrix, tier semantics, source, approval, mutation, preservation, checksum, and deterministic replay tests; and
+- `git diff --check` passes.
+
+At this checkpoint, the R2-R6 tranche was ready for project-owner review but not runtime use. The later density, Patrick Henry, and approval successors preserve this candidate while completing the remaining Block 3 gates.
+
+## Block 3 gross residential density evidence
+
+The project owner approved adding base-zone gross residential density through the current nonruntime Block 3 stage and directed the project to retain the R5/R6 source conflicts while selecting the Table 1-1 values. The implementation preserves the accepted citywide checkpoint and creates a direct successor:
+
+- `docs/residential-density-rule-verification.md` records the visually checked Table 1-1, zone-purpose, and Table 2-3 assertions, the capability boundary, and the July 19 project decisions without changing the checksum-pinned predecessor verification record;
+- `docs/residential-density-title18-amendment-audit.md` records that no adopted post-baseline amendment identified through July 18 changes the selected R1-R6 ranges and preserves the internal baseline conflicts separately;
+- `rulesets/schema/ruleset-v3.2.schema.json` adds only typed `quantity_range` requirements and conflict assertion values in `dwelling_units_per_acre`;
+- `scripts/author_density_residential_rules.py` deterministically consumes immutable candidate `2026-07-19.2` and emits nonoverwriting candidate `2026-07-19.3` plus its density expansion crosswalk;
+- `scripts/validate_density_residential_rules.py` validates the complete approved-v2-to-v3.0-to-v3.1-to-v3.2 lineage, source checksums, conflict consistency, deterministic replay, exact predecessor-rule preservation, and GIS fixtures;
+- candidate `2026-07-19.3` contains the same seven zones, 21 use permissions, 11 ordinary profiles, and two R1 special pathways; it adds exactly 11 density rules for 110 total profile regulations and 131 total permission/regulation records;
+- R1-6L and R1-8L use 0.1-10, R2 uses 8-19, R3 uses 20-36, and R4 uses 37-50 dwelling units per acre;
+- R5 retains 51-100 from Table 1-1 against the 51-99 purpose/Table 2-3 assertions, and R6 retains 60-350 from Table 1-1 and the purpose text against Table 2-3's 85-350 assertion;
+- the R5/R6 rules use `project_resolved_with_conditions`, and the conflict records identify project-owner direction rather than claiming an official City correction;
+- density limitation topics now distinguish supported base-zone range retrieval from deferred parcel yield, plan reconciliation, density bonus, affordability, development-agreement, and state-law evaluation; and
+- production loading, lookup, retrieval, pipeline, presentation, templates, and frontend remain unchanged.
+
+Canonical density-tranche checksums:
+
+- schema v3.2: `186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef`;
+- R1-R6 density candidate: `7f54eb7569a007ce4b5bdac334aa3fd051990937df2717e270960cdde6e426d6`; and
+- density expansion crosswalk: `4c0746efd77d061a00f9a7b54186eb61cdd513b520531c57847d29f3ef28ec4e`.
 
 Validation evidence:
 
-```text
-.venv/bin/python -B -m unittest discover -s tests -p 'test_presentation.py' -v
-18 passed, 0 failed, 0 skipped
+- `.venv/bin/python -B scripts/validate_density_residential_rules.py --verify-source-files` passes the complete schema, domain, source-checksum, conflict, chained-lineage, deterministic-replay, preservation, and GIS-fixture gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because five Patrick Henry zones are absent, the artifact is a candidate, and its rules remain unapproved;
+- `.venv/bin/python -B -m unittest tests.test_density_residential_rules -v` passes 12 new source-matrix, conflict, range-shape, mutation, preservation, checksum, runtime-boundary, and replay tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 231 tests; and
+- `git diff --check` passes.
 
-.venv/bin/python -B -m unittest discover -s tests -v
-123 passed, 0 failed, 0 skipped
-```
+The project owner accepted candidate `2026-07-19.3` on July 19, 2026 and authorized Patrick Henry authoring using the same conflict-preservation and Table 1-1 selection policy for PH-R5. The checkpoint remains nonruntime and immutable.
 
-Block 7.5c accessibility interaction validation was completed on July 18, 2026 against the real Barto result at the mobile viewport. Semantic inspection found a logical focus order from skip link and search controls through source markers, the setback scroll region, native disclosure summaries, source receipts, and return links. Individually focused controls showed a visible three-pixel green outline. Both limitations and source sections use focusable native `summary` controls and changed their parent disclosure state when activated; the test surface could not synthesize native Enter/Space toggling reliably, so no broader claim is made beyond verified native semantics, focusability, focus styling, and disclosure state changes.
+## Block 3 Patrick Henry authoring evidence
 
-The pass found and corrected four concrete gaps. Source markers now meet the 24-by-24 CSS-pixel minimum target, the address placeholder now has a 5.60-to-1 contrast ratio on white, Escape and outside-click dismissal are explicit for source popups, and a focused setback table scrolls horizontally with Left and Right Arrow. Selecting a popup source now closes the popup, opens the source disclosure, moves focus to the exact receipt, and preserves the fragment URL. Popup links, address controls, the skip link, disclosure summaries, and the table region retain visible focus indicators. Reduced-motion styling is present, and the interface has no application animations or transitions.
+The Patrick Henry tranche preserves accepted density candidate `2026-07-19.3` and creates a direct schema-`3.2.0` successor without adding a regulation family:
 
-Measured normal-text and status-color contrast ratios ranged from 5.19-to-1 to 15.14-to-1; the white-on-green action treatment measured 7.26-to-1, qualification amber 6.58-to-1, error red 6.42-to-1, and focus outlines 4.86-to-1 or higher against adjacent surfaces. Browser diagnostics reported no warnings or errors after the interaction checks.
+- `docs/patrick-henry-rule-verification-supplement.md` checksum-pins the final visual reconciliation of Title 18 and the adopted plan, records the accepted PH-R5 density policy, and keeps commercial and office analysis outside the tranche;
+- `scripts/author_patrick_henry_residential_rules.py` deterministically consumes immutable candidate `2026-07-19.3` and emits nonoverwriting candidate `2026-07-19.4` plus its expansion crosswalk;
+- `scripts/validate_patrick_henry_residential_rules.py` validates the complete approved-v2-to-v3.0-to-v3.1-to-v3.2 lineage, both v3.2 successors, source checksums, deterministic replay, exact predecessor preservation, the full 12-zone matrix, and GIS fixtures;
+- candidate `2026-07-19.4` contains 12 zones, 36 use permissions, 16 ordinary profiles, two R1 special pathways, 160 profile regulations, and 196 total permission/regulation records;
+- each of `PH-R5`, `UV`, `VR`, `UC`, and `HDF` contains only one multifamily profile and the same ten supported regulation capabilities already used by the predecessor;
+- all five zones record single-family and two-family as `not_listed` and multifamily as `permitted_by_right`, while keeping use status separate from Zoning Clearance, Architectural Review, hearing, and plan-conformance requirements;
+- PH-R5 uses 135 feet, 10 stories, no coverage maximum listed, 10-foot front/street-side/interior-side setbacks from back of walk, a plan-dependent rear setback, and project-selected density of 51-100 DU/AC;
+- UV uses 160 feet, 12 stories, and 100-149 DU/AC; VR uses 160 feet, 12 stories, and 60-149 DU/AC; UC preserves literal FAA-controlled height and stories with 120-250 DU/AC; and HDF uses 160 feet, 12 stories, and 60-149 DU/AC;
+- the PH-R5 conflict separately retains Title 18 Table 1-1's 51-100 assertion and four 51-99 assertions from the zone-purpose text, Title 18 Table 2-4, Specific Plan Section 4.3.2, and Specific Plan Table 4.2, with the Table 1-1 range selected only by explicit project policy;
+- every Patrick Henry rear setback remains `plan_dependent`, never zero, and every coverage result remains `no_maximum_listed`, never unlimited;
+- the 32-foot transition, recreation space, detailed encroachments, plan design/project review, Objective Design Standards, UC above-250 community-benefits path, HDF office option, and density adjustments remain structured `not evaluated` qualifications rather than new rules; and
+- the production loader, GIS lookup, retrieval, pipeline, presentation, templates, and frontend remain unchanged.
 
-Block 7.5c validation evidence:
+Canonical Patrick Henry tranche checksums:
 
-```text
-.venv/bin/python -B -m unittest tests.test_web -v
-20 passed, 0 failed, 0 skipped
+- preserved schema v3.2: `186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef`;
+- Patrick Henry verification supplement: `7aab62cc482fe462c5430006556e383fe7cb54fe70b05499661f326c7ca3659f`;
+- complete 12-zone candidate: `7e4261277aeb527cd479249a6f580cb6006f5e186c911106c9d4ab9f9ce734b7`; and
+- Patrick Henry expansion crosswalk: `e6f789acf82d79ff3ab9dfff462d05779349bab19c3286d1b60a926708fbefea`.
 
-.venv/bin/python -B -m unittest discover -s tests -v
-143 passed, 0 failed, 0 skipped
+Validation evidence:
 
-node --check santa_clara_zoning/static/app.js
-passed
+- `.venv/bin/python -B scripts/validate_patrick_henry_residential_rules.py --verify-source-files` passes the complete schema, domain, source-checksum, conflict, chained-lineage, deterministic-replay, preservation, 12-zone, and GIS-fixture gates;
+- the same validator with `--require-runtime-eligible` fails closed as expected because the complete artifact remains a candidate with null approval and unapproved rules and pathways, not because any target zone is missing;
+- `.venv/bin/python -B -m unittest tests.test_patrick_henry_residential_rules -v` passes 14 new matrix, source, conflict, nonnumeric-disposition, limitation, mutation, preservation, checksum, runtime-boundary, and replay tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 245 tests; and
+- `git diff --check` passes.
 
-git diff --check
-passed
-```
+This evidence made candidate `2026-07-19.4` ready for project-owner review. The subsequent approval promotion below closes Block 3 without altering that reviewed checkpoint.
 
-Blocks 7.5d and 7.5e were completed on July 18, 2026 after the project-owner visual review identified three presentation defects: source markers could wrap onto isolated lines or drift between approval titles and status badges; the address form repeated the same instruction three times; and standards cards repeated the section's base-zone context while rendering single qualifications as visually heavy bullet lists.
+## Block 3 complete-candidate approval and runtime promotion
 
-The confirmed corrections are presentation-only. Regulation labels and their 24-by-24-pixel source controls now form one flex group, while approval status badges remain separately right-aligned. The search panel now uses one visible instruction, `Search a Santa Clara address`, retains a programmatically associated visually hidden label, and removes the redundant helper sentence. Standards cards no longer render the repeated `Base-zone maximum` qualifier; consequential height, story-counting, and coverage qualifications remain visible as compact unbulleted notes. The presentation contract, ruleset, regulatory values, citations, controlled outcomes, and approved disclaimer were unchanged.
+The project owner approved complete candidate `2026-07-19.4` on July 19, 2026. Approval is recorded as a new immutable successor rather than an in-place edit:
 
-Real-browser validation covered the canonical Barto result at 1280 by 720 CSS pixels and the Brookside result at 390 by 844. The desktop and mobile pages had no document-level horizontal overflow. Approval markers remained inside their title groups and their title/status top edges aligned within two CSS pixels; long standards titles wrapped while their markers stayed anchored at the title's top edge. Scalar and paired setbacks, corner-only street-side labeling, the R1-8L conflict warning, limitations, and source behavior retained their accepted wording and visibility. Browser diagnostics reported no warnings or errors from the application.
+- `scripts/promote_residential_rules_v3.py` revalidates the complete candidate, its Patrick Henry replay, local sources, and the candidate's expected fail-closed runtime state before writing anything;
+- approved ruleset `2026-07-19.5` retains schema `3.2.0`, all 12 zones, 36 use permissions, 16 profiles, 160 profile regulations, two special pathways, four conflicts, every source and citation, every selected value, and every condition and limitation from `.4`;
+- the promotion changes only the immutable version and lifecycle metadata, predecessor/crosswalk pointer, scope lifecycle wording, and `approved_for_ruleset` flags on the 196 rules and two pathways;
+- `approval-crosswalk.json` pins the source, target, and schema checksums, records the owner decision, counts all 198 approval-bearing records, and records a checksum of the regulatory-semantic projection shared by `.4` and `.5`;
+- `scripts/validate_approved_residential_rules.py` validates the complete approved-R1-v2 through residential-v3.2 lineage, every deterministic authoring replay, source-file integrity, GIS fixtures, the approval replay, semantic preservation, and runtime eligibility in one command; and
+- production application modules remain unchanged. Runtime eligibility makes `.5` valid input for Block 4 integration; it does not silently switch the released R1 loader or user experience.
 
-Blocks 7.5d–7.5e validation evidence:
+Canonical approval checksums:
 
-```text
-.venv/bin/python -B -m unittest tests.test_web -v
-20 passed, 0 failed, 0 skipped
+- approved 12-zone ruleset: `ed72cfd24cc43755ddcfbcf566a2c6212592155bb491807cb747748addbb05c4`;
+- approval crosswalk: `778dd129b35fdd4026a76b6b5cf40c875d26795daadff0dcfe7827bd556e4e5b`;
+- preserved reviewed candidate: `7e4261277aeb527cd479249a6f580cb6006f5e186c911106c9d4ab9f9ce734b7`;
+- preserved Patrick Henry crosswalk: `e6f789acf82d79ff3ab9dfff462d05779349bab19c3286d1b60a926708fbefea`; and
+- preserved schema v3.2: `186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef`.
 
-.venv/bin/python -B -m unittest discover -s tests -v
-143 passed, 0 failed, 0 skipped
+Validation evidence:
 
-node --check santa_clara_zoning/static/app.js
-passed
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete source, schema, conflict, lineage, replay, semantic-preservation, GIS-fixture, per-record approval, and runtime-eligibility gates;
+- `.venv/bin/python -B -m unittest tests.test_residential_rules_v3_approval -v` passes 10 approval, checksum, replay, immutability, and mutation tests, including rejection of an R5-density semantic change;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 255 tests; and
+- `git diff --check` passes.
 
-git diff --check
-passed
-```
+Block 3 is complete and project-owner accepted. Block 4 may now integrate the approved residential artifact through the production loader and exact lookup/retrieval boundaries, but no user-visible expansion is claimed yet.
 
-Block 7.5f closed Block 7 on July 18, 2026. The final evidence audit found a recorded passing result for each of the nine Block 7.5 acceptance conditions and each of the nine Block 7 exit conditions. The accepted matrix includes canonical R1-6L and R1-8L success results; paired setbacks and the preserved R1-8L conflict; corner-only street-side applicability without parcel classification; non-R1, ambiguous, unmatched, and review-required outcomes without regulatory conclusions; source and version closure; mutation isolation; unknown-shape integrity failures; repeatable rendering; documented local startup; responsive and accessibility checks; and the project-owner visual review.
+## Block 4 read-only runtime audit and proposal
 
-No final code, ruleset, regulatory-data, README, or prototype-plan correction was required. A fresh closeout run again passed 20 focused web tests, all 143 repository tests, the JavaScript syntax check, and `git diff --check`. Block 7 is therefore complete; exhaustive multi-browser or screen-reader certification, deployment, security and performance testing, live-GIS validation, and the broader end-to-end fixture audit remain outside this milestone.
+The audit inspected the released R1 runtime and its focused regression boundaries without changing application behavior:
 
-Implementation sequence:
+- `santa_clara_zoning/ruleset.py` and `tests/test_ruleset_loader.py` for artifact loading, v1-to-v2 replay, runtime eligibility, recursive freezing, mutation rejection, and defensive copies;
+- `santa_clara_zoning/lookup.py`, the July 16 address manifest, the July 18 residential manifest, `tests/test_local_lookup.py`, and `tests/fixtures/residential_gis_fixture_inventory.json` for exact matching, manifest/checksum loading, spatial outcomes, all ten live target fixtures, R5/R6 zero counts, and excluded designations;
+- `santa_clara_zoning/standards.py` and `tests/test_zone_standards.py` for exact-zone retrieval, approved-record checks, requirement-source traversal, and transitive provenance closure;
+- `santa_clara_zoning/pipeline.py` and `tests/test_standards_pipeline.py` for orchestration, controlled failures, integrity exceptions, versioning, defensive output, and determinism;
+- result contract `2.0.0`, its nonruntime `.1` fixture builder, eight fixture cases, and mutation tests; and
+- the presentation, Flask, and vertical-slice boundaries to identify what Block 4 must leave unchanged until Block 5.
 
-| Substep | Status | Intended result |
-|---|---|---|
-| 7.1 Approve presentation contract and wording | Complete | Presentation contract `1.0.0` and its success/failure semantics were approved by the project owner on July 18, 2026. |
-| 7.2 Implement the pure presenter | Complete | Pure presentation and known-integrity-error APIs map contract `1.0.0` without hard-coded zone values or runtime AI; focused and full tests pass. |
-| 7.3 Validate presenter behavior | Complete | Real-pipeline, controlled-outcome, contract, wording, provenance, mutation, ordering, isolation, and cross-process checks pass. |
-| 7.4 Build the initial interface | Complete | Flask shell, semantic templates, visual layer, source-display refinement, and rendered-contract validation pass; 20 focused and 143 full tests pass. |
-| 7.5 Validate and close Block 7 | Complete | Every approved browser, accessibility, wording, provenance, deterministic-rendering, setup, and regression acceptance condition has reproducible evidence. |
+The detailed proposal is Section 11 of `docs/residential-expansion-plan.md`. Its principal conclusions are:
 
-## Block 8 validation and closeout
+- add approved residential loader, lookup, selection-retrieval, and pipeline components alongside the released R1 public path;
+- validate the complete `.5` lineage at load time rather than treating schema validity or the final approval flag as sufficient;
+- use the ruleset's exact 12-zone identities to validate the filtered residential snapshot, while retaining synthetic-only R5/R6 retrieval coverage and never normalizing the three excluded designations;
+- accept one exact selection ID and derive legal use, workflow family, and structure identity from the approved profile or pathway rather than accepting contradictory independent fields;
+- preserve the eight approved result statuses and introduce a narrow immutable `2.1.0` contract successor before runtime wiring; and
+- keep presentation, templates, frontend assets, and the default Flask application on the released R1 pipeline throughout Block 4.
 
-The Block 8 acceptance plan is recorded in `docs/r1-prototype-plan.md`. It treats the milestone as final system validation rather than feature work: one dedicated complete-path module will exercise the real production composition and canonical artifacts across the two supported successes, unit-bearing input, unsupported zoning, ambiguity, unmatched and empty input, synthetic spatial review, and an integrity failure. New evidence will focus on offline operation, final provenance/version closure, controlled failure isolation, and cross-process rendered determinism without duplicating the focused tests from earlier blocks.
+The contract successor is necessary because the Block 2 fixtures deliberately use candidate `.1` and nine regulations, while approved `.5` profiles contain ten after density; the `2.0.0` outside-snapshot shape requires non-target parcel/zone facts absent from the filtered snapshot; and successful results currently omit the selected use-permission rule and its evidence. These corrections do not add a regulation, status, GIS source, or evaluation capability.
 
-The project owner approved the acceptance contract, fixture matrix, and exclusions on July 18, 2026. Block 8.2 is implemented in `tests/test_vertical_slice.py`. The module constructs the real default Flask application and validated pipeline from canonical artifacts, then follows the production pipeline, presenter, and rendered-route boundaries rather than reproducing their algorithms.
+Read-only validation evidence:
 
-Eight acceptance tests cover both supported successes; Warburton, the Pomeroy unit address, Los Padres ambiguity, unmatched and empty input; normalized Barto variants; a synthetic parcel/zoning disagreement; and a synthetic integrity failure. They verify the exact ten-capability closure, APNs, zones, selected standards, typed scalar and paired setbacks, corner-only applicability, the R1-8L conflict, source and version closure, not-evaluated topics, safe non-regulatory outcomes, and final HTML markers.
+- `.venv/bin/python -B -m unittest tests.test_ruleset_loader tests.test_local_lookup tests.test_zone_standards tests.test_standards_pipeline tests.test_residential_result_contract -q` passes all 47 focused current-runtime and contract tests; and
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 255 repository tests;
+- `git diff --check` passes; and
+- no application, ruleset, schema, contract, source snapshot, fixture, test, README, dependency, or user-visible file changed during the audit.
 
-The first focused run found an overly narrow acceptance assertion rather than a production defect: the street-side rule correctly retained both `lot_context: corner` and its structure-type applicability. The oracle was corrected to assert the required corner condition without discarding the additional authoritative field. No production, ruleset, source-data, template, README, or prototype-plan change was required.
+The project owner approved the proposal on July 19, 2026. Implementation began with the contract-successor tranche and remains bounded away from Block 5 presentation work.
 
-Block 8.2 validation evidence:
+## Block 4 tranche 4.1 result-contract implementation
 
-```text
-.venv/bin/python -B -m unittest tests.test_vertical_slice -v
-5 passed, 0 failed, 0 skipped
+Tranche 4.1 preserves accepted contract `2.0.0` and adds a separately versioned runtime-ready successor:
 
-.venv/bin/python -B -m unittest discover -s tests -v
-148 passed, 0 failed, 0 skipped
+- `contracts/residential-result-contract-2.1.0.schema.json` keeps the same eight statuses and exact selection identities while adding one selected `use_permission` field;
+- the successful ordinary-profile fixture uses the approved PH-R5 multifamily branch, including all ten supported capabilities, the base-zone density range, the retained density conflict, and exact transitive provenance;
+- the special-pathway fixture carries the approved R1 two-family permission and remains explicitly `analysis_not_evaluated` without ordinary standards;
+- the unavailable-profile fixture uses R3 single-family and carries the exact source-backed `not_listed` permission without treating it as a prohibition;
+- the R2 zone-found fixture lists single-family, two-family, and multifamily selections in deterministic order;
+- outside-snapshot evidence retains the matched address but leaves parcel and zone null instead of guessing facts absent from the filtered GIS snapshot;
+- an empty entered address is valid only for the controlled `address_not_found` result; and
+- every result carries non-null address-snapshot, residential-GIS, ruleset, ruleset-schema, and result-contract versions.
 
-node --check santa_clara_zoning/static/app.js
-passed
+`scripts/validate_residential_result_contract_v2_1.py` builds the eight cases directly from runtime-eligible ruleset `2026-07-19.5`, strips authoring-only approval flags from selected output, verifies exact choices and branch bindings, requires complete topics/conflicts/provenance closure, rejects unknown profile identities without fuzzy matching, and domain-checks the fixture ruleset before use. The fixtures explicitly state that they are approved-ruleset contract cases and are not production-pipeline results.
 
-git diff --check
-passed
-```
+Canonical tranche checksums:
 
-Block 8.3 adds three system-boundary proofs without changing production behavior:
+- result contract `2.1.0`: `212aa17543cec4059e7d3b05ceb06a81a462f4481a9cba47e967f26046d6a0d0`;
+- executable case inventory: `dd8c48666f08e5fe7f63bfe45ba7b43159190b8e834568588b3363d0d87cdcc8`.
 
-- Outbound socket connection methods are blocked before constructing the default application. Barto and Brookside still load through the real pipeline and render their expected APNs and zones, proving that the runtime path uses only local artifacts.
-- The acceptance test reads both canonical GIS manifests and the approved ruleset actually loaded by the application. It independently verifies all three GeoJSON SHA-256 values and both regulatory source-document SHA-256 values, then confirms that emitted and rendered dates, ruleset version, and GIS source URLs close back to those artifacts.
-- Two independent Python processes use different `PYTHONHASHSEED` values and opposite request orders. SHA-256 digests of the final Barto, Brookside, and Warburton HTML are identical per address.
+Validation evidence:
 
-Block 8.3 validation evidence:
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` validates all eight `2.1.0` cases against approved ruleset `.5`;
+- `.venv/bin/python -B -m unittest tests.test_residential_result_contract tests.test_residential_result_contract_v2_1 -q` passes all 27 preserved and successor contract tests;
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete approved lineage, source, semantic-preservation, per-record approval, and runtime-eligibility gates;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 271 repository tests; and
+- `git diff --check` passes.
 
-```text
-.venv/bin/python -B -m unittest tests.test_vertical_slice -v
-8 passed, 0 failed, 0 skipped
+No production module, ruleset, ruleset schema, raw source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. The project owner accepted tranche 4.1 and authorized the approved residential loader on July 19, 2026.
 
-.venv/bin/python -B -m unittest discover -s tests -v
-151 passed, 0 failed, 0 skipped
+## Block 4 tranche 4.2 approved residential loader implementation
 
-node --check santa_clara_zoning/static/app.js
-passed
+Tranche 4.2 adds a production-independent, fail-closed loader alongside the released R1 path:
 
-git diff --check
-passed
-```
+- `scripts/validate_approved_residential_rules.py` now exposes `ResidentialRulesetArtifacts`, one exact loaded-lineage snapshot, and `validate_complete_approved_lineage()`; the existing CLI delegates to that same callable gate;
+- the callable validates the approved R1 v2 input, migrated R1 v3.0 checkpoint, citywide v3.1 expansion, density v3.2 expansion, complete Patrick Henry candidate, `.4`-to-`.5` approval promotion, source files, GIS-fixture contract, deterministic replays, regulatory-semantic preservation, per-record approval, and runtime eligibility;
+- dependent replay checks run only after their source and target artifacts pass schema/domain validation, so malformed or candidate targets fail with controlled evidence instead of crashing a later replay helper;
+- `ApprovedResidentialRuleset.load()` reads all 16 required artifacts once, validates that loaded graph, recursively freezes the exact `.5` target that passed, and exposes only defensive mutable copies through `as_dict()`;
+- the public loader reports exact identity and summary metadata: 12 supported zones in ruleset order, schema `3.2.0`, 196 use/profile rule records, 16 ordinary profiles, and two special pathways; and
+- residential load failures reuse `RulesetLoadError` with explicit `artifact loading`, `complete lineage validation`, or `internal representation` stages and never fall back to candidate or partially validated data.
 
-Detailed corrupt-source and candidate-ruleset mutations remain owned by the focused lookup and loader suites. The vertical-slice module proves the final application boundary: an integrity failure renders a safe non-regulatory system-error view with no internal detail, capability cards, regulatory receipts, or ruleset version.
+Focused mutation coverage rejects the complete `.4` candidate, an altered source checksum, byte-changed target checksum, changed regulatory condition, unapproved profile rule, broken citywide crosswalk, altered approval crosswalk, missing density predecessor, and an unexpected validator exception. Separate tests prove recursive tuple/mapping immutability, defensive-copy isolation, repeatable independent loads, public package exports, and preservation of all released R1 loader behavior.
 
-Block 8.4 reran the final matrix from the repository root without modifying production code or authoritative artifacts:
+Validation evidence:
 
-```text
-.venv/bin/python -B scripts/validate_r1_rules_v2.py \
-  --ruleset rulesets/santa_clara/r1/2026-07-17.2/ruleset.json \
-  --crosswalk rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json \
-  --verify-source-files \
-  --require-runtime-eligible
-valid: 20 zone-owned regulations, 1 documented conflict,
-complete migration crosswalk; runtime eligibility yes (approved 2026-07-17)
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the callable complete source, lineage, replay, semantic-preservation, GIS-fixture, approval, and runtime gates;
+- `.venv/bin/python -B -m unittest tests.test_ruleset_loader tests.test_residential_ruleset_loader tests.test_residential_rules_v3_approval -q` passes all 33 released-R1, residential-loader, and approval tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 285 repository tests; and
+- `git diff --check` passes.
 
-.venv/bin/python -B -m unittest tests.test_vertical_slice -v
-8 passed, 0 failed, 0 skipped
+No GIS lookup class, standards retriever, pipeline, result fixture, ruleset, ruleset schema, source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed during tranche 4.2; owner acceptance remained the gate for residential GIS lookup.
 
-.venv/bin/python -B -m unittest tests.test_web -v
-20 passed, 0 failed, 0 skipped
+The project owner accepted tranche 4.2 and authorized the residential GIS lookup on July 19, 2026.
 
-.venv/bin/python -B -m unittest discover -s tests -v
-151 passed, 0 failed, 0 skipped
+## Block 4 tranche 4.3 residential GIS lookup implementation
 
-.venv/bin/python -B -c 'from santa_clara_zoning import ApprovedR1Ruleset; r = ApprovedR1Ruleset.load(); print(r.version, r.supported_zones, r.regulation_count)'
-2026-07-17.2 ('R1-6L', 'R1-8L') 20
+Tranche 4.3 adds an exact, production-independent `LocalResidentialLookup` alongside the released `LocalR1Lookup`:
 
-node --check santa_clara_zoning/static/app.js
-passed
+- construction requires an already validated `ApprovedResidentialRuleset`; its ordered 12-zone identity set must exactly match the July 18 manifest's requested designations and filter;
+- the citywide address manifest must be complete, checksum-backed, EPSG:4326, and internally count-consistent before address indexing;
+- the residential manifest must contain exactly the parcel and current-zoning layers, canonical consolidated filenames, complete validation status, exact source filters, output checksums, and equal source/downloaded/unique counts;
+- requested and downloaded per-zone counts must agree with each other, the consolidated feature contents, and the manifest's cross-layer evidence;
+- R5 and R6 must remain explicit zero-count supported identities, while every other approved designation must remain in the observed positive-count set;
+- `R1-6LHT`, `R2-7L`, and `R2HT` must remain the exact excluded preflight set with matching positive parcel/zoning counts and are never prefix-normalized to a supported zone;
+- every consolidated feature must have a unique integer object ID and one exact supported designation before the polygon indexes are built; and
+- versions, source URLs, zone counts, and excluded counts are held behind defensive-copy properties.
 
-git diff --check
-passed
-```
+Lookup preserves exact normalized address matching and deterministic geometry behavior. One matching address, parcel, and zoning feature with agreeing designations returns `residential_zone_found`; no filtered spatial match returns `outside_supported_residential_snapshot`; duplicate addresses, missing addresses, overlaps, incomplete layer matches, designation disagreements, and unexpected exact codes remain controlled outcomes without standards data.
 
-The canonical local GIS and regulatory artifacts were present, so no acceptance or focused test was skipped. The approved ruleset validator rechecked schema and domain invariants, source-document SHA-256 values, deterministic migration replay, crosswalk completeness, conflict integrity, approval metadata, and runtime eligibility. The dedicated module then rechecked the complete fixture matrix, offline boundary, final provenance closure, safe integrity handling, and independent-process rendered determinism. No defect or acceptance-oracle adjustment was needed.
+The new tests execute all ten source-verified live fixtures (`R1-6L`, `R1-8L`, `R2`, `R3`, `R4`, `PH-R5`, `UV`, `VR`, `UC`, and `HDF`), preserve synthetic-only R5/R6 evidence, reject all three excluded codes, and mutation-test address and residential manifest status, scope, checksums, completeness counts, feature counts, observed designations, cross-layer counts, agreement flags, explicit zeroes, and unsupported feature values. Repeated lookups and returned metadata copies are deterministic and isolated.
 
-### Block 8.5 closeout
+Validation evidence:
 
-The first R1 technical vertical slice is complete within its approved scope. Its canonical runtime inputs and contracts are:
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete approved ruleset lineage and runtime gates used to define lookup scope;
+- `.venv/bin/python -B -m unittest tests.test_residential_lookup -q` passes all 14 residential lookup and snapshot-integrity tests;
+- `.venv/bin/python -B -m unittest tests.test_ruleset_loader tests.test_residential_ruleset_loader tests.test_local_lookup tests.test_residential_lookup tests.test_residential_result_contract_v2_1 -q` passes all 61 released and residential backend boundary tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 299 repository tests; and
+- `git diff --check` passes.
 
-| Artifact | Canonical identity |
-|---|---|
-| Address-point snapshot | `data/raw/2026-07-16/santa_clara_address_points/manifest.json`; 67,243 validated features; snapshot `2026-07-16` |
-| R1 GIS snapshot | `data/raw/2026-07-14/santa_clara_r1_gis/manifest.json`; 16,193 parcels and 16,193 current-zoning features; snapshot `2026-07-14` |
-| Zoning-code baseline and amendment evidence | `data/raw/2026-07-16/santa_clara_zoning_code/manifest.json`; July 2025 consolidated code audited through `2026-07-16` |
-| Approved regulatory rules | `rulesets/santa_clara/r1/2026-07-17.2/ruleset.json`; approved `2026-07-17`; 20 zone-owned regulations |
-| Regulatory migration evidence | `rulesets/santa_clara/r1/2026-07-17.2/migration-crosswalk.json`; complete mapping of all 16 approved v1 rules |
-| Ruleset structure | `rulesets/schema/ruleset-v2.schema.json`; schema version `2.0.0` |
-| Pipeline contract | `santa_clara_zoning/pipeline.py`; contract `1.0.0` |
-| Presentation contract | `santa_clara_zoning/presentation.py`; contract `1.0.0` |
-| Final acceptance harness | `tests/test_vertical_slice.py`; 8 tests |
+No standards retriever, pipeline, result contract or fixture, ruleset, ruleset schema, source snapshot, dependency, presentation component, template, static asset, or default Flask behavior changed. The project owner accepted tranche 4.3 on July 19, 2026 and authorized exact selection retrieval and residential pipeline orchestration as tranche 4.4.
 
-Final fixture disposition:
+## Block 4 tranche 4.4 selection retrieval and pipeline implementation
 
-| Fixture | Final controlled outcome |
-|---|---|
-| `636 Barto Street` | Success; APN `293-16-045`; R1-6L; all ten supported capabilities rendered with sources and versions |
-| `108 Brookside Avenue` | Success; APN `303-22-022`; R1-8L; paired interior yards and the preserved 10-versus-15-foot street-side conflict rendered |
-| `1500 Warburton Avenue` | `outside_supported_r1_snapshot`; no exact non-R1 designation or regulations inferred |
-| `1577 Pomeroy Avenue, Unit 202` | Unit-bearing source record preserved; `outside_supported_r1_snapshot`; no regulations attached |
-| `324 Los Padres Boulevard` | `address_ambiguous`; two candidates preserved without automatic selection or regulations |
-| `99999 No Such Street` | `address_not_found`; no regulatory content or ruleset version |
-| Empty input | Controlled invalid-address result with a retry path and no regulatory content |
-| Synthetic parcel/zoning disagreement | `review_required`; inconsistent spatial evidence cannot become a success |
-| Synthetic integrity failure | Safe `system_error`; no private detail, regulatory content, receipts, or ruleset version |
+Tranche 4.4 adds a pure, production-independent retrieval boundary over the already approved residential artifact:
 
-All nine Block 8 exit conditions pass:
+- `available_selections()` validates and lists ordinary profiles in the closed `single_family`, `two_family`, `multifamily` order, followed by approved special pathways in authored order;
+- `retrieve_residential_selection()` accepts only an exact zone and exact selection identity from an `ApprovedResidentialRuleset`, without aliases, prefix matching, profile synthesis, or nearby-zone fallback;
+- all 16 approved ordinary profiles retrieve the exact ten-capability map, approved legal-use permission, transitive not-evaluated topics, retained conflicts, exception families, citations, and source documents required by that selected branch;
+- both R1 Chapter 18.24 pathway selections return `analysis_not_evaluated` with their prerequisites and provenance, never the ordinary R1 single-family standards;
+- all 18 profile/use combinations recorded as `not_listed` return the controlled `selection_not_available` outcome and the source evidence for that conclusion; and
+- malformed, unapproved, incomplete, unknown, or wrongly bound records fail closed. In particular, requesting the ordinary `two_family` profile in an R1 zone cannot silently substitute its differently named special pathway.
 
-1. every approved fixture reaches its exact controlled outcome through the production path;
-2. both supported zones preserve typed rules, qualifications, conflicts, sources, limitations, and versions through rendered HTML;
-3. unsuccessful lookup, spatial-review, and integrity outcomes remain non-regulatory;
-4. the real application succeeds with outbound socket connections blocked;
-5. pipeline, presentation, and rendered outputs are repeatable across request order and independent hash-seeded processes;
-6. default loading verifies canonical GIS and regulatory integrity and exposes the loaded versions;
-7. the approved validator and all focused and complete test suites pass without artifact-related skips;
-8. setup, validation, and local startup remain reproducible from `README.md`; and
-9. this ledger records the artifacts, commands, outcomes, counts, limitations, and final disposition.
+`ResidentialStandardsPipeline` loads the approved residential ruleset once, binds `LocalResidentialLookup` to its exact identity set, and emits the accepted contract `2.1.0` envelope. A resolved zone with no selection returns `residential_zone_found` and its exact available choices. An exact profile, pathway, or known-unavailable profile returns `residential_standards_found`, `analysis_not_evaluated`, or `selection_not_available`, respectively. Outside-snapshot, not-found, ambiguous, and review-required lookup branches remain nonregulatory and never receive selected rules. Unknown selection identities and integrity failures remain exceptions rather than being mislabeled as parcel-specific planning review.
 
-The completed prototype remains deliberately narrow. It uses normalized exact address matching and a filtered R1 snapshot; it does not provide fuzzy matching or determine the exact zoning of unsupported parcels. It returns selected R1-6L and R1-8L base-zone standards, not a parcel-specific building envelope, proposal-compliance result, or complete entitlement analysis. It does not classify corner lots, evaluate setback exceptions or nonconformities, calculate remaining coverage or floor area, or automate ADUs, SB 9, parking, overlays, density bonuses, or other state-law interactions. The R1-8L corner-side conflict retains a project-selected 15-foot value pending official clarification. Sources are versioned local snapshots rather than live data, and the Flask server remains a local prototype without deployment, authentication, security or performance certification, or exhaustive browser and assistive-technology certification.
+The retrieval boundary strips authoring-only approval flags from returned use and regulation records, computes branch-specific transitive provenance closure, and returns defensive copies. The pipeline preserves separate address-snapshot, residential-GIS-snapshot, ruleset, ruleset-schema, and result-contract identities, verifies successful lookup/property agreement, and rejects incomplete retrieval output before returning it.
 
-Final disposition: **the first Santa Clara R1 prototype is complete for the approved vertical slice.** It must continue to be described as an evidence-backed technical prototype, not as a complete entitlement analysis or legal/planning determination. Broader product development remains active only when a new scope is explicitly approved.
+Validation evidence:
 
-| Substep | Status | Intended result |
-|---|---|---|
-| 8.1 Approve the acceptance contract and fixture matrix | Complete | The project owner approved the final system boundary, fixtures, evidence requirements, and exclusions. |
-| 8.2 Implement complete-path acceptance tests | Complete | Five dedicated tests exercise the approved matrix through real production composition and canonical artifacts without duplicating internal algorithms. |
-| 8.3 Prove offline, integrity, provenance, and determinism boundaries | Complete | Blocked-socket startup and requests, canonical checksum/version closure, safe integrity adaptation, and opposite-order hash-seeded process render digests all pass. |
-| 8.4 Run the final validation matrix | Complete | Approved-v2 validation, 8 acceptance tests, 20 focused web tests, 151 full-suite tests, loader startup, and local JavaScript syntax all pass without skips. |
-| 8.5 Record evidence and close Block 8 | Complete | Canonical artifacts and versions, fixture outcomes, all nine exit conditions, limitations, and the scoped final disposition are recorded. |
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the approved `.5` lineage and all runtime gates;
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` passes all eight accepted contract fixtures;
+- `.venv/bin/python -B -m unittest tests.test_residential_standards -q` passes 11 exact-selection, profile/pathway, requirement-shape, evidence-closure, mutation, and determinism tests;
+- `.venv/bin/python -B -m unittest tests.test_residential_pipeline -q` passes 14 integration, status-matrix, contract-validation, integrity, mutation, and cross-process determinism tests;
+- the focused released/residential loader, lookup, retrieval, pipeline, and contract regression passes all 105 tests;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 324 repository tests; and
+- `git diff --check` passes.
 
-Planning boundaries:
+No result-contract fixture, ruleset, ruleset schema, raw snapshot, dependency, presentation component, template, static asset, web route, or default Flask behavior changed. The project owner accepted tranche 4.4 on July 19, 2026 and authorized the Block 4.5 full-backend acceptance gate.
 
-- no proposal-specific compliance evaluation;
-- no building-envelope, remaining-coverage, or maximum-floor-area calculation;
-- no corner-lot classification;
-- no ADU, SB 9, parking, overlay, density-bonus, or state-law expansion;
-- no AI-generated runtime conclusions; and
-- no new database or replacement of the accepted Block 6 contract.
+## Block 4 tranche 4.5 full-backend acceptance
+
+Tranche 4.5 executed the approved Block 4 acceptance matrix as one combined backend gate. No corrective implementation was required:
+
+- the canonical approved residential `.5` artifact passes complete source, schema, lineage, replay, semantic-preservation, per-record approval, and runtime-eligibility validation;
+- a direct exact-matrix audit covers all 12 supported zone identities, 16 ordinary profiles, both R1 special pathways, and all 18 source-backed unavailable profile selections;
+- the same matrix preserves all eight authored requirement kinds: status, numeric maximum, quantity range, lot-area-tiered maximum, no maximum listed, FAA controlled, setback, and plan dependent;
+- the exact R1-8L, R5, R6, and PH-R5 conflict records and their selected and competing assertions remain in retrieved evidence;
+- the residential runtime suite exercises the ten live GIS designations, synthetic-only R5/R6 behavior, the three exact excluded designations, complete profile/pathway provenance, all eight controlled result statuses, integrity mutations, defensive copies, repeatability, and cross-process byte determinism; and
+- the accepted result-contract `2.0.0` checkpoint and runtime successor `2.1.0` each validate all eight fixture statuses independently.
+
+Released-path protection also passes as an independent gate:
+
+- approved R1 v1 remains valid with 16 rules and its documented conflict;
+- canonical approved R1 v2 `2026-07-17.2` passes source checks, schema and domain validation, complete migration replay, per-record approval, and runtime eligibility with 20 zone-owned regulations;
+- 82 focused released loader, lookup, exact retrieval, pipeline, presentation, web, and vertical-slice tests pass; and
+- `santa_clara_zoning/web.py` still constructs `R1StandardsPipeline`, so no residential backend component is an implicit default-application consumer.
+
+Validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes;
+- `.venv/bin/python -B scripts/validate_residential_result_contract.py` validates all eight preserved contract-`2.0.0` fixtures;
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` validates all eight contract-`2.1.0` fixtures against approved ruleset `.5`;
+- the focused residential loader, lookup, retrieval, pipeline, and contract suite passes all 69 tests;
+- the focused released R1 loader, lookup, retrieval, pipeline, presentation, web, and vertical-slice suite passes all 82 tests;
+- a `unittest` discovery run over `tests/` passes all 324 repository tests with zero failures, errors, skips, or unexpected successes; and
+- `git diff --check` passes.
+
+A path-level audit from the approved Block 4 design commit through the completed backend confirms no changes to dependencies, ruleset schemas, versioned rulesets, raw snapshots, presentation, Flask, templates, CSS, or JavaScript. Block 4.5 therefore changed only this status ledger. The project owner accepted the complete Block 4 backend and authorized the Block 5 interface audit and implementation on July 19, 2026.
+
+## Block 5 common-zone presentation implementation
+
+The owner-approved interface design deliberately avoids a mandatory structure selector in this phase. `ResidentialZoneSummaryPipeline` resolves an address once, retrieves every approved ordinary profile for its exact zone through the existing selection backend, and exposes one common regulation map only after their capability sets and regulatory semantics agree. Rule identities remain traceable through `source_rule_ids`; allowed single-family, two-family, and multifamily uses remain separate records; profile-specific not-evaluated topics retain their exact applicability; and R1 Chapter 18.24 pathways remain separate `not evaluated` disclosures. Any future profile difference fails closed with `structure_specific_standards_require_selection` rather than showing misleading common cards.
+
+`residential_presentation.py` adds presentation contract `2.0.0` for the common-zone result. The default Flask application now uses the approved residential summary pipeline and the active **Santa Clara Zoning Explorer** identity while still accepting an explicitly injected released `R1StandardsPipeline` for historical regression tests. The established page hierarchy and green visual system remain intact, with generalized use, approval, standard, setback, conflict, limitation, pathway, provenance, and failure rendering. The presenter covers all approved requirement shapes: status, numeric maximum, quantity range, lot-area-tiered maximum, no maximum listed, FAA controlled, ordinary and paired/story-adjusted setbacks, plan dependent, not evaluated, and review required.
+
+The released R1 runtime archive remains unchanged. A separately versioned, deterministic residential GIS add-on supplies the three additional snapshot files needed by the new default application. `scripts/build_residential_demo_data_bundle.py` reproduces its fixed-timestamp ZIP and manifest; repeated generation produces the same 4,186,509-byte archive and SHA-256 `bbe2274b00b2687d4a540484e7fcf8cbdc7a8038a063cb4973b169038bb3e098`. `scripts/bootstrap_demo_data.py` installs or verifies both the historical R1 bundle and the residential add-on by default and remains repeatable.
+
+Automated validation evidence:
+
+- `.venv/bin/python -B scripts/validate_approved_residential_rules.py --verify-source-files` passes the complete source, schema, lineage, replay, semantic-preservation, approval, and runtime gates;
+- `.venv/bin/python -B scripts/validate_residential_result_contract_v2_1.py` validates all eight runtime contract fixtures against approved ruleset `.5`;
+- `.venv/bin/python -B scripts/build_residential_demo_data_bundle.py` reproduces the expected archive size and checksum;
+- `.venv/bin/python -B scripts/bootstrap_demo_data.py` reports all 20 files already matching the two approved bundles;
+- the new summary, presentation, Flask, and bundle tests cover common R2/R3/R4 profiles, all supported requirement shapes, R1 pathways, Patrick Henry conflicts and plan-dependent treatment, UC FAA treatment, controlled failures, semantic-divergence rejection, evidence closure, deterministic copies, accessibility structure, and source links;
+- the preserved released R1 presentation, web, and vertical-slice suites pass through explicit historical-pipeline injection;
+- `.venv/bin/python -B -m unittest discover -s tests -q` passes all 346 repository tests; and
+- `git diff --check` passes.
+
+The available in-app browser blocked navigation to the local Flask URL under its URL policy, so the project owner completed the visual review in a locally launched application. During that review, redundant per-citation `Return to result` links were removed, `docs/manual-testing-addresses.md` was added with every live supported designation and controlled failure cases, and a purely decorative, assistive-technology-hidden `YIMBY` wordmark was added behind the hero content using viewport-relative sizing. Automated rendered-document structure and accessibility checks pass, no JavaScript changed, and the owner accepted the complete Block 5 interface on July 19, 2026. No dependency, versioned ruleset, schema, result fixture, raw source snapshot, or approved regulatory value changed in Block 5.
+
+## Block 6 read-only release audit and proposal
+
+The project owner accepted Block 5 and authorized a read-only Block 6 audit on July 19, 2026. The audit changed no application code, ruleset, schema, source snapshot, runtime bundle, dependency, test, or user interface. The owner's separate edit to `docs/manual-testing-addresses.md` remained untouched and outside the audit.
+
+Release-baseline findings:
+
+- `codex/residential-zone-expansion` contains the residential expansion commits beyond `main`, and released tag `v0.1.0-r1-prototype` remains an ancestor of the branch;
+- the approved R1 ruleset, released R1 runtime archive and manifest, R1 amendment audit, and R1 verification record have no branch diff from the released tag;
+- the current branch has no successor release tag, application-version artifact, release report, or GitHub Actions workflow;
+- exact dependency pins remain `jsonschema==4.23.0` and `Flask==3.1.3`, the active Python environment is 3.9.6, and `pip check` passes;
+- the current checkout passes the approved residential source/lineage/runtime validator, both residential result-contract validators, and all 346 repository tests; and
+- the complete suite reports no skips because both local runtime bundles and the ignored research snapshots are present.
+
+The clean-checkout gate exposed one concrete release blocker. A temporary archive created from committed `HEAD` successfully bootstrapped all 20 files from the released R1 bundle and residential GIS add-on, but the default application then rejected approved ruleset `2026-07-19.5` during complete-lineage validation. Both runtime bundles omit `data/raw/2026-07-18/patrick_henry_drive_specific_plan/PatrickHenryPlan.pdf`, even though the approved ruleset checksum-pins that 21,816,482-byte source at SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87`. The clean-checkout suite consequently ran 304 tests with eight failures and 34 errors, all downstream of the same missing source. This is a packaging defect, not a regulatory-value or application-logic conflict; the runtime correctly fails closed instead of bypassing source verification.
+
+The proposed Block 6 implementation is deliberately release-only:
+
+1. Create a nonoverwriting successor residential runtime add-on that includes the adopted Patrick Henry plan and its snapshot manifest alongside the existing residential GIS files; update bootstrap defaults and bundle tests without weakening source or lineage validation or changing the released R1 archive.
+2. Add one consolidated residential vertical-slice acceptance harness covering the ten live default-application zones, synthetic R5/R6 presentation, exact R1 regressions, controlled failures, provenance/version closure, offline startup, and cross-process structured and rendered determinism.
+3. Add a minimal Python CI workflow that bootstraps committed bundles in a clean checkout and runs the approved-ruleset validator, both result-contract validators, the complete suite, and whitespace checks so ignored local research files cannot mask release defects again.
+4. Re-run the source, migration, regression, offline, determinism, interface, clean-checkout, and complete-suite matrix with no unexplained skips, then publish a residential-expansion release report with exact artifact versions, checksums, limitations, and validation evidence.
+5. Use semantic version `v0.2.0` for the proposed next Git tag and **Santa Clara Zoning Explorer v0.2.0 — Residential Expansion** as the proposed release title, subject to owner approval and the normal PR, CI, review, merge, and post-merge tag gates.
+
+Block 6 does not add a regulation, zoning designation, regulatory value, live GIS source, selection screen, commercial analysis, proposal-level compliance logic, or deployment system. Existing immutable source snapshots and released artifacts remain unchanged; any corrected runtime package is a new versioned successor.
+
+### Tranche 6.1 source-complete runtime package
+
+The project owner approved the Block 6 proposal and authorized implementation on July 19, 2026. Tranche 6.1 fixes only the clean-checkout source-packaging defect:
+
+- `scripts/build_residential_demo_data_bundle.py` now builds successor version `2026-07-19.2` with a version-specific external manifest rather than overwriting the accepted `.1` manifest;
+- the successor contains the same three immutable residential GIS runtime artifacts plus the checksum-pinned Patrick Henry adopted-plan PDF and its immutable snapshot manifest;
+- the released R1 archive, its manifest, residential GIS-only archive `.1`, and the accepted `.1` manifest remain byte-for-byte unchanged and separately regression-tested;
+- `scripts/bootstrap_demo_data.py` selects the released R1 manifest and source-complete residential `.2` manifest by default, installing 17 plus five files without loading the redundant `.1` archive;
+- bootstrap retains archive and entry size/checksum checks, safe-path validation, complete manifest/archive agreement, atomic staging, conflict refusal, and repeatable already-matching behavior; and
+- README fresh-clone setup and repository orientation now identify the selected successor and its storage requirement.
+
+Canonical successor evidence:
+
+- archive: 25,213,418 bytes; SHA-256 `17ccccba8714c3a09d85e18db3dbfedc21a4b79c701ac8f7a1a6cdd4a264d0f0`;
+- external manifest: 2,011 bytes; SHA-256 `b797305b8af79f777d97334cf087d1fd3cac4ee6d232ef2158f122dff63dbb33`;
+- Patrick Henry plan entry: 21,816,482 bytes; SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87`; and
+- preserved GIS-only `.1` archive: 4,186,509 bytes; SHA-256 `bbe2274b00b2687d4a540484e7fcf8cbdc7a8038a063cb4973b169038bb3e098`.
+
+Validation evidence:
+
+- two consecutive builder runs produce the same successor byte count and SHA-256;
+- the 11 focused bundle/bootstrap tests pass, including exact successor contents, empty-repository install, default-manifest closure, unsafe and conflicting archive rejection, idempotence, and predecessor checksum preservation;
+- a temporary archive of the staged committed-only tree installs all 22 selected bundle files into an empty `data/raw/` tree, then reports all 22 already matching on a second run;
+- the clean-checkout approved residential validator passes complete source, schema, lineage, deterministic replay, semantic-preservation, per-record approval, and runtime-eligibility validation;
+- the clean-checkout default Flask application starts without a startup error and renders the verified R2 result for 1240 White Drive; and
+- `.venv/bin/python -B -m unittest discover -s tests -q` in the clean checkout passes all 348 tests with no failures, errors, or skips.
+
+No ruleset, schema, result contract, source snapshot, approved regulation, lookup behavior, presentation behavior, template, CSS, JavaScript, or released artifact changed in tranche 6.1.
+
+### Tranche 6.2 consolidated residential acceptance harness
+
+The project owner accepted tranche 6.1 and authorized continued Block 6 work on July 19, 2026. `tests/test_residential_vertical_slice.py` adds one self-contained release gate over the existing focused test layers. Its six tests prove:
+
+- the default Flask application starts with outbound sockets blocked and carries each of the ten source-verified live designations through local address lookup, exact zoning, common-zone summary, deterministic presentation, source receipts, and rendered HTML;
+- synthetic-only `R5` and `R6` render their approved multifamily standards, no-maximum-listed coverage, selected density ranges, and retained conflicts without inventing a real address or contradicting the preserved zero GIS counts;
+- both released R1 addresses retain the exact shared rule semantics, selected R1-8L conflict value, historical ruleset version, and explicitly injected released web path while the expanded path adds density and keeps special pathways separate;
+- all eight residential backend outcomes remain controlled: selection required, standards found, special pathway not evaluated, selection unavailable, outside snapshot, address not found, address ambiguous, and review required; only standards found contains regulations;
+- public lookup, review, and known integrity failures render no regulatory cards or private integrity details;
+- exact address, residential GIS, ruleset, schema, result, summary, and presentation versions close to the loaded artifacts, every displayed citation closes to a source document, and every local regulatory and GIS output checksum matches its manifest; and
+- two independent processes with different hash seeds and reversed request order produce identical structured-result, presented-view, and rendered-HTML SHA-256 values for all ten live addresses plus outside-snapshot, ambiguous, and missing-address outcomes.
+
+Validation evidence:
+
+- `.venv/bin/python -B -m unittest tests.test_residential_vertical_slice -v` passes all six acceptance tests;
+- the approved 12-zone source/lineage/runtime validator and both eight-case residential result-contract validators pass;
+- the working checkout passes all 354 repository tests;
+- a temporary archive of the staged committed-only tree bootstraps all 22 runtime files into an empty `data/raw/` tree;
+- the committed-only checkout passes all six release-harness tests and all 354 repository tests with no failures, errors, or skips; and
+- `git diff --check` passes.
+
+Tranche 6.2 adds tests and status evidence only. It does not change production code, rulesets, schemas, contracts, source snapshots, runtime bundles, dependencies, commands, presentation, or user-visible behavior.
+
+### Tranche 6.3 clean-checkout continuous integration
+
+The project owner accepted tranche 6.2 and authorized continued Block 6 work on July 19, 2026. `.github/workflows/ci.yml` defines one bounded **Residential release validation** workflow for pushes, pull requests, and explicit manual dispatches. It grants only `contents: read`, cancels superseded runs on the same ref, uses a 15-minute timeout, and performs no write, release, deployment, issue, pull-request, or external-service action.
+
+The Python 3.9 clean-checkout job:
+
+1. checks out the repository with `actions/checkout@v6.0.1` and configures Python with `actions/setup-python@v6.2.0` plus the exact-pinned `requirements.txt` cache key;
+2. installs the pinned dependencies and runs `pip check`;
+3. bootstraps both selected runtime bundles twice, proving empty-checkout installation and idempotent checksum matching;
+4. rebuilds source-complete residential bundle `.2` and rejects any archive or manifest byte drift;
+5. runs the approved 12-zone source/lineage/runtime validator and both residential result-contract validators;
+6. runs the six-test residential release harness and the complete repository suite;
+7. checks the unchanged JavaScript enhancement with Node and runs `git diff --check`; and
+8. fails immediately on any unexplained error because no step uses `continue-on-error` or an allowed-failure path.
+
+Validation evidence:
+
+- the workflow file passes local YAML parsing and `git diff --check`;
+- push commit `7dc9c0b5d53195276f43ca27517256d2e38095a6` triggered **Residential release validation** run `29706880910` on July 19, 2026;
+- hosted job `88245280734`, **Python 3.9 clean-checkout gate**, completed successfully in 4 minutes 51 seconds;
+- every substantive step passed: checkout, Python setup, dependency installation and `pip check`, two bootstrap passes, byte-identical residential bundle reproduction, the approved residential validator, both result-contract validators, the six-test release harness, the complete 354-test repository suite, JavaScript syntax, and whitespace integrity; and
+- the successful implementation-head run is recorded at `https://github.com/sukritganesh/SantaClaraZoningTool/actions/runs/29706880910`;
+- final-head commit `7448a7ccca2582413f235a7adb7bbb11a5565ceb` then triggered run `29707062838`, whose Python 3.9 job `88245745563` passed every step in 4 minutes 1 second; and
+- the project owner accepted tranche 6.3 and authorized release reporting on July 19, 2026.
+
+No CI step has write authority or an allowed-failure path. Tranche 6.3 changes automation and status evidence only; it does not change dependencies, production code, regulatory data, source snapshots, runtime archives, contracts, presentation, or user-visible behavior.
+
+### Tranche 6.4 accessible whole-project report
+
+The owner accepted tranche 6.3 and requested one accessible report covering the first R1 release and the residential expansion as a continuous workflow. `docs/santa-clara-zoning-explorer-report.md` is the current whole-project account. It:
+
+- begins with the ordinary user question and current product experience rather than implementation internals;
+- explains the exact 12-designation scope, single-family/two-family/multifamily treatment, supported standard families, and the distinction between ten live GIS designations and synthetic-only R5/R6 rule coverage;
+- retains the historical report's evidence-preparation versus deterministic-runtime structure while updating its Mermaid diagram for the approved residential path;
+- presents the R1 release, source expansion, contract generalization, regulatory authoring, runtime integration, interface work, and release hardening as one staged project;
+- explains versioning, conflicts, fail-closed behavior, AI's candidate-only role, and nonnumeric outcomes in plain language;
+- records the 67,243-address snapshot, paired 18,677-feature residential layers, approved 196-rule/two-pathway package, 354-test suite, clean-checkout bundle, and hosted CI evidence;
+- states the proposed `v0.2.0` release identity without creating a tag or GitHub release; and
+- retains a prominent boundary against complete entitlement, buildability, legal, or planning conclusions.
+
+The historical `docs/prototype-report.md` remains unchanged as the report for released baseline `v0.1.0-r1-prototype`. README navigation now identifies both reports and makes their roles explicit. No production code, dependency, ruleset, schema, source snapshot, runtime package, test, interface, tag, or release changed in tranche 6.4.
+
+Validation evidence:
+
+- every local Markdown link in the new report and updated README resolves;
+- the report's zone, use, capability, artifact-version, count, conflict, limitation, and validation statements were checked against the active plan, regulatory catalog, verification records, approved ruleset, runtime manifests, and progress ledger;
+- the final Mermaid block renders on GitHub and in an isolated full-width check with 22 nodes, eight labeled decision edges, no node overlap, and no label-to-node collision;
+- the historical R1 report has no working-tree diff; and
+- `git diff --check` passes.
+
+The project owner accepted the final report and authorized the final release matrix and pull-request workflow on July 19, 2026.
+
+### Tranche 6.5 final release matrix and PR readiness
+
+The final local release matrix ran from clean branch head `60af6e911e17b4f0a5552430d23f30366656806f` after report acceptance. It changed no production code, ruleset, schema, contract, source snapshot, runtime package, dependency, test, interface, or release identity.
+
+Validation evidence:
+
+- two consecutive `.venv/bin/python -B scripts/bootstrap_demo_data.py` runs report all 22 runtime files already matching the selected committed bundles;
+- `.venv/bin/python -B scripts/build_residential_demo_data_bundle.py` reproduces source-complete add-on `.2` at 25,213,418 bytes and SHA-256 `17ccccba8714c3a09d85e18db3dbfedc21a4b79c701ac8f7a1a6cdd4a264d0f0`;
+- `pip check` reports no broken requirements;
+- the approved 12-zone source, schema, lineage, replay, semantic-preservation, per-record approval, and runtime-eligibility validator passes with source-file verification;
+- both eight-case residential result-contract validators pass for contracts `2.0.0` and `2.1.0`;
+- the released tag `v0.1.0-r1-prototype` is an ancestor of the branch, and its runtime archive, manifest, approved R1 ruleset, amendment audit, and rule-verification record have no branch diff;
+- the six-test residential release harness passes all live-zone, R5/R6, R1-regression, controlled-failure, provenance, offline, and cross-process determinism gates in 17.577 seconds;
+- `.venv/bin/python -B -m unittest discover -s tests -v` passes all 354 repository tests in 123.582 seconds with no failures, errors, skips, or unexpected successes;
+- the bundled Node.js runtime accepts `santa_clara_zoning/static/app.js` syntax, and `git diff --check` passes; and
+- hosted clean-checkout run `29707903970` passes every configured step on the report-polish head before this status-only release-evidence update.
+
+PR #2 opened against the verified `main` default branch on July 19, 2026. Pull-request CI, review, conflict readiness, and explicit landing confirmation remain required, and the proposed `v0.2.0` tag and GitHub release remain post-merge actions only.
+
+## Blocks 0-1 validation evidence
+
+- `git diff --check` passes;
+- the archived R1 ledger matches the corresponding body of the former active ledger exactly;
+- the checksum-pinned `docs/title18-amendment-audit.md` has no working-tree diff;
+- the Patrick Henry manifest parses, and its recorded 21,816,482-byte size, 191-page count, and SHA-256 `cefd7df91819c61d26b5cdddd0d395b74445078f2dc6e0d57995dc6992b16b87` match the preserved PDF;
+- the approved R1 v2 validator still passes schema, domain, source-file, migration, and runtime-eligibility gates;
+- all 410 residential snapshot evidence files match their recorded sizes and checksums;
+- the eight focused residential downloader and fixture tests pass; and
+- `.venv/bin/python -m unittest discover -s tests -q` passes all 167 tests;
+- the optional `node --check santa_clara_zoning/static/app.js` check was unavailable because Node.js is not installed; no JavaScript changed in this work.
+
+## Current source and design observations
+
+- Google Drive residential research is available and useful as candidate input, but it is not approved runtime data.
+- The July 18 immutable City GIS snapshot contains exact target R1, R2, R3, R4, and Patrick Henry designations, but no exact `R5` or `R6` features. Future snapshots must preserve their own explicit results and trigger inspection if this changes.
+- The R1 two-family permission is a special Chapter 18.24 pathway. It must not inherit ordinary R1 single-family dimensional standards silently.
+- Two-family belongs to the multifamily workflow family but retains separate legal-use and primary-structure identities.
+- A missing maximum must be presented as no maximum listed in the controlling base table, not as unlimited.
+- An FAA-controlled height and a plan-dependent Patrick Henry rear setback require explicit nonnumeric dispositions within the existing regulation families.
+- Patrick Henry rear setback must not default to zero without an affirmative verified source value.
+- Approved ruleset `2026-07-19.5` discloses Objective Design Standards, the applicable 32-foot R1/R2 proximity transition, Patrick Henry recreation space and encroachments, plan/project review, the UC community-benefits path, and the HDF office option without adding them to the evaluated regulation map.
+- PH-R5 has a retained 51-100 versus 51-99 gross-density conflict; the approved ruleset uses Table 1-1 only through explicit project-owner policy and does not claim a City correction.
+- Base-zone gross residential density is now an approved encoded capability, but parcel yield, plan reconciliation, density bonus, affordability, development agreements, and state-law adjustments remain not evaluated.
 
 ## Blockers
 
-None currently recorded.
+None currently recorded. The clean-checkout source-packaging blocker found by the Block 6 audit is resolved by accepted tranche 6.1.
 
-## Implementation decision log
+## Decision log
 
 | Date | Decision | Reason |
 |---|---|---|
-| 2026-07-14 | Preserve raw GIS before choosing a database. | Enables offline inspection without committing to an application storage model. |
-| 2026-07-14 | Download all matching R1 features instead of a sample. | The complete filtered set is manageable and avoids sampling blind spots. |
-| 2026-07-14 | Download by ArcGIS object ID and validate completeness. | Prevents silent truncation from service record limits. |
-| 2026-07-14 | Limit GET batches to 100 features. | A 500-ID URL was rejected by the City/proxy. |
-| 2026-07-15 | Assign one owner to each kind of project information. | Avoids synchronizing milestone state and commands across multiple documents. |
-| 2026-07-15 | Exclude downloaded GIS snapshots from Git. | Raw data is reproducible, potentially large, and retains its own local manifest and checksums. |
-| 2026-07-16 | Use the complete citywide address layer as the canonical raw address input. | Address resolution occurs before zoning classification and must also support unsupported-zone results. |
-| 2026-07-16 | Use POST requests with 1,000-ID batches for address acquisition. | Avoids GET URL-length limits while preserving complete object-ID validation with fewer requests. |
-| 2026-07-16 | Share ArcGIS snapshot primitives between downloaders. | Keeps retry, parsing, serialization, batching, and checksum behavior consistent without duplicating code. |
-| 2026-07-16 | Treat the July 2025 code as a versioned baseline plus an amendment ledger. | The City still labels July 2025 as the latest consolidation, while later adopted ordinances remain unincorporated. |
-| 2026-07-16 | Do not resolve the competing Chapter 18.27 enactments in application logic. | Ordinances 2085 and 2086 assign different text to the same chapter number; City or codifier clarification is required. |
-| 2026-07-16 | Treat verified dimensional numbers as base-zone standards rather than final parcel requirements. | Setback averaging, encroachments, official plan lines, alleys, historical parcels, and legal nonconformities can change site-specific application. |
-| 2026-07-16 | Resolve the R1-8L first-story corner-side setback to 15 feet while preserving the conflict. | The zone-specific written provision states at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement; the 10-foot table assertion remains provenance, not discarded data. |
-| 2026-07-16 | Store the first regulatory implementation as versioned normalized JSON. | The small prototype ruleset remains directly inspectable and testable without committing to an application database before lookup access patterns are known. |
-| 2026-07-16 | Validate rules with executable Draft 2020-12 schema validation, domain invariants, and regression tests. | The schema must actually reject malformed records, while custom checks separately enforce cross-record provenance and selected-value consistency. |
-| 2026-07-16 | Start address resolution with normalized exact matching rather than fuzzy matching. | Exact matching is reproducible and makes unmatched and duplicate outcomes explicit while the prototype remains narrow. |
-| 2026-07-16 | Query immutable GeoJSON snapshots directly before choosing a database. | The current data volume supports a simple validated vertical slice and preserves the option to select storage after access patterns are proven. |
-| 2026-07-16 | Verify snapshot checksums and source invariants when loading lookup data. | Runtime lookup must not silently use incomplete, modified, misprojected, or out-of-scope polygon data. |
-| 2026-07-16 | Label no-polygon results outside the supported R1 snapshot rather than naming a non-R1 zone. | The local polygon snapshot is intentionally R1-filtered and cannot establish the exact designation of an unsupported parcel. |
-| 2026-07-16 | Maintain a dedicated supported-regulations catalog before redesigning schema v2. | Regulation meaning and product support boundaries should be explicit before deciding their machine-readable representation. |
-| 2026-07-16 | Keep jurisdiction-specific values and schema field designs out of the capability catalog. | Values belong to versioned rulesets, while representation belongs to schema design; separating them prevents duplicated sources of truth. |
-| 2026-07-16 | Adopt zone-first v2 rules with independent per-zone identities. | Direct capability lookup is deterministic, while independently amendable zone rules no longer share one legal identity merely because current values match. |
-| 2026-07-16 | Represent setbacks as base values plus typed adjustments. | Explicit triggers, total-versus-additional effects, paired values, and precedence prevent prose-dependent or ambiguous stepback interpretation. |
-| 2026-07-16 | Add schema v2 beside the operational v1 contract. | Preserves the validated v1 ruleset until migration and expanded cross-record validation are complete. |
-| 2026-07-16 | Map every catalog capability to a standalone rule or embedded typed structure. | Gives humans and AI one unambiguous authoring path while allowing supporting behaviors such as stepbacks and paired yards to remain inside their parent setback rule. |
-| 2026-07-17 | Migrate v1 into a separate non-overwriting v2 candidate with a complete crosswalk. | Makes the transformation reproducible and reviewable while preserving the approved operational v1 artifact until the expanded validation gate passes. |
-| 2026-07-17 | Maintain cross-cutting deferred enhancements in `docs/future-improvements.md`. | Preserves useful design observations without duplicating active status, regulatory capability scope, or detailed contracts across project documents. |
-| 2026-07-17 | Separate candidate validity from runtime eligibility. | Allows unapproved v2 data to pass structural and semantic review while preventing runtime use until the whole version is approved, dated, and all selected rules are approved. |
-| 2026-07-17 | Limit v2 operational semantics to cataloged prototype capabilities even when the schema supports future shapes. | Height-triggered and additive setbacks remain representable for future work but cannot silently enter the current R1 runtime contract. |
-| 2026-07-17 | Promote the reviewed candidate into separate immutable ruleset v2 version `2026-07-17.2`. | Preserves the exact reviewed candidate while recording explicit project-owner approval and providing a runtime-eligible source for Block 6. |
-| 2026-07-17 | Version the Block 6 output contract separately from regulatory data. | `contract_version` describes result shape and semantics, while `ruleset_version` identifies the regulations; a separate engine version is deferred until meaningful evaluation logic exists. |
-| 2026-07-18 | Validate and freeze the approved JSON ruleset once at application startup. | Keeps JSON authoritative for the prototype, prevents per-address revalidation and accidental mutation, and leaves storage replaceable by a future database-backed repository. |
-| 2026-07-18 | Require exact zone keys and retrieve every approved rule without parcel-fact filtering. | GIS already establishes the canonical zone; preserving lot-context and story applicability avoids guessing whether a parcel is a corner lot or what a proposal contains. |
-| 2026-07-18 | Keep address orchestration thin and preserve Block 5 failures without regulatory attachment. | Regulations are safe to retrieve only after one unambiguous parcel and current-zoning match; regulatory integrity failures are system errors, not parcel-specific review outcomes. |
-| 2026-07-18 | Close Block 6 with one canonical real address per supported regulatory branch instead of arbitrary parcel sampling. | After exact zoning resolution, same-zone parcels retrieve the same base-zone rules; stronger contract, provenance, failure, mutation, and cross-process determinism checks add more distinct coverage. |
-| 2026-07-18 | Put a pure UI-neutral presenter between Block 6 and the first interface. | Keeps display wording and grouping testable while preventing frontend code from interpreting raw regulations or maintaining duplicate values. |
-| 2026-07-18 | Use a brief template-derived zone overview for the current prototype. | The approved ruleset has no source-backed per-zone narrative; the presenter can safely compose existing zone, use, approval, scope, and disclaimer fields without inventing suffix meanings. |
-| 2026-07-18 | Build toward a shared regulatory core with controlled jurisdiction extensions. | Common semantics and renderers should be reusable across cities, while unique local rules remain typed, source-backed, validated, and visible instead of being forced into a near-match or silently omitted. |
-| 2026-07-18 | Approve UI-neutral presentation contract `1.0.0`. | Fixes deterministic success and failure semantics, controlled wording, display order, provenance linkage, source behavior, and version mapping before presenter implementation begins. |
-| 2026-07-18 | Use explicit capability and requirement dispatch in the presenter. | Shared capability mappings remain deterministic and ordered; unknown capabilities, status codes, and setback shapes fail visibly rather than being guessed or omitted. |
-| 2026-07-18 | Keep integrity-error adaptation separate from pure result presentation. | The presenter stays stateless and fail-closed, while a deliberate application boundary can produce a safe `system_error` view without exposing internal details. |
-| 2026-07-18 | Require every project-resolved display rule to retain its conflict reference. | Prevents a presentation mutation or malformed input from hiding the competing source assertions behind a selected project value. |
-| 2026-07-18 | Validate presenter determinism with reordered inputs, mutated authoritative values, and independent hash-seeded processes. | Proves that presentation order is deliberate, regulatory values are not hard-coded, and identical versioned inputs serialize identically across processes. |
-| 2026-07-18 | Use a scroll-first local web interface with expandable secondary detail. | Keeps the main planning answer immediately visible while making limitations, source receipts, and versions inspectable without dominating the page. |
-| 2026-07-18 | Use Flask 3.1.3, Jinja, custom CSS, and one read-only address route for the prototype interface. | Preserves the existing synchronous Python pipeline, provides precise semantic and visual control, and avoids a separate API, frontend build system, database, or duplicated client-side regulatory state. |
-| 2026-07-18 | Load or inject one pipeline at Flask application creation and catch only known integrity failures at the route boundary. | Avoids repeated snapshot and ruleset loading, keeps tests isolated, produces approved system-error views, and prevents programming defects from being mislabeled as zoning outcomes. |
-| 2026-07-18 | Commit one deterministic runtime-data ZIP while continuing to ignore extracted raw snapshots. | Makes a fresh clone runnable without live GIS retrieval, preserves a small reviewable runtime package, and avoids committing large ArcGIS response chunks or treating extracted files as source-controlled working data. |
-| 2026-07-18 | Make bundle installation checksum-gated, path-restricted, idempotent, and non-overwriting. | A distribution convenience must not weaken the prototype's provenance model or silently replace locally preserved source evidence. |
+| 2026-07-18 | Preserve the completed R1 ledger in a dated progress archive and start a new active ledger. | The released prototype's detailed evidence remains inspectable while current status stays concise and phase-specific. |
+| 2026-07-18 | Keep R1-named historical plans, source verification, rulesets, schemas, scripts, and tests until their owning behavior is deliberately migrated. | Their names accurately identify release provenance; a broad rename would mix historical evidence with active product refactoring. |
+| 2026-07-18 | Expand only selected residential zones and the existing main regulation families. | The immediate goal is multifamily residential data and product generalization, not a complete zoning or entitlement system. |
+| 2026-07-18 | Retain separate workflow, legal-use, and structure concepts. | Two-family can reuse multifamily machinery without erasing zone-specific permission or dimensional applicability. |
+| 2026-07-18 | Use explicit dispositions for no maximum listed, FAA-controlled, plan-dependent, not evaluated, and review required. | Nonnumeric source meaning must not be converted into an invented number, prohibition, or unlimited claim. |
+| 2026-07-18 | Create a new residential ruleset lineage and expect a major schema revision, subject to Block 2 approval. | The approved R1 artifact is immutable, while multiple structures and nonnumeric dispositions change closed data contracts. |
+| 2026-07-18 | Use **Santa Clara Zoning Explorer** as the active product name and **Selected residential zoning standards by address** as its scope line. | The identity can survive expansion beyond R1 without implying a complete entitlement determination; historical R1/prototype artifacts retain their provenance names. |
+| 2026-07-18 | Keep `R5` and `R6` in legal and synthetic rule scope even while exact live feature counts are zero. | The July 2025 code defines both zones; absence from a current GIS response is not authority to erase their rules or invent real-address fixtures. |
+| 2026-07-18 | Treat the Patrick Henry Table 2-4 rear setback as plan-dependent, never zero by default, and treat `UC` height and stories as FAA-controlled. | The base table supplies no rear-setback row and uses the literal value `FAA`; deterministic output must preserve those meanings rather than inventing numbers. |
+| 2026-07-18 | Promote structured `not evaluated` topics into expansion Block 2. | Applicable but deferred layers such as the 32-foot transition and Objective Design Standards need stable identities, reasons, citations, and prerequisites before broad presentation. |
+| 2026-07-18 | Preserve the checksum-pinned R1 amendment audit and create `docs/residential-title18-amendment-audit.md` as its active successor. | Editing the historical source correctly failed the approved ruleset's checksum gate; a new audit preserves R1 reproducibility while allowing the expansion cutoff and findings to evolve. |
+| 2026-07-18 | List the source-verified R1 Chapter 18.24 two-unit pathway but keep its dimensional result `not evaluated`. | The applicable standards branch on site eligibility, attached/detached configuration, the ordinary R1 envelope, existing setbacks, and proposal facts the current product does not collect; ordinary single-family rules cannot be applied universally. |
+| 2026-07-18 | Add a separate residential GIS downloader instead of broadening the historical R1 downloader in place. | The released acquisition remains reproducible while the new artifact can enforce the exact 12-designation scope, explicit zeroes, excluded-code preflights, polygon validation, and cross-layer count agreement. |
+| 2026-07-18 | Preserve one real fixture per live target designation and use synthetic fixtures for zero-count or deliberately excluded codes. | Routing coverage stays source-backed without inventing R5/R6 addresses or normalizing distinct legacy and combining designations. |
+| 2026-07-19 | Approve the complete Block 1 residential verification record, including the explicit `High-Density Flex`/`HD Flex`/`HD-Flex` to `HDF` crosswalk and the Patrick Henry rear-setback treatment as no universal numeric base value, with plan/project review required and no zero default. | The source, GIS, fixture, and disposition evidence passed its technical gates and is authorized to drive Block 2 contract design; this approval does not make new-zone rules runtime eligible. |
+| 2026-07-19 | Approve the complete Block 2 residential contract design and begin implementation. | The audited design preserves the immutable v2 baseline, separates legal use from ordinary profiles and special pathways, represents nonnumeric source meanings explicitly, and supplies deterministic migration and result-contract gates before runtime expansion. |
+| 2026-07-19 | Permit partial v3 candidates for contract and migration validation, but require the exact complete 12-zone target before runtime eligibility. | Block 2 must prove the contract with migrated R1 data without prematurely authoring or approving R2-R6 and Patrick Henry numeric standards; schema validity must not be confused with runtime completeness. |
+| 2026-07-19 | Accept the completed Block 2 implementation and authorize the Block 3 R2-R6 citywide authoring tranche. | The schema, migration, equivalence, GIS-fixture, and result-contract gates passed; citywide data can now be authored without coupling it to Patrick Henry or production runtime changes. |
+| 2026-07-19 | Preserve `2026-07-19.1` and create a new versioned candidate for citywide expansion. | The committed R1-only candidate is reproducible migration evidence; adding R2-R6 in place would erase that checkpoint and weaken lineage inspection. |
+| 2026-07-19 | Add schema `3.1.0` as a successor while preserving schema `3.0.0` unchanged. | R3 and R4 have separate coverage outcomes below and at/above 10,000 square feet; a typed tier within the existing coverage capability preserves both outcomes without flattening data or broadening the regulation catalog. |
+| 2026-07-19 | Keep the completed R1-R6 candidate nonruntime and nonapproved until Patrick Henry and full Block 3 approval. | Technical validity and deterministic source encoding do not satisfy the complete 12-zone matrix, owner approval, or production-loader gates. |
+| 2026-07-19 | Add `standard.gross_residential_density` as a typed minimum-to-maximum base-zone range while keeping unit yield and density adjustments out of scope. | The base density range is a key zone standard that can be retrieved deterministically without expanding into acreage, proposal, bonus, affordability, plan, or state-law evaluation. |
+| 2026-07-19 | Retain all R5/R6 density assertions and select Table 1-1 values of 51-100 and 60-350 DU/AC through explicit project resolutions. | The project owner supplied a deterministic policy choice; preserving the competing purpose and Table 2-3 values prevents that local choice from being mistaken for an official City correction. |
+| 2026-07-19 | Preserve candidate `2026-07-19.2` and its pinned verification sources, then create density-specific source supplements and successor `2026-07-19.3`. | Editing checksum-pinned predecessor evidence or rule data in place would break reproducibility; additive documents, schema, rules, and crosswalk retain an inspectable lineage. |
+| 2026-07-19 | Accept nonruntime density candidate `2026-07-19.3` and authorize the Patrick Henry tranche. | Its 11 ranges, R5/R6 conflict records, deterministic lineage, source pins, and mutation tests passed; Patrick Henry can be added without editing the checkpoint. |
+| 2026-07-19 | Apply the R5 conflict policy to PH-R5: preserve all 51-100 and 51-99 assertions and select Table 1-1's 51-100 DU/AC range. | The project owner supplied the policy explicitly; retaining the four competing 51-99 assertions prevents the project choice from appearing to be an official correction. |
+| 2026-07-19 | Reuse schema `3.2.0` for Patrick Henry candidate `2026-07-19.4` and keep all new records nonapproved. | Existing typed requirements already express numeric, range, no-maximum-listed, FAA-controlled, and plan-dependent outcomes; the tranche adds data and provenance, not schema or runtime authority. |
+| 2026-07-19 | Approve complete residential candidate `2026-07-19.4` as the Block 3 regulatory content. | The exact 12-zone matrix, supported regulation families, retained conflicts, source pins, deterministic lineage, and technical validation passed project-owner review. |
+| 2026-07-19 | Preserve `.4` and promote it without regulatory-semantic change into immutable runtime-eligible version `2026-07-19.5`. | A separate lifecycle successor records approval transparently, enables all 196 rules and two pathways, and keeps the reviewed candidate and every prior checkpoint reproducible. |
+| 2026-07-19 | Complete a read-only Block 4 runtime audit and implementation proposal before changing production code. | The released R1 path remains the regression oracle while loader, filtered-GIS, selection, result-contract, and provenance mismatches are resolved explicitly rather than discovered during coupled implementation. |
+| 2026-07-19 | Approve the Block 4 design and implement only tranche 4.1 before residential runtime wiring. | A separate `2.1.0` contract resolves the approved-density, use-permission-evidence, filtered-snapshot, empty-address, and version-identity gaps while preserving accepted `2.0.0` and the released R1 application. |
+| 2026-07-19 | Accept result-contract tranche 4.1 and authorize only the approved residential loader tranche 4.2. | The accepted runtime-ready result boundary can now be paired with an exact `.5` loader, while GIS lookup, selection retrieval, pipeline orchestration, and presentation remain independently gated. |
+| 2026-07-19 | Accept approved-loader tranche 4.2 and authorize only residential GIS lookup tranche 4.3. | The complete-lineage `.5` loader can now define the exact snapshot identity boundary, while selection retrieval, pipeline orchestration, presentation, and the default Flask application remain separately gated. |
+| 2026-07-19 | Accept residential GIS lookup tranche 4.3 and authorize only exact selection retrieval and production-independent pipeline tranche 4.4. | All live supported zone identities already pass the immutable snapshot boundary; the next isolated gate can now attach exact approved branches under contract `2.1.0` without changing presentation or the released application. |
+| 2026-07-19 | Accept exact selection retrieval and residential pipeline tranche 4.4 and begin the Block 4.5 full-backend acceptance gate. | The production-independent backend now covers exact approved branches under contract `2.1.0`; the complete matrix and released-path regressions must pass together before any presentation consumer changes. |
+| 2026-07-19 | Complete Block 4.5 as a validation-only tranche and retain the default R1 application boundary. | Every approved backend acceptance case and released-path regression passed without a code correction; changing presentation consumers remains a separately reviewed Block 5 concern. |
+| 2026-07-19 | Accept the complete Block 4 backend and authorize Block 5 presentation and default-application work. | The exact residential matrix and released R1 regressions passed together, so presentation could become the next deliberate consumer of the approved backend. |
+| 2026-07-19 | Present verified common zone standards without a mandatory structure selector and retain exact profile selection as backend and future infrastructure. | Current R2, R3, and R4 ordinary profiles have identical supported regulation semantics; allowed uses and profile-specific limitations can be disclosed separately, while any future standards divergence fails closed and triggers backlog item `UX-001`. |
+| 2026-07-19 | Add a separate residential GIS runtime add-on rather than modifying the released R1 demo archive. | The new default application needs the broader filtered snapshot, while the published R1 bundle must remain checksum-reproducible as historical release evidence. |
+| 2026-07-19 | Accept the complete Block 5 presentation and interface and authorize a read-only Block 6 release audit. | The owner completed local functional and responsive review, accepted the final interface refinements, and confirmed that the generalized residential product works as intended. |
+| 2026-07-19 | Approve the Block 6 release-only implementation proposal and begin with the clean-checkout package repair. | Source-complete startup must pass before additional acceptance automation can provide a trustworthy release gate. |
+| 2026-07-19 | Preserve residential GIS-only add-on `.1` and its manifest, and create source-complete successor `.2` with a separate version-specific manifest. | The accepted predecessor remains reproducible while fresh clones receive the Patrick Henry authoritative source required by the unchanged complete-lineage validator. |
+| 2026-07-19 | Accept Block 6.1 and proceed to the consolidated residential acceptance harness. | The source-complete successor repairs fresh-clone startup, preserves every earlier artifact, and passes the approved validator and complete suite from committed-only data. |
+| 2026-07-19 | Keep Block 6.2 test-only and consolidate release evidence without replacing focused tests. | Focused suites remain better diagnostics, while one product-level gate makes the complete offline, regression, provenance, failure, and determinism claim directly executable. |
+| 2026-07-19 | Accept Block 6.2 and proceed to clean-checkout CI. | The consolidated gate passes in working and committed-only trees and makes the release claims executable without changing product behavior. |
+| 2026-07-19 | Use one read-only Python 3.9 CI job before considering broader version matrices or deployment automation. | The immediate release risk is clean-checkout reproducibility on the supported baseline; extra runtime matrices and deployment systems would expand scope without strengthening the current regulatory acceptance contract. |
+| 2026-07-19 | Accept Block 6.3 and proceed to residential release reporting. | Both the workflow implementation head and the final documentation head passed the complete hosted Python 3.9 clean-checkout gate, so the release claims can now be assembled for a general audience. |
+| 2026-07-19 | Preserve the R1 prototype report and create a separate Santa Clara Zoning Explorer whole-project report. | The historical report accurately records the first release, while the new report can tell the complete R1-to-residential story and update the architecture diagram without rewriting release provenance. |
+| 2026-07-19 | Accept Block 6.4 and proceed through the final release matrix and pull-request workflow. | The owner accepted the accessible whole-project report after its vertical-flow and visual-routing refinements; release readiness can now be proved against the exact branch. |
+| 2026-07-19 | Treat the passing tranche 6.5 matrix as PR readiness, not as a release or landing decision. | Local and hosted evidence closes the agreed acceptance scope, while PR CI, review, explicit landing confirmation, merge verification, and post-merge tag gates remain separate safeguards. |

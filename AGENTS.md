@@ -4,9 +4,9 @@ These instructions apply to the entire `SantaClaraZoningPortal` workspace unless
 
 ## Objective
 
-Build the Santa Clara R1 zoning prototype in small, deterministic, evidence-backed blocks. The detailed scope and architecture live in `docs/r1-prototype-plan.md`; do not reproduce them here.
+Expand the released Santa Clara R1 prototype into **Santa Clara Zoning Explorer**, a selected residential zoning product, in small, deterministic, evidence-backed blocks. The active scope and architecture live in `docs/residential-expansion-plan.md`; do not reproduce them here. `docs/r1-prototype-plan.md` remains the historical design reference for the released baseline.
 
-Do not describe prototype output as a complete entitlement analysis or legal/planning determination.
+Do not describe product output as a complete entitlement analysis or legal/planning determination.
 
 ## Document ownership
 
@@ -14,13 +14,23 @@ Each project document has one job:
 
 - `README.md` is the human-facing setup and runbook. Put dependencies, runnable commands, and repository orientation there.
 - `AGENTS.md` contains durable Codex operating instructions. Do not put changing milestone status or duplicate run commands here.
-- `docs/progress.md` is the sole status ledger. Put the current stage, completed blocks, validation evidence, canonical artifacts, next block, blockers, and implementation decision log there.
+- `docs/progress.md` is the sole active status ledger. Put the current stage, completed blocks, validation evidence, canonical artifacts, next block, blockers, and implementation decision log there.
+- `docs/progress-archive/` preserves closed phase ledgers. Treat archived ledgers as historical evidence; never resume active status tracking in them or silently rewrite their technical record.
 - `docs/future-improvements.md` is the cross-cutting improvement burndown. Record useful deferred enhancements there; when one becomes active, put execution status in `docs/progress.md` and detailed design in the relevant owning artifact.
-- `docs/r1-prototype-plan.md` is the design reference. Put scope, architecture, authoritative-source research, schemas, rules, and completion criteria there.
+- `docs/residential-expansion-plan.md` is the active phase design reference. Put the approved expansion scope, architecture, source boundaries, migration strategy, blocks, and completion criteria there.
+- `docs/r1-prototype-plan.md` is the historical design reference for the released R1 vertical slice. Do not retrofit the expansion design into it.
+- `docs/prototype-report.md` is the completed plain-language report for the R1 release. Preserve it as historical product context.
 - `docs/regulations/supported-regulations.md` is the regulatory capability catalog. Put supported regulation families, their meanings, implementation boundaries, and the deferred capability queue there; do not duplicate zone-specific values or schema field designs.
-- `docs/regulations/ruleset-authoring-guide.md` is the human- and AI-facing representation contract. Put ruleset hierarchy, identity conventions, typed regulation semantics, authoring requirements, and representative examples there.
-- `docs/title18-amendment-audit.md` records the consolidated-code baseline and later-legislation audit.
-- `docs/r1-rule-verification.md` is the source trace and approval gate for machine-readable R1 rules. Update it when definitions, applicability, exceptions, conflicts, or rule dispositions change.
+- `docs/regulations/ruleset-authoring-guide.md` is the preserved human- and AI-facing representation contract for the released R1 ruleset v2 lineage. Change it only when the v2 contract itself changes.
+- `docs/regulations/residential-ruleset-authoring-guide.md` is the active human- and AI-facing representation contract for residential ruleset v3. Put the v3 hierarchy, identity conventions, typed regulation semantics, authoring requirements, and representative examples there.
+- `contracts/residential-result-contract-2.0.0.schema.json` is the machine-enforced residential pipeline result contract. Put controlled status payload shapes and selection/result cardinality there; keep runtime implementation status in `docs/progress.md`.
+- `docs/title18-amendment-audit.md` is the checksum-pinned historical amendment audit used by the approved R1 rulesets. Preserve it byte-for-byte unless intentionally creating a new R1 ruleset version and migration.
+- `docs/residential-title18-amendment-audit.md` owns the current expansion cutoff, later-legislation effects, and recheck triggers.
+- `docs/residential-density-title18-amendment-audit.md` is the checksum-pinned density-capability audit supplement for residential candidate `2026-07-19.3`; preserve it when creating later successors.
+- `docs/r1-rule-verification.md` is the historical source trace and approval gate for the released machine-readable R1 rules. Preserve it except when correcting or re-verifying its own R1 conclusions.
+- `docs/residential-rule-verification.md` is the active source trace and approval gate for new-zone use permissions, structure applicability, definitions, exceptions, conflicts, and rule dispositions.
+- `docs/residential-density-rule-verification.md` is the checksum-pinned source trace and project-decision record for the gross residential density capability added after candidate `2026-07-19.2`.
+- `docs/patrick-henry-rule-verification-supplement.md` is the checksum-pinned final source reconciliation and PH-R5 density decision record for the Patrick Henry successor to candidate `2026-07-19.3`.
 - Each raw snapshot's `manifest.json` is the authoritative record of that download's sources, filters, counts, files, and checksums.
 
 When something changes, update only its owning document unless the change genuinely affects another document's role. In particular, a milestone change normally updates `docs/progress.md` only.
@@ -28,13 +38,20 @@ When something changes, update only its owning document unless the change genuin
 ## Starting a task
 
 1. Read `docs/progress.md` to learn the current stage and next block.
-2. Read the relevant portions of `docs/r1-prototype-plan.md` before making design or scope decisions.
-3. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
-4. Read `docs/regulations/ruleset-authoring-guide.md` before changing ruleset schemas, authoring rule data, or building regulatory extraction workflows.
-5. Read `README.md` when running, changing, or documenting repository commands or dependencies.
-6. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
-7. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
-8. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
+2. Read the relevant portions of `docs/residential-expansion-plan.md` before making design or scope decisions.
+3. Read `docs/residential-rule-verification.md` before approving, authoring, or implementing a new residential-zone rule or disposition.
+4. Read `docs/residential-title18-amendment-audit.md` before making a current-law or later-legislation conclusion for the expansion.
+5. Read the density-specific verification and audit supplements before changing gross residential density data or its conflict resolutions.
+6. Read the Patrick Henry verification supplement before authoring, approving, or changing Patrick Henry rule data or its PH-R5 conflict resolution.
+7. Read the relevant portions of `docs/r1-prototype-plan.md` when changing, migrating, or testing a contract inherited from the R1 baseline.
+8. Read `docs/regulations/supported-regulations.md` before adding or changing a regulatory capability.
+9. Read `docs/regulations/ruleset-authoring-guide.md` before changing or migrating the released R1/v2 contract.
+10. Read `docs/regulations/residential-ruleset-authoring-guide.md` before changing residential ruleset v3 schemas, authoring v3 rule data, or building v3 extraction workflows.
+11. Read `contracts/residential-result-contract-2.0.0.schema.json` before changing expansion pipeline or presentation result shapes.
+12. Read `README.md` when running, changing, or documenting repository commands or dependencies.
+13. Read `docs/future-improvements.md` before promoting a deferred enhancement or recording a newly discovered cross-cutting improvement.
+14. Read the relevant `manifest.json` before using or transforming a GIS snapshot.
+15. Use `GOOGLE_DRIVE_SOURCE.txt` when project source documents in Google Drive are needed.
 
 ## Preserve authoritative inputs
 
@@ -78,7 +95,7 @@ When something changes, update only its owning document unless the change genuin
 
 ## Respect scope and uncertainty
 
-- Follow the included and deferred scope in `docs/r1-prototype-plan.md`.
+- Follow the included and deferred scope in `docs/residential-expansion-plan.md`. Use `docs/r1-prototype-plan.md` only for inherited R1 behavior and historical acceptance boundaries.
 - Treat unsupported zones and deferred topics explicitly; do not silently infer applicability.
 - Label unevaluated subjects `not evaluated` rather than implying they are prohibited or irrelevant.
 - Do not treat the July 2025 consolidated PDF as a complete current-law snapshot without auditing later Title 18 amendments.
@@ -90,9 +107,9 @@ When something changes, update only its owning document unless the change genuin
 - Record material implementation choices in its decision log.
 - Do not mark a block complete merely because files exist; its validation criteria must pass.
 - Update `README.md` only if setup, dependencies, runnable commands, or repository orientation changed.
-- Update the prototype plan only if design, scope, source research, or completion criteria changed.
+- Update the residential expansion plan only if active-phase design, scope, source boundaries, migration strategy, or completion criteria changed. Preserve the R1 prototype plan unless correcting its own historical record.
 - Update the supported-regulations catalog when a capability is added, removed, renamed, or its supported behavior changes.
-- Update the ruleset authoring guide when a capability's JSON mapping, identity convention, typed semantics, or maintenance workflow changes; every cataloged capability must have a documented standalone or embedded representation before rule data is authored.
+- Update the authoring guide that owns the affected schema lineage when a capability's JSON mapping, identity convention, typed semantics, or maintenance workflow changes; every cataloged capability must have a documented standalone or embedded representation before rule data is authored.
 - Update the future-improvements backlog when a cross-cutting enhancement is discovered, promoted, completed, dropped, or superseded; do not use it as a second active-status ledger.
 
 ## Protect the workspace

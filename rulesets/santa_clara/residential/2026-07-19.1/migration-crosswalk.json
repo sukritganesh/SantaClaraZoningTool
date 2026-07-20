@@ -1,0 +1,583 @@
+{
+  "crosswalk_version": "1.0.0",
+  "migration_id": "santa-clara-r1-v2-to-residential-v3",
+  "generated_on": "2026-07-19",
+  "migration_status": "candidate_contract_validated",
+  "source_ruleset": {
+    "path": "rulesets/santa_clara/r1/2026-07-17.2/ruleset.json",
+    "ruleset_id": "santa-clara-r1-base-zone",
+    "version": "2026-07-17.2",
+    "schema_version": "2.0.0",
+    "status": "approved_for_prototype",
+    "sha256": "8cd3282feb48cb4774a25dee48e5d3f152f89c3da877b49f168654706d236ed1"
+  },
+  "target_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.1/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.1",
+    "schema_version": "3.0.0",
+    "status": "candidate",
+    "sha256": "ad8f0ddb3eda82c724ae0c50fb23a89591ae78b72fab58e10868698eac4ed2ff"
+  },
+  "target_schema": {
+    "path": "rulesets/schema/ruleset-v3.schema.json",
+    "sha256": "5368aeb987caab94d7e8cafe5f4d34bc9f637661b7077bfb03108ea1129ecd8c"
+  },
+  "counts": {
+    "source_rules": 20,
+    "mapped_source_rules": 20,
+    "target_zones": 2,
+    "target_use_permissions": 6,
+    "target_profile_regulations": 18,
+    "target_special_pathways": 2,
+    "mapped_scope_topics": 10,
+    "conflicts": 1
+  },
+  "rule_mappings": [
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.use.single_family_dwelling",
+      "source_zone": "R1-6L",
+      "source_capability_id": "use.single_family_dwelling",
+      "target_kind": "use_permission",
+      "target_zone": "R1-6L",
+      "target_profile_id": null,
+      "target_capability_id": "use.single_family_dwelling",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.use.single_family_dwelling",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Removed redundant rule-level structure_type; zone use permission owns legal-use identity.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.approval.zoning_clearance",
+      "source_zone": "R1-6L",
+      "source_capability_id": "approval.zoning_clearance",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "approval.zoning_clearance",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.approval.zoning_clearance",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.approval.architectural_review",
+      "source_zone": "R1-6L",
+      "source_capability_id": "approval.architectural_review",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "approval.architectural_review",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.approval.architectural_review",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.standard.maximum_primary_structure_height",
+      "source_zone": "R1-6L",
+      "source_capability_id": "standard.maximum_primary_structure_height",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "standard.maximum_primary_structure_height",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.standard.maximum_primary_structure_height",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.standard.maximum_stories",
+      "source_zone": "R1-6L",
+      "source_capability_id": "standard.maximum_stories",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "standard.maximum_stories",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.standard.maximum_stories",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.standard.maximum_structure_coverage",
+      "source_zone": "R1-6L",
+      "source_capability_id": "standard.maximum_structure_coverage",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "standard.maximum_structure_coverage",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.standard.maximum_structure_coverage",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.setback.front",
+      "source_zone": "R1-6L",
+      "source_capability_id": "setback.front",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.front",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.front",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.setback.interior_side",
+      "source_zone": "R1-6L",
+      "source_capability_id": "setback.interior_side",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.interior_side",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.interior_side",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.setback.street_side",
+      "source_zone": "R1-6L",
+      "source_capability_id": "setback.street_side",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.street_side",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.street_side",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-6l.setback.rear",
+      "source_zone": "R1-6L",
+      "source_capability_id": "setback.rear",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-6L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.rear",
+      "target_rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.rear",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.use.single_family_dwelling",
+      "source_zone": "R1-8L",
+      "source_capability_id": "use.single_family_dwelling",
+      "target_kind": "use_permission",
+      "target_zone": "R1-8L",
+      "target_profile_id": null,
+      "target_capability_id": "use.single_family_dwelling",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.use.single_family_dwelling",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Removed redundant rule-level structure_type; zone use permission owns legal-use identity.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.approval.zoning_clearance",
+      "source_zone": "R1-8L",
+      "source_capability_id": "approval.zoning_clearance",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "approval.zoning_clearance",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.approval.zoning_clearance",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.approval.architectural_review",
+      "source_zone": "R1-8L",
+      "source_capability_id": "approval.architectural_review",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "approval.architectural_review",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.approval.architectural_review",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.standard.maximum_primary_structure_height",
+      "source_zone": "R1-8L",
+      "source_capability_id": "standard.maximum_primary_structure_height",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "standard.maximum_primary_structure_height",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.standard.maximum_primary_structure_height",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.standard.maximum_stories",
+      "source_zone": "R1-8L",
+      "source_capability_id": "standard.maximum_stories",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "standard.maximum_stories",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.standard.maximum_stories",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.standard.maximum_structure_coverage",
+      "source_zone": "R1-8L",
+      "source_capability_id": "standard.maximum_structure_coverage",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "standard.maximum_structure_coverage",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.standard.maximum_structure_coverage",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.setback.front",
+      "source_zone": "R1-8L",
+      "source_capability_id": "setback.front",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.front",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.front",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.setback.interior_side",
+      "source_zone": "R1-8L",
+      "source_capability_id": "setback.interior_side",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.interior_side",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.interior_side",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.setback.street_side",
+      "source_zone": "R1-8L",
+      "source_capability_id": "setback.street_side",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.street_side",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.street_side",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    },
+    {
+      "source_rule_id": "us.ca.santa_clara.r1-8l.setback.rear",
+      "source_zone": "R1-8L",
+      "source_capability_id": "setback.rear",
+      "target_kind": "profile_regulation",
+      "target_zone": "R1-8L",
+      "target_profile_id": "single_family",
+      "target_capability_id": "setback.rear",
+      "target_rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.rear",
+      "preserved_components": [
+        "label",
+        "requirement",
+        "lot_context",
+        "conditions",
+        "exception_family_ids",
+        "validation_status",
+        "conflict_id"
+      ],
+      "representation_changes": [
+        "Inserted the ordinary profile ID into the rule identity.",
+        "Derived structure_type from the enclosing profile.",
+        "Reset approved_for_ruleset to false for the new schema lineage."
+      ]
+    }
+  ],
+  "topic_mappings": [
+    {
+      "source_label": "Accessory structures",
+      "target_topic_id": "accessory_structures",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "ADUs and JADUs",
+      "target_topic_id": "adus_and_jadus",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "SB 9 and two-unit projects",
+      "target_topic_id": "sb9_and_two_unit_projects",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Density and state-law overrides",
+      "target_topic_id": "density_and_state_law_overrides",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Parcel-creation standards",
+      "target_topic_id": "parcel_creation_standards",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Driveway approach length",
+      "target_topic_id": "driveway_approach_length",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Daylight plane",
+      "target_topic_id": "daylight_plane",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Proposal-specific compliance",
+      "target_topic_id": "proposal_specific_compliance",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Buildable-envelope geometry",
+      "target_topic_id": "buildable_envelope_geometry",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    },
+    {
+      "source_label": "Historic, specific-plan, and other overlay review",
+      "target_topic_id": "historic_specific_plan_and_other_overlay_review",
+      "provenance_source_ref": "approved-r1-v2-scope"
+    }
+  ],
+  "added_contract_records": [
+    "R1 two-family use-permission record for each migrated zone",
+    "R1 multifamily not-listed record for each migrated zone",
+    "R1 Chapter 18.24 not-evaluated special pathway for each migrated zone",
+    "Structured R1 Chapter 18.24 dimensional-analysis topic"
+  ],
+  "allowed_ruleset_changes": [
+    "The v3 artifact has a new lineage identity and candidate approval state.",
+    "Rules are separated into zone use permissions and profile-owned regulations.",
+    "Profile-owned rule IDs include the exact profile ID.",
+    "Structure type moves from each rule into the enclosing exact profile.",
+    "The v2 global not-evaluated list becomes structured sourced topic records.",
+    "Conflict dispositions use ruleset-neutral wording while preserving selection meaning.",
+    "The verified-through cutoff advances through the residential amendment audit."
+  ]
+}

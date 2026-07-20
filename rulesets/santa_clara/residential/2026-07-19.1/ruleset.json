@@ -1,0 +1,1284 @@
+{
+  "$schema": "../../../schema/ruleset-v3.schema.json",
+  "schema_version": "3.0.0",
+  "ruleset_id": "santa-clara-residential-zoning",
+  "version": "2026-07-19.1",
+  "jurisdiction": {
+    "name": "City of Santa Clara",
+    "slug": "santa_clara",
+    "state": "CA",
+    "country": "US"
+  },
+  "status": "candidate",
+  "approved_on": null,
+  "verified_through": "2026-07-18",
+  "scope": {
+    "description": "Candidate selected residential standards contract containing the migrated R1 baseline; remaining target zones are intentionally unauthored.",
+    "workflow_families": [
+      "single_family",
+      "multifamily"
+    ],
+    "legal_use_capability_ids": [
+      "use.single_family_dwelling",
+      "use.two_family_dwelling",
+      "use.multifamily_dwelling"
+    ],
+    "primary_structure_types": [
+      "single_family_primary_structure",
+      "two_family_primary_structure",
+      "multifamily_primary_structure"
+    ],
+    "result_kind": "selected_residential_standards_retrieval"
+  },
+  "predecessor_rulesets": [
+    {
+      "ruleset_id": "santa-clara-r1-base-zone",
+      "version": "2026-07-17.2",
+      "sha256": "8cd3282feb48cb4774a25dee48e5d3f152f89c3da877b49f168654706d236ed1",
+      "crosswalk_path": "rulesets/santa_clara/residential/2026-07-19.1/migration-crosswalk.json"
+    }
+  ],
+  "shared": {
+    "source_documents": {
+      "sc-title18-2025-07": {
+        "title": "Santa Clara Zoning Code, Title 18",
+        "version": "July 2025",
+        "effective_date": null,
+        "local_path": "data/raw/2026-07-16/santa_clara_zoning_code/SantaClaraZoningCode-July-2025.pdf",
+        "sha256": "d6461e366cd214beb5c96ee8abe7498d80464879ac63f216119db7c3af6c9c35",
+        "verification_status": "verified_baseline"
+      },
+      "sc-title18-amendment-audit-2026-07-16": {
+        "title": "Santa Clara Title 18 post-baseline amendment audit",
+        "version": "Cutoff July 16, 2026",
+        "effective_date": null,
+        "local_path": "docs/title18-amendment-audit.md",
+        "sha256": "e145d100ee1f5581ef3c516a0383cd9e4a61bf5fb01b265223c7661b4b43e0f2",
+        "verification_status": "verified_audit_artifact"
+      },
+      "approved-r1-ruleset-v2": {
+        "title": "Approved Santa Clara R1 ruleset v2",
+        "version": "2026-07-17.2",
+        "effective_date": "2026-07-17",
+        "local_path": "rulesets/santa_clara/r1/2026-07-17.2/ruleset.json",
+        "sha256": "8cd3282feb48cb4774a25dee48e5d3f152f89c3da877b49f168654706d236ed1",
+        "verification_status": "verified_migration_source"
+      },
+      "sc-title18-amendment-audit-2026-07-18": {
+        "title": "Santa Clara residential Title 18 post-baseline amendment audit",
+        "version": "Cutoff July 18, 2026",
+        "effective_date": null,
+        "local_path": "docs/residential-title18-amendment-audit.md",
+        "sha256": "709d8c6089a36347a416ed7fdb2745124ea1fca241bae453629be2c65a0eee54",
+        "verification_status": "verified_audit_artifact"
+      }
+    },
+    "citations": {
+      "use-table": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.10.020, Table 2-1",
+        "topic": "R1 use permissions"
+      },
+      "zoning-clearance": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.10.020(D) and Chapter 18.126",
+        "topic": "Zoning Clearance for permitted construction"
+      },
+      "architectural-review": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.120.020",
+        "topic": "Architectural Review and Development Review Hearing triggers"
+      },
+      "r1-standards-table": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.10.030, Table 2-3",
+        "topic": "R1 base development standards"
+      },
+      "r1-additional-standards": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.10.040",
+        "topic": "Additional R1 development standards and exceptions"
+      },
+      "r1-8l-corner-side": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.10.040(B)(1)",
+        "topic": "R1-8L street-side corner setback"
+      },
+      "conflict-rule": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.04.020(G)",
+        "topic": "More restrictive requirement controls when provisions conflict"
+      },
+      "residential-encroachments": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.10.030, Table 2-6",
+        "topic": "Residential setback encroachments"
+      },
+      "general-projections": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Sections 18.30.010 and 18.30.020",
+        "topic": "General development standards and projections"
+      },
+      "height-method": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.30.040 and Article 8 definition of Grade",
+        "topic": "Height measurement and appurtenance exceptions"
+      },
+      "setback-method": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Section 18.30.050",
+        "topic": "Setback measurement, averaging, and lot orientation"
+      },
+      "coverage-definition": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Article 8 definitions of Structure and Structure Coverage",
+        "topic": "Included and excluded structure coverage"
+      },
+      "nonconformities": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Chapters 18.90 and 18.92",
+        "topic": "Legal nonconforming uses and structures"
+      },
+      "amendment-audit": {
+        "source_document_id": "sc-title18-amendment-audit-2026-07-16",
+        "locator": "R1 conclusion",
+        "topic": "No adopted post-baseline change identified for selected R1 standards"
+      },
+      "approved-r1-v2-scope": {
+        "source_document_id": "approved-r1-ruleset-v2",
+        "locator": "not_evaluated",
+        "topic": "Approved predecessor scope limitations"
+      },
+      "r1-two-unit-pathway": {
+        "source_document_id": "sc-title18-2025-07",
+        "locator": "Chapter 18.24",
+        "topic": "R1 two-home permission and dimensional pathways"
+      },
+      "residential-amendment-audit": {
+        "source_document_id": "sc-title18-amendment-audit-2026-07-18",
+        "locator": "Residential expansion conclusion",
+        "topic": "Later-legislation review for selected residential standards"
+      }
+    },
+    "definitions": {},
+    "exception_families": {
+      "coverage-definition-and-projections": {
+        "label": "Coverage inclusions, exclusions, and permitted projections",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "coverage-definition",
+          "general-projections"
+        ]
+      },
+      "height-measurement-and-appurtenances": {
+        "label": "Grade measurement, roof form, and nonhabitable appurtenances",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "height-method",
+          "r1-additional-standards"
+        ]
+      },
+      "setback-measurement-and-plan-lines": {
+        "label": "Parcel lines, curb face, right-of-way, and official plan lines",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "r1-standards-table",
+          "setback-method"
+        ]
+      },
+      "front-setback-block-average": {
+        "label": "Front setback averaging on legally improved block faces",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "setback-method"
+        ]
+      },
+      "narrow-pre-1955-parcel-side-setback": {
+        "label": "Reduced interior side setback for qualifying narrow pre-1955 parcels",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "r1-additional-standards"
+        ]
+      },
+      "alley-rear-setback-credit": {
+        "label": "One-half alley width may count toward rear setback",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "setback-method"
+        ]
+      },
+      "setback-encroachments": {
+        "label": "Residential and general permitted setback projections",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "residential-encroachments",
+          "general-projections"
+        ]
+      },
+      "legal-nonconformities": {
+        "label": "Legal nonconforming structures and retained conditions",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "nonconformities"
+        ]
+      },
+      "disaster-reconstruction": {
+        "label": "Qualifying reconstruction using prior footprint and setbacks",
+        "treatment": "not_evaluated",
+        "source_refs": [
+          "r1-additional-standards"
+        ]
+      }
+    }
+  },
+  "zones": {
+    "R1-6L": {
+      "label": "R1-6L",
+      "use_permissions": {
+        "use.single_family_dwelling": {
+          "rule_id": "us.ca.santa_clara.r1-6l.use.single_family_dwelling",
+          "label": "Single-family dwelling",
+          "requirement": {
+            "kind": "status",
+            "code": "permitted_by_right",
+            "source_refs": [
+              "use-table"
+            ]
+          },
+          "conditions": [
+            "Permitted by right does not mean approval-free construction."
+          ],
+          "exception_family_ids": [],
+          "validation_status": "verified_base_value",
+          "conflict_id": null,
+          "approved_for_ruleset": false,
+          "special_pathway_id": null
+        },
+        "use.two_family_dwelling": {
+          "rule_id": "us.ca.santa_clara.r1-6l.use.two_family_dwelling",
+          "label": "Two-family dwelling pathway",
+          "requirement": {
+            "kind": "status",
+            "code": "permitted_by_right",
+            "source_refs": [
+              "use-table",
+              "r1-two-unit-pathway",
+              "residential-amendment-audit"
+            ]
+          },
+          "conditions": [
+            "Subject to Chapter 18.24 eligibility and attached-or-detached configuration rules.",
+            "Dimensional analysis is not evaluated by the current product."
+          ],
+          "exception_family_ids": [],
+          "validation_status": "verified_with_conditions",
+          "conflict_id": null,
+          "special_pathway_id": "r1_chapter_18_24_two_unit",
+          "approved_for_ruleset": false
+        },
+        "use.multifamily_dwelling": {
+          "rule_id": "us.ca.santa_clara.r1-6l.use.multifamily_dwelling",
+          "label": "Multifamily dwelling",
+          "requirement": {
+            "kind": "status",
+            "code": "not_listed",
+            "source_refs": [
+              "use-table",
+              "residential-amendment-audit"
+            ]
+          },
+          "conditions": [
+            "Not listed records the controlling base-table cell and is not a prohibition conclusion."
+          ],
+          "exception_family_ids": [],
+          "validation_status": "verified_base_value",
+          "conflict_id": null,
+          "special_pathway_id": null,
+          "approved_for_ruleset": false
+        }
+      },
+      "analysis_profiles": {
+        "single_family": {
+          "workflow_family": "single_family",
+          "legal_use_capability_id": "use.single_family_dwelling",
+          "primary_structure_type": "single_family_primary_structure",
+          "regulations": {
+            "approval.zoning_clearance": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.approval.zoning_clearance",
+              "label": "Zoning Clearance",
+              "requirement": {
+                "kind": "status",
+                "code": "required",
+                "source_refs": [
+                  "zoning-clearance"
+                ]
+              },
+              "applicability": {
+                "lot_context": "not_applicable"
+              },
+              "conditions": [
+                "Applies to a permitted-by-right use involving construction."
+              ],
+              "exception_family_ids": [],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "approval.architectural_review": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.approval.architectural_review",
+              "label": "Architectural Review",
+              "requirement": {
+                "kind": "status",
+                "code": "required",
+                "source_refs": [
+                  "architectural-review"
+                ]
+              },
+              "applicability": {
+                "lot_context": "not_applicable"
+              },
+              "conditions": [
+                "A Development Review Hearing is required for listed single-family project types."
+              ],
+              "exception_family_ids": [],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "standard.maximum_primary_structure_height": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.standard.maximum_primary_structure_height",
+              "label": "Maximum primary-structure height",
+              "requirement": {
+                "kind": "maximum_quantity",
+                "value": {
+                  "number": 25,
+                  "unit": "ft"
+                },
+                "source_refs": [
+                  "r1-standards-table",
+                  "height-method",
+                  "amendment-audit"
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base maximum; it is not an absolute cap for every listed nonhabitable appurtenance."
+              ],
+              "exception_family_ids": [
+                "height-measurement-and-appurtenances"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "standard.maximum_stories": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.standard.maximum_stories",
+              "label": "Maximum stories",
+              "requirement": {
+                "kind": "maximum_quantity",
+                "value": {
+                  "number": 2,
+                  "unit": "stories"
+                },
+                "source_refs": [
+                  "r1-standards-table",
+                  "amendment-audit"
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Automated proposal-level story counting is not included."
+              ],
+              "exception_family_ids": [],
+              "validation_status": "verified_base_value",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "standard.maximum_structure_coverage": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.standard.maximum_structure_coverage",
+              "label": "Maximum structure coverage",
+              "requirement": {
+                "kind": "maximum_quantity",
+                "value": {
+                  "number": 40,
+                  "unit": "percent"
+                },
+                "source_refs": [
+                  "r1-standards-table",
+                  "coverage-definition",
+                  "amendment-audit"
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base-zone value only; do not calculate remaining capacity without existing-structure facts."
+              ],
+              "exception_family_ids": [
+                "coverage-definition-and-projections"
+              ],
+              "validation_status": "verified_base_value",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.front": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.front",
+              "label": "Front setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 20,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "setback-method",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": [
+                  {
+                    "adjustment_id": "second-story-total",
+                    "trigger": {
+                      "kind": "story_at_or_above",
+                      "story": 2
+                    },
+                    "effect": {
+                      "kind": "replace_total_minimum",
+                      "value": {
+                        "kind": "distance",
+                        "number": 25,
+                        "unit": "ft"
+                      }
+                    },
+                    "source_refs": [
+                      "r1-standards-table",
+                      "setback-method",
+                      "amendment-audit"
+                    ]
+                  }
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base setback; block-face averaging and measurement controls are not evaluated.",
+                "The code does not clearly state whether block-face averaging changes this second-story line."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "front-setback-block-average",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.interior_side": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.interior_side",
+              "label": "Interior-side setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 5,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "r1-additional-standards",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": [
+                  {
+                    "adjustment_id": "second-story-total",
+                    "trigger": {
+                      "kind": "story_at_or_above",
+                      "story": 2
+                    },
+                    "effect": {
+                      "kind": "replace_total_minimum",
+                      "value": {
+                        "kind": "distance",
+                        "number": 10,
+                        "unit": "ft"
+                      }
+                    },
+                    "source_refs": [
+                      "r1-standards-table",
+                      "r1-additional-standards",
+                      "amendment-audit"
+                    ]
+                  }
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base setback; narrow-parcel and nonconformity exceptions are not evaluated."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "narrow-pre-1955-parcel-side-setback",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.street_side": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.street_side",
+              "label": "Street-side (corner-side) setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 10,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "setback-method",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": [
+                  {
+                    "adjustment_id": "second-story-total",
+                    "trigger": {
+                      "kind": "story_at_or_above",
+                      "story": 2
+                    },
+                    "effect": {
+                      "kind": "replace_total_minimum",
+                      "value": {
+                        "kind": "distance",
+                        "number": 15,
+                        "unit": "ft"
+                      }
+                    },
+                    "source_refs": [
+                      "r1-standards-table",
+                      "setback-method",
+                      "amendment-audit"
+                    ]
+                  }
+                ]
+              },
+              "applicability": {
+                "lot_context": "corner"
+              },
+              "conditions": [
+                "Corner orientation and street-adjacent measurement require additional parcel facts."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.rear": {
+              "rule_id": "us.ca.santa_clara.r1-6l.single_family.setback.rear",
+              "label": "Rear setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 20,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "setback-method",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": []
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base setback; alley credit and feature-specific encroachments are not evaluated."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "alley-rear-setback-credit",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            }
+          },
+          "not_evaluated_topic_ids": [
+            "accessory_structures",
+            "adus_and_jadus",
+            "sb9_and_two_unit_projects",
+            "density_and_state_law_overrides",
+            "parcel_creation_standards",
+            "driveway_approach_length",
+            "daylight_plane",
+            "proposal_specific_compliance",
+            "buildable_envelope_geometry",
+            "historic_specific_plan_and_other_overlay_review"
+          ]
+        }
+      },
+      "special_pathways": {
+        "r1_chapter_18_24_two_unit": {
+          "label": "R1 Chapter 18.24 two-home pathway",
+          "workflow_family": "multifamily",
+          "legal_use_capability_id": "use.two_family_dwelling",
+          "configuration_scope": "attached_or_detached_homes",
+          "analysis_requirement": {
+            "kind": "not_evaluated",
+            "reason_code": "requires_unimplemented_eligibility_and_branch_logic",
+            "explanation": "The controlling standards branch on eligibility, attached or detached configuration, the ordinary R1 envelope, existing setbacks, and proposal facts.",
+            "source_refs": [
+              "r1-two-unit-pathway",
+              "residential-amendment-audit"
+            ],
+            "prerequisite_ids": [
+              "proposal_specific_compliance",
+              "buildable_envelope_geometry"
+            ]
+          },
+          "not_evaluated_topic_ids": [
+            "r1_chapter_18_24_dimensional_analysis"
+          ],
+          "validation_status": "verified_with_conditions",
+          "approved_for_ruleset": false
+        }
+      }
+    },
+    "R1-8L": {
+      "label": "R1-8L",
+      "use_permissions": {
+        "use.single_family_dwelling": {
+          "rule_id": "us.ca.santa_clara.r1-8l.use.single_family_dwelling",
+          "label": "Single-family dwelling",
+          "requirement": {
+            "kind": "status",
+            "code": "permitted_by_right",
+            "source_refs": [
+              "use-table"
+            ]
+          },
+          "conditions": [
+            "Permitted by right does not mean approval-free construction."
+          ],
+          "exception_family_ids": [],
+          "validation_status": "verified_base_value",
+          "conflict_id": null,
+          "approved_for_ruleset": false,
+          "special_pathway_id": null
+        },
+        "use.two_family_dwelling": {
+          "rule_id": "us.ca.santa_clara.r1-8l.use.two_family_dwelling",
+          "label": "Two-family dwelling pathway",
+          "requirement": {
+            "kind": "status",
+            "code": "permitted_by_right",
+            "source_refs": [
+              "use-table",
+              "r1-two-unit-pathway",
+              "residential-amendment-audit"
+            ]
+          },
+          "conditions": [
+            "Subject to Chapter 18.24 eligibility and attached-or-detached configuration rules.",
+            "Dimensional analysis is not evaluated by the current product."
+          ],
+          "exception_family_ids": [],
+          "validation_status": "verified_with_conditions",
+          "conflict_id": null,
+          "special_pathway_id": "r1_chapter_18_24_two_unit",
+          "approved_for_ruleset": false
+        },
+        "use.multifamily_dwelling": {
+          "rule_id": "us.ca.santa_clara.r1-8l.use.multifamily_dwelling",
+          "label": "Multifamily dwelling",
+          "requirement": {
+            "kind": "status",
+            "code": "not_listed",
+            "source_refs": [
+              "use-table",
+              "residential-amendment-audit"
+            ]
+          },
+          "conditions": [
+            "Not listed records the controlling base-table cell and is not a prohibition conclusion."
+          ],
+          "exception_family_ids": [],
+          "validation_status": "verified_base_value",
+          "conflict_id": null,
+          "special_pathway_id": null,
+          "approved_for_ruleset": false
+        }
+      },
+      "analysis_profiles": {
+        "single_family": {
+          "workflow_family": "single_family",
+          "legal_use_capability_id": "use.single_family_dwelling",
+          "primary_structure_type": "single_family_primary_structure",
+          "regulations": {
+            "approval.zoning_clearance": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.approval.zoning_clearance",
+              "label": "Zoning Clearance",
+              "requirement": {
+                "kind": "status",
+                "code": "required",
+                "source_refs": [
+                  "zoning-clearance"
+                ]
+              },
+              "applicability": {
+                "lot_context": "not_applicable"
+              },
+              "conditions": [
+                "Applies to a permitted-by-right use involving construction."
+              ],
+              "exception_family_ids": [],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "approval.architectural_review": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.approval.architectural_review",
+              "label": "Architectural Review",
+              "requirement": {
+                "kind": "status",
+                "code": "required",
+                "source_refs": [
+                  "architectural-review"
+                ]
+              },
+              "applicability": {
+                "lot_context": "not_applicable"
+              },
+              "conditions": [
+                "A Development Review Hearing is required for listed single-family project types."
+              ],
+              "exception_family_ids": [],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "standard.maximum_primary_structure_height": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.standard.maximum_primary_structure_height",
+              "label": "Maximum primary-structure height",
+              "requirement": {
+                "kind": "maximum_quantity",
+                "value": {
+                  "number": 25,
+                  "unit": "ft"
+                },
+                "source_refs": [
+                  "r1-standards-table",
+                  "height-method",
+                  "amendment-audit"
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base maximum; it is not an absolute cap for every listed nonhabitable appurtenance."
+              ],
+              "exception_family_ids": [
+                "height-measurement-and-appurtenances"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "standard.maximum_stories": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.standard.maximum_stories",
+              "label": "Maximum stories",
+              "requirement": {
+                "kind": "maximum_quantity",
+                "value": {
+                  "number": 2,
+                  "unit": "stories"
+                },
+                "source_refs": [
+                  "r1-standards-table",
+                  "amendment-audit"
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Automated proposal-level story counting is not included."
+              ],
+              "exception_family_ids": [],
+              "validation_status": "verified_base_value",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "standard.maximum_structure_coverage": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.standard.maximum_structure_coverage",
+              "label": "Maximum structure coverage",
+              "requirement": {
+                "kind": "maximum_quantity",
+                "value": {
+                  "number": 40,
+                  "unit": "percent"
+                },
+                "source_refs": [
+                  "r1-standards-table",
+                  "coverage-definition",
+                  "amendment-audit"
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base-zone value only; do not calculate remaining capacity without existing-structure facts."
+              ],
+              "exception_family_ids": [
+                "coverage-definition-and-projections"
+              ],
+              "validation_status": "verified_base_value",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.front": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.front",
+              "label": "Front setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 20,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "setback-method",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": [
+                  {
+                    "adjustment_id": "second-story-total",
+                    "trigger": {
+                      "kind": "story_at_or_above",
+                      "story": 2
+                    },
+                    "effect": {
+                      "kind": "replace_total_minimum",
+                      "value": {
+                        "kind": "distance",
+                        "number": 25,
+                        "unit": "ft"
+                      }
+                    },
+                    "source_refs": [
+                      "r1-standards-table",
+                      "setback-method",
+                      "amendment-audit"
+                    ]
+                  }
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base setback; block-face averaging and measurement controls are not evaluated.",
+                "The code does not clearly state whether block-face averaging changes this second-story line."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "front-setback-block-average",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.interior_side": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.interior_side",
+              "label": "Interior-side setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "paired_distances",
+                    "members": [
+                      {
+                        "role": "smaller_setback",
+                        "number": 6,
+                        "unit": "ft"
+                      },
+                      {
+                        "role": "larger_setback",
+                        "number": 9,
+                        "unit": "ft"
+                      }
+                    ],
+                    "relationship": "coordinated_pair",
+                    "physical_assignment": "proposal_dependent"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "r1-additional-standards",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": [
+                  {
+                    "adjustment_id": "second-story-total-pair",
+                    "trigger": {
+                      "kind": "story_at_or_above",
+                      "story": 2
+                    },
+                    "effect": {
+                      "kind": "replace_total_minimum",
+                      "value": {
+                        "kind": "paired_distances",
+                        "members": [
+                          {
+                            "role": "smaller_setback",
+                            "number": 11,
+                            "unit": "ft"
+                          },
+                          {
+                            "role": "larger_setback",
+                            "number": 14,
+                            "unit": "ft"
+                          }
+                        ],
+                        "relationship": "coordinated_pair",
+                        "physical_assignment": "proposal_dependent"
+                      }
+                    },
+                    "source_refs": [
+                      "r1-standards-table",
+                      "r1-additional-standards",
+                      "amendment-audit"
+                    ]
+                  }
+                ]
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "The paired yards must not be reduced to one symmetric value."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "narrow-pre-1955-parcel-side-setback",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            },
+            "setback.street_side": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.street_side",
+              "label": "Street-side (corner-side) setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 15,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "r1-8l-corner-side",
+                    "conflict-rule",
+                    "amendment-audit",
+                    "setback-method"
+                  ]
+                },
+                "adjustments": []
+              },
+              "applicability": {
+                "lot_context": "corner"
+              },
+              "conditions": [
+                "Project-selected value pending official City clarification of the conflicting table cell.",
+                "Corner orientation and street-adjacent measurement require additional parcel facts."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "project_resolved_with_conditions",
+              "conflict_id": "conflict-r1-8l-corner-side-first",
+              "approved_for_ruleset": false
+            },
+            "setback.rear": {
+              "rule_id": "us.ca.santa_clara.r1-8l.single_family.setback.rear",
+              "label": "Rear setback",
+              "requirement": {
+                "kind": "setback",
+                "base": {
+                  "value": {
+                    "kind": "distance",
+                    "number": 20,
+                    "unit": "ft"
+                  },
+                  "source_refs": [
+                    "r1-standards-table",
+                    "setback-method",
+                    "amendment-audit"
+                  ]
+                },
+                "adjustments": []
+              },
+              "applicability": {
+                "lot_context": "all"
+              },
+              "conditions": [
+                "Base setback; alley credit and feature-specific encroachments are not evaluated."
+              ],
+              "exception_family_ids": [
+                "setback-measurement-and-plan-lines",
+                "alley-rear-setback-credit",
+                "setback-encroachments",
+                "legal-nonconformities",
+                "disaster-reconstruction"
+              ],
+              "validation_status": "verified_with_conditions",
+              "conflict_id": null,
+              "approved_for_ruleset": false
+            }
+          },
+          "not_evaluated_topic_ids": [
+            "accessory_structures",
+            "adus_and_jadus",
+            "sb9_and_two_unit_projects",
+            "density_and_state_law_overrides",
+            "parcel_creation_standards",
+            "driveway_approach_length",
+            "daylight_plane",
+            "proposal_specific_compliance",
+            "buildable_envelope_geometry",
+            "historic_specific_plan_and_other_overlay_review"
+          ]
+        }
+      },
+      "special_pathways": {
+        "r1_chapter_18_24_two_unit": {
+          "label": "R1 Chapter 18.24 two-home pathway",
+          "workflow_family": "multifamily",
+          "legal_use_capability_id": "use.two_family_dwelling",
+          "configuration_scope": "attached_or_detached_homes",
+          "analysis_requirement": {
+            "kind": "not_evaluated",
+            "reason_code": "requires_unimplemented_eligibility_and_branch_logic",
+            "explanation": "The controlling standards branch on eligibility, attached or detached configuration, the ordinary R1 envelope, existing setbacks, and proposal facts.",
+            "source_refs": [
+              "r1-two-unit-pathway",
+              "residential-amendment-audit"
+            ],
+            "prerequisite_ids": [
+              "proposal_specific_compliance",
+              "buildable_envelope_geometry"
+            ]
+          },
+          "not_evaluated_topic_ids": [
+            "r1_chapter_18_24_dimensional_analysis"
+          ],
+          "validation_status": "verified_with_conditions",
+          "approved_for_ruleset": false
+        }
+      }
+    }
+  },
+  "conflicts": {
+    "conflict-r1-8l-corner-side-first": {
+      "affected_rule_ids": [
+        "us.ca.santa_clara.r1-8l.single_family.setback.street_side"
+      ],
+      "assertions": [
+        {
+          "assertion_id": "table-2-3-10-ft",
+          "source_refs": [
+            "r1-standards-table"
+          ],
+          "disposition": "not_selected_for_ruleset",
+          "value": {
+            "kind": "distance",
+            "number": 10,
+            "unit": "ft"
+          }
+        },
+        {
+          "assertion_id": "section-18-10-040-b-1-15-ft",
+          "source_refs": [
+            "r1-8l-corner-side"
+          ],
+          "disposition": "selected_for_ruleset",
+          "value": {
+            "kind": "distance",
+            "number": 15,
+            "unit": "ft"
+          }
+        }
+      ],
+      "resolution": {
+        "selected_assertion_id": "section-18-10-040-b-1-15-ft",
+        "rationale": "The zone-specific written provision requires at least 15 feet, and Section 18.04.020(G) directs use of the more restrictive requirement when provisions conflict.",
+        "decision_source": "Project owner direction for the prototype",
+        "decision_date": "2026-07-16",
+        "status": "project_resolved_pending_official_clarification",
+        "re_review_triggers": [
+          "Official City or codifier clarification",
+          "A newly consolidated Title 18 edition",
+          "An adopted amendment affecting either cited provision"
+        ],
+        "selected_value": {
+          "kind": "distance",
+          "number": 15,
+          "unit": "ft"
+        }
+      }
+    }
+  },
+  "not_evaluated_topics": {
+    "accessory_structures": {
+      "label": "Accessory structures",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "adus_and_jadus": {
+      "label": "ADUs and JADUs",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "sb9_and_two_unit_projects": {
+      "label": "SB 9 and two-unit projects",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "density_and_state_law_overrides": {
+      "label": "Density and state-law overrides",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "parcel_creation_standards": {
+      "label": "Parcel-creation standards",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "driveway_approach_length": {
+      "label": "Driveway approach length",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "daylight_plane": {
+      "label": "Daylight plane",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "proposal_specific_compliance": {
+      "label": "Proposal-specific compliance",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "buildable_envelope_geometry": {
+      "label": "Buildable-envelope geometry",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "historic_specific_plan_and_other_overlay_review": {
+      "label": "Historic, specific-plan, and other overlay review",
+      "reason_code": "migrated_scope_limitation",
+      "explanation": "The approved R1 v2 ruleset expressly excluded this subject from its deterministic retrieval scope.",
+      "source_refs": [
+        "approved-r1-v2-scope"
+      ],
+      "prerequisite_ids": []
+    },
+    "r1_chapter_18_24_dimensional_analysis": {
+      "label": "R1 Chapter 18.24 two-home dimensional analysis",
+      "reason_code": "requires_unimplemented_eligibility_and_branch_logic",
+      "explanation": "Permission is source verified, but the current product lacks the facts and branch logic required to return dimensional standards.",
+      "source_refs": [
+        "r1-two-unit-pathway",
+        "residential-amendment-audit"
+      ],
+      "prerequisite_ids": [
+        "proposal_specific_compliance",
+        "buildable_envelope_geometry"
+      ]
+    }
+  },
+  "disclaimer": "Santa Clara Zoning Explorer reports selected residential zoning standards and is not a complete entitlement analysis or legal or planning determination."
+}

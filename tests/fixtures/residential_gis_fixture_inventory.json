@@ -1,0 +1,356 @@
+{
+  "fixture_contract_version": "1.0.0",
+  "status": "source_and_geometry_verified",
+  "verified_on": "2026-07-18",
+  "purpose": "Address-to-zone routing fixtures for the selected residential expansion; these records do not establish legal-use permission or dimensional standards.",
+  "sources": {
+    "address_points": {
+      "snapshot_date": "2026-07-16",
+      "manifest_file": "data/raw/2026-07-16/santa_clara_address_points/manifest.json",
+      "manifest_sha256": "e1861a418f0c78a0581449d6474f80bb38d6a4d7e3b76dfd7e846c73cabd1632",
+      "output_sha256": "5b637bcfa1f5188548545afd183aa4b2e2dcb5edbf0baf409a81ed836e012a22"
+    },
+    "residential_gis": {
+      "snapshot_date": "2026-07-18",
+      "manifest_file": "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json",
+      "manifest_sha256": "f71138d11eabdff773cb3f8fe156a41d0940b1adde72370f9bbab74a397aeb38",
+      "parcels_sha256": "e31ce5afb81c717ddcbd639c17b57a4625bcf257175a14cc03a09bfc90f5ecc3",
+      "current_zoning_sha256": "cb18cf0a8f7b2ebc8754334285b0f73e3160ca7d7f3fc64eeb6df3963b23f862"
+    }
+  },
+  "real_address_fixtures": [
+    {
+      "id": "r1_6l_barto",
+      "designation": "R1-6L",
+      "address": {
+        "display_address": "636 Barto Street",
+        "source_object_id": 193634739,
+        "source_address_id": 10028501,
+        "unit": null,
+        "longitude": -121.9831373489907,
+        "latitude": 37.33386934039514
+      },
+      "parcel": {
+        "source_object_id": 7535,
+        "apn": "293-16-045",
+        "designation": "R1-6L",
+        "specific_plan": null
+      },
+      "current_zoning": {
+        "source_object_id": 7535,
+        "designation": "R1-6L"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "r1_8l_brookside",
+      "designation": "R1-8L",
+      "address": {
+        "display_address": "108 Brookside Avenue",
+        "source_object_id": 193625291,
+        "source_address_id": 10016833,
+        "unit": null,
+        "longitude": -121.96321379439908,
+        "latitude": 37.32537867793737
+      },
+      "parcel": {
+        "source_object_id": 7103,
+        "apn": "303-22-022",
+        "designation": "R1-8L",
+        "specific_plan": null
+      },
+      "current_zoning": {
+        "source_object_id": 7103,
+        "designation": "R1-8L"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "r2_white",
+      "designation": "R2",
+      "address": {
+        "display_address": "1240 White Drive",
+        "source_object_id": 193622730,
+        "source_address_id": 10013675,
+        "unit": null,
+        "longitude": -121.97279923849531,
+        "latitude": 37.34865288505975
+      },
+      "parcel": {
+        "source_object_id": 589,
+        "apn": "290-14-206",
+        "designation": "R2",
+        "specific_plan": null
+      },
+      "current_zoning": {
+        "source_object_id": 589,
+        "designation": "R2"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "r3_pomeroy",
+      "designation": "R3",
+      "address": {
+        "display_address": "1577 Pomeroy Avenue",
+        "source_object_id": 193642095,
+        "source_address_id": 10005646,
+        "unit": null,
+        "longitude": -121.98666575248693,
+        "latitude": 37.3514078103888
+      },
+      "parcel": {
+        "source_object_id": 51,
+        "apn": "290-03-090",
+        "designation": "R3",
+        "specific_plan": null
+      },
+      "current_zoning": {
+        "source_object_id": 51,
+        "designation": "R3"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "r4_coleman",
+      "designation": "R4",
+      "address": {
+        "display_address": "1400 Coleman Avenue",
+        "source_object_id": 193642967,
+        "source_address_id": 10032385,
+        "unit": null,
+        "longitude": -121.93614722025374,
+        "latitude": 37.35729285854955
+      },
+      "parcel": {
+        "source_object_id": 2434,
+        "apn": "230-05-021",
+        "designation": "R4",
+        "specific_plan": "SCS"
+      },
+      "current_zoning": {
+        "source_object_id": 2434,
+        "designation": "R4"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "ph_r5_patrick_henry",
+      "designation": "PH-R5",
+      "address": {
+        "display_address": "3105 Patrick Henry Drive",
+        "source_object_id": 193621223,
+        "source_address_id": 10011817,
+        "unit": null,
+        "longitude": -121.98489800319291,
+        "latitude": 37.39647293963474
+      },
+      "parcel": {
+        "source_object_id": 10467,
+        "apn": "104-04-131",
+        "designation": "PH-R5",
+        "specific_plan": "PH"
+      },
+      "current_zoning": {
+        "source_object_id": 10467,
+        "designation": "PH-R5"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "uv_patrick_henry",
+      "designation": "UV",
+      "address": {
+        "display_address": "3200 Patrick Henry Drive",
+        "source_object_id": 193612293,
+        "source_address_id": 10000959,
+        "unit": null,
+        "longitude": -121.98493759726068,
+        "latitude": 37.396048996385424
+      },
+      "parcel": {
+        "source_object_id": 10134,
+        "apn": "104-04-124",
+        "designation": "UV",
+        "specific_plan": "PH"
+      },
+      "current_zoning": {
+        "source_object_id": 10134,
+        "designation": "UV"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "vr_patrick_henry",
+      "designation": "VR",
+      "address": {
+        "display_address": "4701 Patrick Henry Drive",
+        "source_object_id": 193642393,
+        "source_address_id": 10014822,
+        "unit": null,
+        "longitude": -121.98385304988861,
+        "latitude": 37.3979124480552
+      },
+      "parcel": {
+        "source_object_id": 10070,
+        "apn": "104-53-000",
+        "designation": "VR",
+        "specific_plan": "PH"
+      },
+      "current_zoning": {
+        "source_object_id": 10070,
+        "designation": "VR"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "uc_old_ironsides",
+      "designation": "UC",
+      "address": {
+        "display_address": "4650 Old Ironsides Drive",
+        "source_object_id": 193636782,
+        "source_address_id": 10030988,
+        "unit": null,
+        "longitude": -121.97970376547289,
+        "latitude": 37.39757254951643
+      },
+      "parcel": {
+        "source_object_id": 23092,
+        "apn": "104-04-077",
+        "designation": "UC",
+        "specific_plan": "PH"
+      },
+      "current_zoning": {
+        "source_object_id": 23092,
+        "designation": "UC"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    },
+    {
+      "id": "hdf_old_ironsides",
+      "designation": "HDF",
+      "address": {
+        "display_address": "4633 Old Ironsides Drive",
+        "source_object_id": 193613532,
+        "source_address_id": 10002455,
+        "unit": null,
+        "longitude": -121.97938463792003,
+        "latitude": 37.39651366582125
+      },
+      "parcel": {
+        "source_object_id": 11750,
+        "apn": "104-04-141",
+        "designation": "HDF",
+        "specific_plan": "PH"
+      },
+      "current_zoning": {
+        "source_object_id": 11750,
+        "designation": "HDF"
+      },
+      "verification": {
+        "exact_address_match_count": 1,
+        "parcel_match_count": 1,
+        "current_zoning_match_count": 1,
+        "parcel_and_current_zoning_agree": true
+      }
+    }
+  ],
+  "synthetic_zero_count_fixtures": [
+    {
+      "id": "r5_no_live_feature",
+      "designation": "R5",
+      "kind": "synthetic_ruleset_and_contract_fixture",
+      "parcel_source_count": 0,
+      "current_zoning_source_count": 0,
+      "boundary": "No real address fixture may be invented while both exact live counts remain zero."
+    },
+    {
+      "id": "r6_no_live_feature",
+      "designation": "R6",
+      "kind": "synthetic_ruleset_and_contract_fixture",
+      "parcel_source_count": 0,
+      "current_zoning_source_count": 0,
+      "boundary": "No real address fixture may be invented while both exact live counts remain zero."
+    }
+  ],
+  "synthetic_excluded_designation_fixtures": [
+    {
+      "id": "r1_6lht_excluded",
+      "designation": "R1-6LHT",
+      "kind": "synthetic_negative_designation_fixture",
+      "parcel_preflight_count": 14,
+      "current_zoning_preflight_count": 14,
+      "expected_treatment": "unsupported_exact_designation",
+      "must_not_normalize_to": "R1-6L"
+    },
+    {
+      "id": "r2_7l_excluded",
+      "designation": "R2-7L",
+      "kind": "synthetic_negative_designation_fixture",
+      "parcel_preflight_count": 1,
+      "current_zoning_preflight_count": 1,
+      "expected_treatment": "unsupported_exact_designation",
+      "must_not_normalize_to": "R2"
+    },
+    {
+      "id": "r2ht_excluded",
+      "designation": "R2HT",
+      "kind": "synthetic_negative_designation_fixture",
+      "parcel_preflight_count": 2,
+      "current_zoning_preflight_count": 2,
+      "expected_treatment": "unsupported_exact_designation",
+      "must_not_normalize_to": "R2"
+    }
+  ],
+  "selection_notes": [
+    "Every real fixture has one exact address record, one intersecting residential parcel, one intersecting current-zoning feature, and matching exact designations.",
+    "Both live R4 polygons were inspected. 1400 Coleman Avenue (OBJECTID 2434, SCS specific-plan attribute) was selected; the other is 2250 El Camino Real (OBJECTID 23128, ECR specific-plan attribute).",
+    "All PH-R5, UV, VR, UC, and HDF polygons were inspected for address-point intersections before choosing one non-unit fixture per designation.",
+    "Fixture zoning labels test deterministic routing only. Legal uses and standards come from independently verified and approved regulatory sources."
+  ]
+}

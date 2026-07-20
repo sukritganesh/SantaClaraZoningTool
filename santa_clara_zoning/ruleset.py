@@ -1,4 +1,4 @@
-"""Validated runtime loading for the approved Santa Clara R1 ruleset."""
+"""Validated, immutable runtime loading for approved Santa Clara rulesets."""
 
 from __future__ import annotations
 
@@ -8,6 +8,12 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Mapping
 
+from scripts.validate_approved_residential_rules import (
+    DEFAULT_APPROVED_RESIDENTIAL_ARTIFACTS,
+    ResidentialRulesetArtifacts,
+    load_approved_residential_lineage,
+    validate_complete_approved_lineage,
+)
 from scripts.validate_r1_rules_v2 import (
     runtime_eligibility_errors,
     validate_migration,
@@ -50,11 +56,20 @@ DEFAULT_APPROVED_ARTIFACTS = RulesetArtifacts(
 class RulesetLoadError(RuntimeError):
     """Report the gate that rejected a runtime ruleset and its evidence."""
 
-    def __init__(self, stage: str, errors: list[str]) -> None:
+    def __init__(
+        self,
+        stage: str,
+        errors: list[str],
+        *,
+        ruleset_name: str = "R1",
+    ) -> None:
         self.stage = stage
         self.errors = tuple(errors)
+        self.ruleset_name = ruleset_name
         detail = "\n".join(f"- {error}" for error in self.errors)
-        super().__init__(f"Approved R1 ruleset rejected during {stage}:\n{detail}")
+        super().__init__(
+            f"Approved {ruleset_name} ruleset rejected during {stage}:\n{detail}"
+        )
 
 
 @dataclass(frozen=True)
@@ -119,7 +134,10 @@ class ApprovedR1Ruleset:
 
         frozen = _freeze_json(ruleset)
         if not isinstance(frozen, Mapping):
-            raise RulesetLoadError("internal representation", ["ruleset is not an object"])
+            raise RulesetLoadError(
+                "internal representation",
+                ["ruleset is not an object"],
+            )
         return cls(_data=frozen, artifacts=paths)
 
     @property
@@ -172,6 +190,138 @@ class ApprovedR1Ruleset:
         return value
 
 
+@dataclass(frozen=True)
+class ApprovedResidentialRuleset:
+    """Validated, recursively read-only access to approved residential v3 data."""
+
+    _data: Mapping[str, Any]
+    artifacts: ResidentialRulesetArtifacts
+
+    @classmethod
+    def load(
+        cls,
+        artifacts: ResidentialRulesetArtifacts = (
+            DEFAULT_APPROVED_RESIDENTIAL_ARTIFACTS
+        ),
+    ) -> "ApprovedResidentialRuleset":
+        """Load one lineage snapshot, validate every gate, and freeze its target."""
+
+        paths = artifacts.resolved()
+        try:
+            lineage = load_approved_residential_lineage(paths)
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
+            raise RulesetLoadError(
+                "artifact loading",
+                [f"Could not load complete residential lineage: {exc}"],
+                ruleset_name="residential",
+            ) from exc
+
+        try:
+            errors = validate_complete_approved_lineage(
+                lineage,
+                repo_root=REPO_ROOT,
+                verify_source_files=True,
+            )
+        except Exception as exc:
+            raise RulesetLoadError(
+                "complete lineage validation",
+                [f"validator raised {type(exc).__name__}: {exc}"],
+                ruleset_name="residential",
+            ) from exc
+        if errors:
+            raise RulesetLoadError(
+                "complete lineage validation",
+                errors,
+                ruleset_name="residential",
+            )
+
+        frozen = _freeze_json(lineage.ruleset)
+        if not isinstance(frozen, Mapping):
+            raise RulesetLoadError(
+                "internal representation",
+                ["ruleset is not an object"],
+                ruleset_name="residential",
+            )
+        return cls(_data=frozen, artifacts=paths)
+
+    @property
+    def ruleset_id(self) -> str:
+        return str(self._data["ruleset_id"])
+
+    @property
+    def version(self) -> str:
+        return str(self._data["version"])
+
+    @property
+    def schema_version(self) -> str:
+        return str(self._data["schema_version"])
+
+    @property
+    def approved_on(self) -> str:
+        return str(self._data["approved_on"])
+
+    @property
+    def verified_through(self) -> str:
+        return str(self._data["verified_through"])
+
+    @property
+    def jurisdiction(self) -> dict[str, Any]:
+        value = _thaw_json(self._data["jurisdiction"])
+        if not isinstance(value, dict):
+            raise RuntimeError("Validated jurisdiction is not an object")
+        return value
+
+    @property
+    def disclaimer(self) -> str:
+        return str(self._data["disclaimer"])
+
+    @property
+    def supported_zones(self) -> tuple[str, ...]:
+        zones = self._validated_zones()
+        return tuple(str(zone) for zone in zones)
+
+    @property
+    def regulation_count(self) -> int:
+        """Count approved use-permission and ordinary-profile rule records."""
+
+        return sum(
+            len(zone["use_permissions"])
+            + sum(
+                len(profile["regulations"])
+                for profile in zone["analysis_profiles"].values()
+            )
+            for zone in self._validated_zones().values()
+        )
+
+    @property
+    def analysis_profile_count(self) -> int:
+        return sum(
+            len(zone["analysis_profiles"])
+            for zone in self._validated_zones().values()
+        )
+
+    @property
+    def special_pathway_count(self) -> int:
+        return sum(
+            len(zone["special_pathways"])
+            for zone in self._validated_zones().values()
+        )
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return a defensive mutable copy without exposing authoritative state."""
+
+        value = _thaw_json(self._data)
+        if not isinstance(value, dict):
+            raise RuntimeError("Validated ruleset is not an object")
+        return value
+
+    def _validated_zones(self) -> Mapping[str, Any]:
+        zones = self._data["zones"]
+        if not isinstance(zones, Mapping):
+            raise RuntimeError("Validated zones collection is not an object")
+        return zones
+
+
 def _read_json_object(path: Path, label: str) -> dict[str, Any]:
     try:
         with path.open(encoding="utf-8") as source:
@@ -191,7 +341,9 @@ def _read_json_object(path: Path, label: str) -> dict[str, Any]:
 
 def _freeze_json(value: Any) -> Any:
     if isinstance(value, dict):
-        return MappingProxyType({key: _freeze_json(item) for key, item in value.items()})
+        return MappingProxyType(
+            {key: _freeze_json(item) for key, item in value.items()}
+        )
     if isinstance(value, list):
         return tuple(_freeze_json(item) for item in value)
     return value

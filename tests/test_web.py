@@ -290,7 +290,7 @@ class WebStartupFailureTest(unittest.TestCase):
     def test_ruleset_startup_failure_is_presented_after_search(self) -> None:
         failure = RulesetLoadError("fixture gate", ["private diagnostic detail"])
         with patch(
-            "santa_clara_zoning.web.R1StandardsPipeline.from_defaults",
+            "santa_clara_zoning.web.ResidentialZoneSummaryPipeline.from_defaults",
             side_effect=failure,
         ):
             app = create_app()

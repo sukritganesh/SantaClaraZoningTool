@@ -2,11 +2,11 @@
 
 **Status:** Active backlog
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
 This document records worthwhile improvements that are not all part of the current implementation block. It prevents design observations from being lost while keeping active milestone status in `docs/progress.md`.
 
-An item here does not expand the current prototype scope or authorize implementation. When an item becomes active, `docs/progress.md` owns its execution status and the relevant design, catalog, schema, or verification document owns its detailed contract.
+An item here does not expand the current active scope or authorize implementation. When an item becomes active, `docs/progress.md` owns its execution status and the relevant design, catalog, schema, or verification document owns its detailed contract.
 
 The deferred regulation-family queue remains in `docs/regulations/supported-regulations.md`; it is linked rather than duplicated here.
 
@@ -36,9 +36,9 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 | `DATA-001` | Populate source-backed shared definitions | Encode materially relevant terms such as Grade, Structure, Structure Coverage, Story, Corner Lot, and lot-line classifications without duplicating them across zones. | Before proposal-level evaluation of affected rules | Proposed |
 | `DATA-002` | Link rules explicitly to definitions and measurement methods | Replace implicit glossary relationships with validated references such as `definition_ids` or typed measurement-method references. | Ruleset schema later version | Proposed |
 | `DATA-003` | Replace consequential prose conditions with typed logic | Incrementally encode conditions that affect applicability, numbers, triggers, or operations; retain prose only for explanation and unsupported behavior. | As each evaluator is implemented | Proposed |
-| `DATA-004` | Structure `not evaluated` topics | Give deferred subjects stable identifiers, reasons, source references, and the facts or capabilities required before evaluation. | Before broad product presentation | Proposed |
+| `DATA-004` | Structure `not evaluated` topics | Give deferred subjects stable identifiers, reasons, source references, and the facts or capabilities required before evaluation. | Residential expansion Block 2 | Promoted |
 | `DATA-005` | Add rule lifecycle and supersession metadata | Represent effective periods, replaced provisions, amendment lineage, and re-review triggers without mutating prior approved rulesets. | Multi-version maintenance phase | Proposed |
-| `DATA-006` | Add source-backed zone profiles | Store reviewed per-zone names, purposes, characteristic-use descriptions, and source references so richer overviews can be composed without interpreting zone codes or inventing narrative at runtime. | After the brief Block 7 overview | Proposed |
+| `DATA-006` | Add source-backed zone profiles | Store reviewed per-zone names, purposes, characteristic-use descriptions, and source references so richer overviews can be composed without interpreting zone codes or inventing narrative at runtime. | After the initial residential expansion | Proposed |
 
 ### Provenance and explanation
 
@@ -48,12 +48,18 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 | `PROV-002` | Distinguish supporting, conflicting, and contextual sources | Prevent renderers from presenting a rejected assertion as support for the selected value; conflict dispositions and source roles must remain visible. | Domain validation and presentation iterations | Proposed |
 | `PROV-003` | Provide audience-appropriate deterministic explanations | Generate staff-facing and public-facing summaries from the same evaluation trace without changing the underlying conclusion. | Presentation iteration | Proposed |
 
+### Presentation and interaction
+
+| ID | Improvement | Intended outcome | Horizon | Status |
+|---|---|---|---|---|
+| `UX-001` | Add conditional structure-specific selection | Reuse the existing exact profile-selection backend when supported standards or evaluation inputs genuinely differ by residential structure; keep the common zone summary as the default while the approved profiles remain semantically equivalent. | A later ruleset or proposal-input phase that introduces a material profile difference | Proposed |
+
 ### Workflow automation and expansion
 
 | ID | Improvement | Intended outcome | Horizon | Status |
 |---|---|---|---|---|
-| `AUTO-001` | Build an AI-assisted candidate extraction workflow | Extract candidate rules, definitions, exceptions, cross-references, and conflicts into validated schemas while preventing AI from approving its own output. | Post-prototype workflow automation | Proposed |
-| `AUTO-002` | Automate source-change and amendment impact detection | Compare new code editions and ordinances with approved snapshots, identify affected capabilities and zones, and require focused re-verification. | Post-prototype maintenance workflow | Proposed |
+| `AUTO-001` | Build an AI-assisted candidate extraction workflow | Extract candidate rules, definitions, exceptions, cross-references, and conflicts into validated schemas while preventing AI from approving its own output. | Later product workflow automation | Proposed |
+| `AUTO-002` | Automate source-change and amendment impact detection | Compare new code editions and ordinances with approved snapshots, identify affected capabilities and zones, and require focused re-verification. | Later product maintenance workflow | Proposed |
 | `AUTO-003` | Generalize onboarding for additional jurisdictions | Map exact semantic matches into a validated shared capability core while preserving unmatched local rules as typed, source-backed, namespaced extensions; do not carry Santa Clara values or silently discard local differences. | Multi-jurisdiction phase | Proposed |
 
 For additional zoning capabilities—including ADUs, SB 9, density bonus, parking, overlays, averaging, encroachments, and nonconformities—use the authoritative deferred queue in `docs/regulations/supported-regulations.md`.

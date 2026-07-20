@@ -9,8 +9,32 @@ import zipfile
 from pathlib import Path
 from typing import Mapping
 
-from scripts.bootstrap_demo_data import DemoDataBootstrapError, install_bundle
+from scripts.bootstrap_demo_data import (
+    DEFAULT_MANIFESTS,
+    DemoDataBootstrapError,
+    install_bundle,
+)
 from scripts.build_demo_data_bundle import ARCHIVE_PATH, MANIFEST_PATH
+from scripts.build_residential_demo_data_bundle import (
+    ARCHIVE_PATH as RESIDENTIAL_ARCHIVE_PATH,
+    MANIFEST_PATH as RESIDENTIAL_MANIFEST_PATH,
+)
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+LEGACY_RESIDENTIAL_MANIFEST_PATH = (
+    REPO_ROOT / "demo-data/residential-bundle-manifest.json"
+)
+LEGACY_RESIDENTIAL_ARCHIVE_PATH = (
+    REPO_ROOT
+    / "demo-data/santa-clara-residential-runtime-data-2026-07-19.1.zip"
+)
+PATRICK_HENRY_PLAN_PATH = (
+    "data/raw/2026-07-18/patrick_henry_drive_specific_plan/PatrickHenryPlan.pdf"
+)
+PATRICK_HENRY_MANIFEST_PATH = (
+    "data/raw/2026-07-18/patrick_henry_drive_specific_plan/manifest.json"
+)
 
 
 def _sha256(value: bytes) -> str:
@@ -201,6 +225,80 @@ class CommittedDemoDataBundleTest(unittest.TestCase):
                     / "data/raw/2026-07-14/santa_clara_r1_gis/parcels_r1.geojson"
                 ).is_file()
             )
+
+    def test_residential_successor_matches_manifest_and_installs(self) -> None:
+        manifest = json.loads(
+            RESIDENTIAL_MANIFEST_PATH.read_text(encoding="utf-8")
+        )
+        archive_record = manifest["archive"]
+        self.assertEqual(archive_record["file"], RESIDENTIAL_ARCHIVE_PATH.name)
+        self.assertEqual(
+            archive_record["size_bytes"],
+            RESIDENTIAL_ARCHIVE_PATH.stat().st_size,
+        )
+        self.assertLess(RESIDENTIAL_ARCHIVE_PATH.stat().st_size, 50_000_000)
+        self.assertEqual(
+            archive_record["sha256"],
+            hashlib.sha256(RESIDENTIAL_ARCHIVE_PATH.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            {record["path"] for record in manifest["included_files"]},
+            {
+                "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json",
+                "data/raw/2026-07-18/santa_clara_residential_gis/parcels_residential.geojson",
+                "data/raw/2026-07-18/santa_clara_residential_gis/current_zoning_residential.geojson",
+                PATRICK_HENRY_PLAN_PATH,
+                PATRICK_HENRY_MANIFEST_PATH,
+            },
+        )
+        with tempfile.TemporaryDirectory() as raw_temp:
+            repository = Path(raw_temp) / "repository"
+            repository.mkdir()
+            installed, matched = install_bundle(
+                RESIDENTIAL_MANIFEST_PATH,
+                repository,
+            )
+            self.assertEqual((installed, matched), (5, 0))
+            self.assertTrue(
+                (
+                    repository
+                    / "data/raw/2026-07-18/santa_clara_residential_gis/manifest.json"
+                ).is_file()
+            )
+            self.assertTrue((repository / PATRICK_HENRY_PLAN_PATH).is_file())
+            self.assertTrue((repository / PATRICK_HENRY_MANIFEST_PATH).is_file())
+
+    def test_default_bundles_install_complete_runtime_source_set(self) -> None:
+        self.assertEqual(DEFAULT_MANIFESTS, (MANIFEST_PATH, RESIDENTIAL_MANIFEST_PATH))
+        with tempfile.TemporaryDirectory() as raw_temp:
+            repository = Path(raw_temp) / "repository"
+            repository.mkdir()
+            results = [
+                install_bundle(manifest_path, repository)
+                for manifest_path in DEFAULT_MANIFESTS
+            ]
+
+            self.assertEqual(results, [(17, 0), (5, 0)])
+            self.assertTrue((repository / PATRICK_HENRY_PLAN_PATH).is_file())
+            self.assertTrue((repository / PATRICK_HENRY_MANIFEST_PATH).is_file())
+
+    def test_predecessor_residential_add_on_remains_checksum_reproducible(self) -> None:
+        manifest = json.loads(
+            LEGACY_RESIDENTIAL_MANIFEST_PATH.read_text(encoding="utf-8")
+        )
+        archive_record = manifest["archive"]
+
+        self.assertEqual(manifest["bundle_version"], "2026-07-19.1")
+        self.assertEqual(archive_record["file"], LEGACY_RESIDENTIAL_ARCHIVE_PATH.name)
+        self.assertEqual(archive_record["size_bytes"], 4_186_509)
+        self.assertEqual(
+            archive_record["sha256"],
+            "bbe2274b00b2687d4a540484e7fcf8cbdc7a8038a063cb4973b169038bb3e098",
+        )
+        self.assertEqual(
+            hashlib.sha256(LEGACY_RESIDENTIAL_ARCHIVE_PATH.read_bytes()).hexdigest(),
+            archive_record["sha256"],
+        )
 
 
 if __name__ == "__main__":

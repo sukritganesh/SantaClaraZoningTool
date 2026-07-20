@@ -3,17 +3,18 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Santa Clara R1 Zoning Prototype{% endblock %}</title>
+    <title>{% block title %}Santa Clara Zoning Explorer{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
+      <span class="hero-easter-egg" aria-hidden="true">YIMBY</span>
       <div class="page-shell">
-        <p class="eyebrow">Santa Clara R1 zoning prototype</p>
+        <p class="eyebrow">Santa Clara Zoning Explorer</p>
         <h1>Residential zoning lookup</h1>
-        <p class="site-intro">Review selected, evidence-backed base-zone rules for an R1-6L or R1-8L property.</p>
+        <p class="site-intro">Selected residential zoning standards by address.</p>
       </div>
     </header>
     <main id="main-content" class="page-shell">
@@ -21,7 +22,7 @@
     </main>
     <footer class="site-footer">
       <div class="page-shell">
-        <p>This prototype does not provide a complete entitlement analysis or legal or planning determination.</p>
+        <p>This application does not provide a complete entitlement analysis or legal or planning determination.</p>
       </div>
     </footer>
   </body>

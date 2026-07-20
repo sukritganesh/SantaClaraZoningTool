@@ -1,0 +1,104 @@
+{
+  "crosswalk_version": "1.0.0",
+  "migration_id": "santa-clara-residential-v3-add-patrick-henry-zones",
+  "generated_on": "2026-07-19",
+  "migration_status": "candidate_contract_validated",
+  "source_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.3/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.3",
+    "schema_version": "3.2.0",
+    "status": "candidate",
+    "sha256": "7f54eb7569a007ce4b5bdac334aa3fd051990937df2717e270960cdde6e426d6"
+  },
+  "target_ruleset": {
+    "path": "rulesets/santa_clara/residential/2026-07-19.4/ruleset.json",
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.4",
+    "schema_version": "3.2.0",
+    "status": "candidate",
+    "sha256": "7e4261277aeb527cd479249a6f580cb6006f5e186c911106c9d4ab9f9ce734b7"
+  },
+  "target_schema": {
+    "path": "rulesets/schema/ruleset-v3.2.schema.json",
+    "sha256": "186204364b72f6aac4b8615030c874681c6aa5ea4fac976aff03214f7347c6ef"
+  },
+  "counts": {
+    "source_zones": 7,
+    "target_zones": 12,
+    "carried_source_rules": 131,
+    "target_rules": 196,
+    "added_use_permissions": 15,
+    "added_analysis_profiles": 5,
+    "added_profile_regulations": 50,
+    "added_not_evaluated_topics": 8,
+    "added_source_documents": 2,
+    "added_citations": 9,
+    "added_exception_families": 2,
+    "carried_conflicts": 3,
+    "added_conflicts": 1
+  },
+  "preserved_components": [
+    {
+      "component_path": "zones.R1-6L",
+      "sha256": "054bc1b3ec2d6dd96cf54d28be9e2d192e1a8a091d9a4b8c858b33a0ab9c4325"
+    },
+    {
+      "component_path": "zones.R1-8L",
+      "sha256": "fe26b4d1d7bbc5eb98039ba58e63872ff1ad439d6f0b56ca5e30ed8bcae86101"
+    },
+    {
+      "component_path": "zones.R2",
+      "sha256": "1414a43a1d64ee4340c791aabad78416d31152fe4b44c259ea43b74ebc237c75"
+    },
+    {
+      "component_path": "zones.R3",
+      "sha256": "12ec3d4a5cca2584cbd01bfd224cd3b82754c36911c1df4da44f2c4044652dec"
+    },
+    {
+      "component_path": "zones.R4",
+      "sha256": "06c507a7a35f5482934d1befb350cdb298fee75c24fcb4606ff09fcbb392a28a"
+    },
+    {
+      "component_path": "zones.R5",
+      "sha256": "295c5b02e12f23d6f9c9f6359b91ec2514bbdd575c111f7c4a12dc1465b3a023"
+    },
+    {
+      "component_path": "zones.R6",
+      "sha256": "1a93d8ad5ad9f85dc88c533e12dedb49a28f7ad0733f6e44481cb00fea42788e"
+    },
+    {
+      "component_path": "conflicts",
+      "sha256": "047f611ffcc930f62236d2146165cd67045f35c85d8f63d268264a99f1ac6dbe"
+    },
+    {
+      "component_path": "not_evaluated_topics",
+      "sha256": "2f88bcc6d0532d248941c845b5881ca2af4605ff0712ffcf2a6960d7024a63d5"
+    }
+  ],
+  "added_zone_profiles": {
+    "PH-R5": [
+      "multifamily"
+    ],
+    "UV": [
+      "multifamily"
+    ],
+    "VR": [
+      "multifamily"
+    ],
+    "UC": [
+      "multifamily"
+    ],
+    "HDF": [
+      "multifamily"
+    ]
+  },
+  "allowed_ruleset_changes": [
+    "Retain schema 3.2.0 and advance the candidate version without widening the regulation map.",
+    "Add exactly PH-R5, UV, VR, UC, and HDF with three use permissions and one multifamily profile each.",
+    "Add ten existing supported capabilities per Patrick Henry profile, including gross density.",
+    "Retain every PH-R5 density assertion and project-select Table 1-1's 51-100 DU/AC range.",
+    "Add checksum-pinned Patrick Henry source, verification, qualification, and exception records.",
+    "Retain candidate status, null approval, and false record approvals pending full candidate review."
+  ]
+}

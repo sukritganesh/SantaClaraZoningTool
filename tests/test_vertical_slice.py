@@ -90,9 +90,10 @@ import hashlib
 import json
 import os
 
+from santa_clara_zoning import R1StandardsPipeline
 from santa_clara_zoning.web import create_app
 
-app = create_app()
+app = create_app(R1StandardsPipeline.from_defaults())
 if app.extensions["r1_startup_error"] is not None:
     raise RuntimeError("Default application startup failed")
 app.config.update(TESTING=True)
@@ -172,11 +173,11 @@ def _authoritative_projection(result: dict[str, Any]) -> dict[str, Any]:
 class VerticalSliceAcceptanceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.app = create_app()
+        cls.pipeline = R1StandardsPipeline.from_defaults()
+        cls.app = create_app(cls.pipeline)
         cls.app.config.update(TESTING=True)
-        cls.pipeline = cls.app.extensions["r1_standards_pipeline"]
         if not isinstance(cls.pipeline, R1StandardsPipeline):
-            raise AssertionError("Default application startup did not load the real pipeline")
+            raise AssertionError("Released R1 acceptance did not load the real pipeline")
         if cls.app.extensions["r1_startup_error"] is not None:
             raise AssertionError("Default application startup reported an integrity error")
         cls.client = cls.app.test_client()

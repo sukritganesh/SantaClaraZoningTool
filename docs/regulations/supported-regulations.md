@@ -1,10 +1,10 @@
 # Supported Regulations Catalog
 
-**Last updated:** July 18, 2026
+**Last updated:** July 19, 2026
 
-**Current jurisdictional scope:** City of Santa Clara R1-6L and R1-8L prototype
+**Current jurisdictional scope:** City of Santa Clara selected residential zones in the approved residential ruleset, including citywide R zones and Patrick Henry designations
 
-This catalog defines the regulation families and supporting behaviors that belong to the prototype's supported product scope. It explains what each capability means and where its current implementation stops. It does not define JSON fields or database tables, and it does not store jurisdiction-specific numeric values.
+This catalog defines the regulation families and supporting behaviors that belong to Santa Clara Zoning Explorer's selected residential scope. It explains what each capability means and where its current implementation stops. It does not define JSON fields or database tables, and it does not store jurisdiction-specific numeric values.
 
 As regulation coverage grows, detailed family-specific documents may be added beside this catalog in `docs/regulations/`. This file remains the top-level index.
 
@@ -13,7 +13,8 @@ As regulation coverage grows, detailed family-specific documents may be added be
 Each project artifact has a distinct role:
 
 - This catalog defines **which regulatory capabilities are supported** and what support means.
-- `ruleset-authoring-guide.md` defines the approved ruleset v2 representation for humans and AI-assisted extraction workflows.
+- `ruleset-authoring-guide.md` defines the preserved approved ruleset v2 representation for the released R1 lineage.
+- `residential-ruleset-authoring-guide.md` defines the approved ruleset v3 representation for the residential expansion lineage.
 - The versioned ruleset stores approved Santa Clara values, citations, applicability, conditions, and provenance.
 - `docs/r1-rule-verification.md` records the legal-source analysis supporting those values.
 - The JSON Schema defines how supported capabilities are represented in machine-readable data.
@@ -36,7 +37,7 @@ When a provision does not fit an existing shared capability exactly, it must not
 
 An unrecognized extension must be rejected or reported as `not evaluated`; it must never be silently discarded. If equivalent extensions recur across jurisdictions, they may be deliberately promoted into the shared core through a versioned catalog, schema, migration, validation, and testing change.
 
-The current Santa Clara R1 prototype uses only the shared capabilities cataloged below. It does not yet implement arbitrary jurisdiction extensions.
+The current Santa Clara work uses only the shared capabilities cataloged below. It does not yet implement arbitrary jurisdiction extensions.
 
 ## Capability stages
 
@@ -50,7 +51,7 @@ The current Santa Clara R1 prototype uses only the shared capabilities cataloged
 | Evaluated | Deterministic code can apply the rule to parcel or proposal facts. |
 | Presented | The interface displays the result, sources, limitations, and status. |
 
-The current Santa Clara rules are cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, retrievable by exact R1-6L or R1-8L zone key, and attached after an unambiguous supported address-to-parcel-to-zone lookup. Parcel- or proposal-level evaluation and presentation remain later stages.
+The released Santa Clara R1 rules remain cataloged, encoded in approved ruleset v2 version `2026-07-17.2`, and preserved as the historical regression baseline. Approved residential ruleset `2026-07-19.5` encodes the verified complete 12-zone use/profile matrix and selected standards, including gross residential density, two-family and multifamily identities, and explicit no-maximum-listed, FAA-controlled, and plan-dependent dispositions. It now feeds the complete-lineage loader, exact residential GIS lookup, exact profile/pathway retriever, contract-`2.1.0` pipeline, fail-closed common-zone summary, and default residential application. The interface lists the verified residential use identities separately and presents dimensional standards without a structure selector only when every ordinary profile in that zone has semantically identical supported standards. Parcel- or proposal-level compliance evaluation remains outside this phase.
 
 ## Current supported regulation families
 
@@ -58,28 +59,31 @@ The current Santa Clara rules are cataloged, encoded in approved ruleset v2 vers
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `use.single_family_dwelling` | Single-family dwelling use classification | Base R1 permission status; separate approvals remain visible | Retrievable from approved v2 |
-| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Retrievable from approved v2 |
-| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Retrievable from approved v2 |
+| `use.single_family_dwelling` | Single-family dwelling use classification | Explicit source-table status for every target-zone matrix cell; separate approvals remain visible | Presented through the default residential application |
+| `use.two_family_dwelling` | Two-family dwelling use classification | Separate legal-use identity; ordinary two-family structures use the multifamily workflow family, while the R1 Chapter 18.24 path remains separate | Presented through the default residential application |
+| `use.multifamily_dwelling` | Multifamily dwelling use classification | Explicit source-table status for every target-zone matrix cell | Presented through the default residential application |
+| `approval.zoning_clearance` | Zoning Clearance requirement | Construction associated with the supported permitted use | Presented through the default residential application |
+| `approval.architectural_review` | Architectural Review requirement | Base review requirement and disclosure of hearing triggers | Presented through the default residential application |
 
 ### Dimensional standards
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit with measurement and exception warnings | Retrievable from approved v2 |
-| `standard.maximum_stories` | Maximum number of stories | Base numeric limit; automated story classification is excluded | Retrievable from approved v2 |
-| `standard.maximum_structure_coverage` | Maximum structure coverage | Base percentage only; remaining development capacity is not calculated | Retrievable from approved v2 |
+| `standard.maximum_primary_structure_height` | Maximum primary-structure height | Base numeric limit or explicit FAA-controlled result with measurement, exception, and applicable proximity-transition warnings | Presented through the default residential application |
+| `standard.maximum_stories` | Maximum number of stories | Base numeric limit or explicit FAA-controlled result; automated story classification is excluded | Presented through the default residential application |
+| `standard.maximum_structure_coverage` | Maximum structure coverage | Universal percentage, lot-area-tiered percentage/no-maximum-listed outcomes, or universal no-maximum-listed outcome; remaining development capacity is not calculated | Presented through the default residential application |
+| `standard.gross_residential_density` | Gross residential density range | Base-zone minimum and maximum in dwelling units per acre; parcel yield, plan reconciliation, density bonus, and state-law adjustments are not calculated | Presented through the default residential application |
 
 ### Setbacks
 
 | Capability ID | Regulation or behavior | Current scope | Current stage |
 |---|---|---|---|
-| `setback.front` | Front setback | Base requirement and supported upper-story difference | Retrievable from approved v2 |
-| `setback.rear` | Rear setback | Base requirement | Retrievable from approved v2 |
-| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Retrievable from approved v2 |
-| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Retrievable from approved v2 |
-| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Retrievable as embedded approved-v2 behavior |
-| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Retrievable as embedded approved-v2 behavior |
+| `setback.front` | Front setback | Base requirement and supported upper-story difference | Presented through the default residential application |
+| `setback.rear` | Rear setback | Base requirement, supported story-triggered replacement, or explicit plan-dependent result | Presented through the default residential application |
+| `setback.interior_side` | Interior-side setback | Scalar or paired base requirements and supported upper-story difference | Presented through the default residential application |
+| `setback.street_side` | Street-side setback on a corner lot | Santa Clara calls this the corner-side setback; base and upper-story requirements are supported | Presented through the default residential application |
+| `setback.adjustment.story_based` | Story-triggered setback or stepback | A different minimum may apply beginning at a specified story | Presented as embedded behavior through approved v2 and residential v3 results |
+| `setback.configuration.paired_side_yards` | Unequal paired interior-side yards | Preserves two coordinated side-yard requirements rather than collapsing them into one value | Presented as embedded behavior through approved v2 and residential v3 results |
 
 ## Use and approval capabilities
 
@@ -87,7 +91,17 @@ The current Santa Clara rules are cataloged, encoded in approved ruleset v2 vers
 
 The system may report the base permission category for a single-family dwelling in a supported zone. “Permitted by right” must never be translated into “no approvals required.” Use classification and approval requirements remain separate outputs.
 
-The current capability does not evaluate two-family dwellings, ADUs, JADUs, SB 9 projects, home occupations, or other residential and accessory uses.
+The current capability does not evaluate ADUs, JADUs, SB 9 eligibility, home occupations, or other residential and accessory uses.
+
+### Two-family dwelling use classification
+
+The expansion keeps two-family as a distinct legal-use capability and `two_family_primary_structure` as a distinct structure identity. Its ordinary dimensional analysis uses the `multifamily` workflow family; this reuse must not erase its separate use or structure identity.
+
+R1's Chapter 18.24 two-home pathway is not an ordinary two-family profile. It can involve attached or detached homes and branches on eligibility, configuration, existing improvements, and proposal facts. The product may list that permission pathway, but its dimensional analysis remains `not evaluated` until those inputs and rules are implemented.
+
+### Multifamily dwelling use classification
+
+The expansion may report the source-table permission status for a multifamily dwelling in a target residential zone. A source-table `not_listed` result means only that the use is not listed in the controlling base table; it must not be presented as a prohibition or as a complete entitlement conclusion.
 
 ### Zoning Clearance
 
@@ -109,7 +123,15 @@ The system may retrieve the base maximum number of stories. It does not yet dete
 
 ### Maximum structure coverage
 
-The system may retrieve the base maximum coverage percentage and explain that coverage can include structures beyond the primary dwelling. It does not yet calculate existing coverage, remaining buildable area, or the treatment of every site feature.
+The system may retrieve a universal base maximum percentage, preserve separate source-table outcomes below and at/above a stated lot-area threshold, or report that the controlling base table lists no maximum. A `no_maximum_listed` outcome is not an “unlimited” conclusion. The tiered representation remains part of the same structure-coverage capability rather than creating a new regulation.
+
+The system does not yet calculate existing coverage, remaining buildable area, or the treatment of every site feature.
+
+### Gross residential density
+
+The system may retrieve the base-zone gross residential density range as a sourced minimum and maximum in dwelling units per acre. A range is not a parcel unit-count result: the product does not multiply it by acreage, determine qualifying acreage, round a yield, or decide whether a proposal complies.
+
+Where authoritative code locations disagree, every assertion remains in a conflict record. A project-selected value remains visibly project-resolved and conditional; it is not presented as an official City correction. General Plan, master-plan, specific-plan, area-plan, development-agreement, density-bonus, affordable-housing, and state-law effects remain outside the evaluated result.
 
 ## Setback capabilities
 
@@ -157,6 +179,11 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 - Preservation of conflicting source assertions
 - Documented project resolutions that remain distinct from official government corrections
 - Controlled `not evaluated` and `review required` outcomes
+- Explicit `no maximum listed`, `FAA-controlled`, and `plan-dependent` source dispositions without invented numeric substitutes
+- Typed lot-area-tiered maximum outcomes within an existing supported capability
+- Typed minimum-to-maximum quantity ranges with one closed unit
+- Separation of legal-use permission, workflow family, primary-structure identity, ordinary analysis profiles, and special pathways
+- Partial-candidate validation that remains distinct from complete runtime eligibility
 
 ## Identified but not currently supported
 
@@ -172,12 +199,13 @@ These are cross-cutting platform capabilities rather than individual zoning regu
 | Legal nonconforming structures | Source provisions identified; legal-status facts and evaluator are absent |
 | Accessory structures | Deferred from the initial primary-structure scope |
 | ADUs and JADUs | Deferred; local and state-law interaction is not encoded |
-| SB 9 and two-unit projects | Deferred; eligibility and state-law overrides are not encoded |
-| Density and density bonus | Deferred; project and affordability inputs are not encoded |
+| R1 Chapter 18.24 two-home dimensional analysis | Permission pathway is cataloged; eligibility, configuration, and branch-specific dimensional evaluation remain `not evaluated` |
+| SB 9 project evaluation beyond the source-verified local pathway | Deferred; state-law eligibility and override analysis are not encoded |
+| Density bonus, parcel unit yield, and density compliance | Base-zone gross density ranges are encoded; acreage, plan reconciliation, bonus, affordability, state-law, and proposal evaluation remain deferred |
 | Minimum parcel area and frontage | Values identified but parcel-creation evaluation is deferred |
 | Driveway approach length | Value identified but proposal-specific applicability is deferred |
 | Daylight plane | Geometry and applicability interpretation are deferred |
-| Parking | Not researched or encoded for this prototype |
+| Parking | Not researched or encoded for this selected residential phase |
 | Historic, specific-plan, airport, and other overlays | GIS and regulatory evaluation are deferred |
 | Proposal-specific compliance | No project geometry or detailed proposal evaluator exists |
 
