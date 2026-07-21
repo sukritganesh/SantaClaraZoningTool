@@ -535,6 +535,7 @@ The active product copy is **Santa Clara Zoning Explorer** with scope line **Sel
 | 4. Expand lookup and retrieval | Load the residential GIS and ruleset, determine exact zones, and retrieve standards only for valid use/structure combinations. | Real and synthetic fixtures cover supported, unsupported, ambiguous, mismatch, missing-data, and integrity outcomes deterministically. |
 | 5. Generalize presentation and interface | Remove active R1/prototype assumptions, present the verified common zone standards and residential-use matrix, and render all supported dispositions and qualifications without a mandatory structure selector. | Desktop and mobile states are accessible, source-linked, deterministic, preserve profile-specific disclosures and special pathways, and fail closed if profiles diverge or lookup evidence is insufficient. |
 | 6. Validate and release | Run the complete acceptance matrix, protect the R1 baseline, document limitations, and assign the next release identity. | Source, migration, regression, offline, determinism, interface, and complete-suite gates pass with no unexplained skips. |
+| 7. Add local address autocomplete | Use the validated citywide address snapshot to progressively enhance address discovery without changing exact final lookup. | Bounded deterministic suggestions, strict public response fields, duplicate and unit safety, accessible pointer and keyboard selection, manual fallback, real-snapshot outcomes, and the complete release matrix pass before owner acceptance and `v0.3.0` release work. |
 
 Implementation should stop at each source, contract, data-approval, and release gate for project-owner review.
 
@@ -564,3 +565,20 @@ The phase is complete when the product can:
 - fail closed on unsupported designations, invalid selections, incomplete data, and integrity errors;
 - reproduce the same structured and rendered results from the same versioned inputs; and
 - describe itself as a selected residential zoning information product, not as a complete entitlement analysis or legal or planning determination.
+
+## 16. Post-release local address autocomplete
+
+**Status:** Owner-approved post-`v0.2.0` UX design; Block 7 implementation is validated and awaiting owner acceptance and normal `v0.3.0` release gates.
+
+The address field should progressively suggest canonical records from the already validated July 16 citywide address snapshot. This is a discovery aid over the existing exact lookup boundary, not a new geocoder, zoning source, or regulatory conclusion. Suggestions cover all active Santa Clara address records, including addresses outside the selected residential snapshot; final submission continues through the unchanged address, parcel, zoning, ruleset, summary, and presentation gates.
+
+The local suggestion contract is:
+
+- begin after three normalized alphanumeric characters and reject queries longer than 120 characters;
+- rank exact normalized matches, full-address prefixes, then ordered token-prefix matches without fuzzy correction;
+- collapse identical canonical address values, retain their source-record count, return no more than eight choices, and report truncation so unit-heavy addresses prompt more typing rather than an arbitrary selection;
+- expose only canonical address display/value, Santa Clara locality and ZIP, duplicate count, total unique match count, truncation, and address-snapshot identity through a same-origin endpoint;
+- never expose coordinates, object IDs, parcel facts, zoning facts, or regulations in a suggestion response; and
+- keep ordinary GET form submission operational when JavaScript or suggestions are unavailable.
+
+The interface follows the editable ARIA combobox pattern, debounces and cancels stale requests, supports pointer and keyboard selection, and immediately submits an explicitly chosen suggestion. It remains local vanilla JavaScript with no API key, online provider, frontend package manager, or runtime third-party request. Rulesets, source snapshots, regulatory schemas, result contracts, supported capabilities, and zoning-analysis behavior remain unchanged.

@@ -2,7 +2,7 @@
 
 **Status:** Active backlog
 
-**Last updated:** July 19, 2026
+**Last updated:** July 20, 2026
 
 This document records worthwhile improvements that are not all part of the current implementation block. It prevents design observations from being lost while keeping active milestone status in `docs/progress.md`.
 
@@ -53,6 +53,7 @@ The deferred regulation-family queue remains in `docs/regulations/supported-regu
 | ID | Improvement | Intended outcome | Horizon | Status |
 |---|---|---|---|---|
 | `UX-001` | Add conditional structure-specific selection | Reuse the existing exact profile-selection backend when supported standards or evaluation inputs genuinely differ by residential structure; keep the common zone summary as the default while the approved profiles remain semantically equivalent. | A later ruleset or proposal-input phase that introduces a material profile difference | Proposed |
+| `UX-002` | Add local Santa Clara address autocomplete | Suggest canonical addresses from the validated citywide snapshot as the user types, support accessible keyboard and pointer selection, and submit the chosen address without adding a third-party geocoder or weakening exact final lookup. | [Post-`v0.2.0` UX Block 7](progress.md#block-7-local-address-autocomplete-implementation) | Complete |
 
 ### Workflow automation and expansion
 

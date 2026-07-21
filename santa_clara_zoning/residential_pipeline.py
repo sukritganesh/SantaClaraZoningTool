@@ -114,6 +114,23 @@ class ResidentialStandardsPipeline:
             result[field] = copy.deepcopy(retrieval[field])
         return result
 
+    def suggest_addresses(self, query: str) -> dict[str, Any]:
+        """Delegate autocomplete to the already loaded local address index."""
+
+        suggester = getattr(self.lookup_engine, "suggest_addresses", None)
+        if not callable(suggester):
+            raise PipelineIntegrityError(
+                "address_suggestions_unavailable",
+                "Residential lookup does not provide address suggestions.",
+            )
+        result = suggester(query)
+        if not isinstance(result, dict):
+            raise PipelineIntegrityError(
+                "invalid_address_suggestions",
+                "Residential lookup returned invalid address suggestions.",
+            )
+        return copy.deepcopy(result)
+
 
 def _neutral_result(
     entered_address: str,

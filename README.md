@@ -49,7 +49,7 @@ Then start the residential development application:
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). The [manual testing address sheet](docs/manual-testing-addresses.md) lists one verified address for every live supported designation plus useful controlled-failure cases.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Start typing at least three address characters to choose a canonical City address and run the lookup immediately, or enter a full address and use the ordinary lookup button. Suggestions come only from the bundled Santa Clara snapshot; they require no API key or network request. The [manual testing address sheet](docs/manual-testing-addresses.md) covers autocomplete, one verified address for every live supported designation, and useful controlled-failure cases.
 
 The repository preserves the 35,499,787-byte released R1 bundle and the initial 4,186,509-byte residential GIS-only add-on. Fresh-clone bootstrap uses the R1 bundle plus the source-complete 25,213,418-byte residential successor, which contains the same three GIS artifacts and the checksum-pinned Patrick Henry adopted-plan snapshot required by approved-ruleset validation. The command verifies both selected archives and all 22 included files against their manifests, installs them under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
 
@@ -394,7 +394,7 @@ After completing the quick start, launch the development server from the reposit
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and enter a Santa Clara address. The responsive local interface renders property identity, verified residential uses, common supported standards, approvals, setbacks, conditional qualifications, special pathways, limitations, source receipts, data versions, and controlled non-regulatory outcomes. It uses local server-rendered templates and custom CSS with no frontend build step or external asset dependency.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and start typing a Santa Clara address. The progressively enhanced field suggests up to eight canonical City addresses from the already loaded local snapshot; choosing one runs the unchanged zoning lookup immediately. The lookup button and ordinary GET form remain available without JavaScript or suggestions. The responsive local interface renders property identity, verified residential uses, common supported standards, approvals, setbacks, conditional qualifications, special pathways, limitations, source receipts, data versions, and controlled non-regulatory outcomes. It uses local server-rendered templates and custom CSS with no frontend build step, external asset dependency, geocoder, API key, billing account, or runtime third-party request.
 
 The built-in server is for local development only. It binds to the local machine by default; do not expose debug mode or the development server as a production deployment.
 

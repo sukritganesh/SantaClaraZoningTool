@@ -1,10 +1,10 @@
 # Residential Zoning Expansion Progress
 
-**Last updated:** July 19, 2026
+**Last updated:** July 20, 2026
 
-**Current position:** Blocks 0-6 are complete and owner accepted; residential expansion PR #2 is merged into `main`, its post-merge clean-checkout gate passes, and the final product release identity is `v0.2.0`
+**Current position:** Residential expansion Blocks 0-6 remain complete and released as `v0.2.0`; post-release Block 7 local address autocomplete is implemented and validated, with owner acceptance and `v0.3.0` release gates still pending
 
-**Next action:** No work remains in the residential expansion phase; begin any later product work by promoting a deliberately scoped backlog item into a new active phase
+**Next action:** Complete owner functional review of Block 7, then decide whether to begin the normal PR, CI, merge, and `v0.3.0` release gates
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
@@ -64,6 +64,7 @@ The released R1 artifacts remain the immutable inherited baseline. The Patrick H
 | 4. Expand lookup and retrieval | Complete and owner accepted | The complete backend passed its exact matrix, approved-artifact, released-R1, determinism, complete-suite, and scope-boundary gates; the project owner accepted Block 4 on July 19, 2026. |
 | 5. Generalize presentation and interface | Complete and owner accepted | The default application presents semantically shared zone standards immediately, lists residential types and conditional topics separately, preserves R1 special pathways, and retains exact selection only as backend/future infrastructure. Owner review covered the generalized desktop and responsive interface and accepted the source-receipt cleanup, manual test sheet, and faint responsive `YIMBY` hero easter egg on July 19, 2026. |
 | 6. Validate and release | Complete and owner accepted | Source-complete startup, consolidated release acceptance, clean-checkout CI, the accessible report, the final local matrix, PR #2, and post-merge `main` validation all pass. Release `v0.2.0` records the resulting Santa Clara Zoning Explorer residential product without modifying the preserved R1 baseline. |
+| 7. Add local address autocomplete | Implementation complete; owner acceptance pending | The startup-loaded 67,243-record citywide index, bounded same-origin endpoint, strict public response boundary, and accessible auto-submit combobox pass unit, integration, browser, clean-checkout, release-harness, complete-suite, bundle, validator, and whitespace gates without changing zoning-analysis or regulatory artifacts. |
 
 ## Block 0 evidence
 
@@ -669,6 +670,30 @@ The release uploads no redundant binary assets. The checksum-pinned R1 and resid
 
 This tranche updates release status in the progress ledger, README, and whole-project report only. It does not change production code, regulatory values, rulesets, schemas, contracts, source snapshots, runtime packages, dependencies, tests, application behavior, or the preserved `v0.1.0-r1-prototype` release.
 
+## Block 7 local address autocomplete implementation
+
+Block 7 adds address discovery over the existing exact lookup without changing the final analysis boundary. The application now prepares a suggestion view of all 67,243 active City address records when the local address index is loaded at startup. Exact normalized matches rank first, full-address prefixes second, and ordered token-prefix matches third; identical canonical strings collapse with their source-record count, natural ordering is deterministic, and every response is capped at eight choices with the full unique-match count retained.
+
+The same-origin `GET /api/address-suggestions?q=...` endpoint delegates through the already loaded residential pipeline. Its strict public projection exposes only the query, normalized query, address snapshot, counts, canonical display/value, locality and ZIP, and duplicate count. It rejects overlong queries with a controlled 400, returns short queries as a controlled 200, fails closed with a controlled 503 when an injected legacy pipeline has no suggester, and strips coordinates, source IDs, parcel facts, zoning facts, regulations, and unknown provider fields.
+
+The server-rendered GET form remains the functional fallback. Local vanilla JavaScript adds a 150-millisecond debounce, request cancellation and stale-response checks, DOM-only option construction, live result announcements, duplicate and truncation guidance, pointer selection, Down/Up/Home/End/Enter/Escape/Tab handling, and immediate `requestSubmit()` after an explicit selection. The visible label, combobox/listbox relationships, active-descendant state, selected options, and live region follow the editable ARIA combobox pattern. CSS extends the existing green system for hover, selected, loading, no-result, unavailable, truncated, mobile, forced-colors, and reduced-motion states.
+
+Documentation changes are limited to the active product plan, this ledger, `UX-002` in the cross-cutting backlog, the README runbook description, and the manual test sheet. No dependency, setup command, raw snapshot, ruleset, regulatory schema, result contract, capability catalog, source-verification conclusion, or zoning-analysis behavior changed.
+
+Validation evidence:
+
+- two consecutive bootstrap runs in the working repository report all 22 runtime files matching; the residential runtime add-on reproduces at 25,213,418 bytes and SHA-256 `17ccccba8714c3a09d85e18db3dbfedc21a4b79c701ac8f7a1a6cdd4a264d0f0`;
+- `pip check`, the approved R1 v2 runtime gate, the complete approved residential lineage and source-checksum gate, and both eight-case residential result-contract validators pass;
+- the six-test residential release harness passes in 22.700 seconds;
+- `.venv/bin/python -B -m unittest discover -s tests -v` passes all 371 tests in 156.947 seconds with no failures, errors, skips, or unexpected successes;
+- JavaScript parsing succeeds in the bundled Node-backed runtime, and `git diff --check` passes;
+- a temporary clean checkout plus the Block 7 patch installs all 22 runtime files, reports all 22 already matched on the second bootstrap, and passes 20 focused address-index and residential-web tests;
+- real-snapshot endpoint tests prove `1240 whi` selects the existing R2 result, `1500 warburton` retains the outside-snapshot outcome, `324 los padres` remains a two-record ambiguity, and `3710 el camino real` reports 577 unique matches while returning eight;
+- in-app browser testing proves pointer and keyboard auto-submit, duplicate warning and controlled ambiguity, Down/Up/Home/End/Escape/Tab behavior, live announcements, stale-request cancellation, zero-result state, and no console warnings or errors; and
+- a 375-pixel viewport check shows one-column form controls, an in-bounds popup, no horizontal overflow, eight unit-heavy choices, and the truncated-result instruction in the established visual system.
+
+This evidence establishes implementation readiness only. The current released product remains `v0.2.0`; no branch, commit, pull request, merge, tag, or `v0.3.0` release was created in this block.
+
 ## Blocks 0-1 validation evidence
 
 - `git diff --check` passes;
@@ -754,3 +779,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-19 | Treat the passing tranche 6.5 matrix as PR readiness, not as a release or landing decision. | Local and hosted evidence closes the agreed acceptance scope, while PR CI, review, explicit landing confirmation, merge verification, and post-merge tag gates remain separate safeguards. |
 | 2026-07-19 | Land residential expansion PR #2 through a merge commit at its exact approved head. | Both PR checks passed, the branch was clean and mergeable, the owner confirmed the guarded landing warning for head `98c6907edc86cecf5057cf097dd4352db8c1811f`, and post-merge `main` validation passed at merge commit `9fb112066420e40390a50380d1220d4100a57b66`. |
 | 2026-07-19 | Publish `v0.2.0` as the first normal Santa Clara Zoning Explorer residential release. | The broader product is no longer a narrow prototype; the historical `v0.1.0-r1-prototype` prerelease remains preserved, while the accepted 12-zone product has passed local, PR, merge, and post-merge gates. |
+| 2026-07-20 | Implement Block 7 address autocomplete only from the validated local City snapshot, with no external geocoder or frontend dependency. | Local deterministic suggestions avoid keys, billing, branding, provider policy, runtime network, and new source-provenance concerns while reusing the exact approved address normalization and immutable snapshot identity. |
+| 2026-07-20 | Search every active City address, auto-submit an explicitly selected canonical value, and leave final zoning analysis unchanged. | Users can discover supported and outside-scope City addresses more easily, while duplicates remain ambiguous, unit choices are never guessed, manual GET submission remains available, and all existing fail-closed outcomes continue through the same pipeline. |

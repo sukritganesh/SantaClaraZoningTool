@@ -298,6 +298,22 @@ class LocalResidentialLookupIntegrationTest(unittest.TestCase):
         empty = self.lookup.lookup("")
         self.assertEqual(empty["reason_code"], "empty_or_invalid_address")
 
+    def test_citywide_suggestions_use_the_loaded_address_snapshot(self) -> None:
+        result = self.lookup.suggest_addresses("1240 whi")
+
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual(result["address_snapshot"], "2026-07-16")
+        self.assertEqual(result["total_matches"], 1)
+        self.assertEqual(
+            result["suggestions"][0]["value"],
+            "1240 White Drive",
+        )
+        outside = self.lookup.suggest_addresses("1500 warburton")
+        self.assertEqual(
+            outside["suggestions"][0]["value"],
+            "1500 Warburton Avenue",
+        )
+
     def test_repeated_lookup_is_deterministic_and_metadata_is_defensive(self) -> None:
         first = self.lookup.lookup("1240 White Drive")
         second = self.lookup.lookup("1240 White Drive")

@@ -3,18 +3,30 @@
 {% block content %}
   <section class="lookup-panel" aria-labelledby="search-heading">
     <h2 id="search-heading">Search a Santa Clara address</h2>
-    <form class="lookup-form" action="{{ url_for('index') }}" method="get" role="search">
-      <div class="lookup-field">
-        <label class="visually-hidden" for="address">Street address</label>
+    <form class="lookup-form" action="{{ url_for('index') }}" method="get" role="search" data-address-search-form>
+      <div class="lookup-field" data-address-autocomplete>
+        <label for="address">Santa Clara street address</label>
+        <p id="address-help" class="field-help">Start typing, then choose a City address to run the lookup.</p>
         <input
           id="address"
           name="address"
           type="text"
           value="{{ entered_address }}"
-          autocomplete="street-address"
+          autocomplete="off"
+          spellcheck="false"
           placeholder="1240 White Drive"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="address-suggestion-list"
+          aria-expanded="false"
+          aria-describedby="address-help"
           required
         >
+        <div id="address-suggestion-popup" class="address-suggestion-popup" data-state="idle" hidden>
+          <ul id="address-suggestion-list" class="address-suggestion-list" role="listbox" aria-label="Santa Clara address suggestions"></ul>
+          <p id="address-suggestion-note" class="address-suggestion-note" hidden></p>
+        </div>
+        <p id="address-suggestion-status" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
       </div>
       <button type="submit">Look up zoning</button>
     </form>

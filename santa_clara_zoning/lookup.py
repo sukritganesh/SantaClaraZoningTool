@@ -351,6 +351,15 @@ class LocalResidentialLookup:
             supported_zones=self._supported_zone_set,
         )
 
+    def suggest_addresses(self, query: str) -> dict[str, Any]:
+        """Return local citywide suggestions with their snapshot identity."""
+
+        result = self.address_index.suggest(query)
+        return {
+            **result,
+            "address_snapshot": self._versions["address_snapshot"],
+        }
+
 
 def _spatial_result(
     *,

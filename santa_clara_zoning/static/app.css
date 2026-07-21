@@ -178,8 +178,99 @@ main.page-shell {
 }
 
 .lookup-field {
+  position: relative;
   display: grid;
   gap: 0.35rem;
+}
+
+.field-help {
+  margin: -0.05rem 0 0.15rem;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.address-suggestion-popup {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.address-suggestion-popup[hidden],
+.address-suggestion-note[hidden] {
+  display: none;
+}
+
+.address-suggestion-list {
+  max-height: 22rem;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.address-suggestion-option {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+  cursor: pointer;
+}
+
+.address-suggestion-option:hover,
+.address-suggestion-option[aria-selected="true"] {
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.address-suggestion-primary {
+  font-weight: 720;
+}
+
+.address-suggestion-secondary,
+.address-suggestion-duplicate {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.address-suggestion-option[aria-selected="true"] .address-suggestion-secondary,
+.address-suggestion-option[aria-selected="true"] .address-suggestion-duplicate {
+  color: currentColor;
+}
+
+.address-suggestion-note {
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.address-suggestion-popup[data-state="loading"] .address-suggestion-note {
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.address-suggestion-popup[data-state="no-results"] .address-suggestion-note,
+.address-suggestion-popup[data-state="unavailable"] .address-suggestion-note {
+  background: var(--surface-subtle);
+}
+
+.address-suggestion-popup[data-state="truncated"] .address-suggestion-note {
+  border-top-color: var(--green-border);
+  background: var(--green-soft);
+  color: var(--green-dark);
+}
+
+.address-suggestion-list:empty + .address-suggestion-note {
+  border-top: 0;
 }
 
 label {
@@ -922,7 +1013,6 @@ dd {
   .sources-section {
     padding: 1.1rem;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -936,5 +1026,17 @@ dd {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .address-suggestion-popup {
+    border: 1px solid CanvasText;
+  }
+
+  .address-suggestion-option[aria-selected="true"] {
+    outline: 2px solid Highlight;
+    background: Highlight;
+    color: HighlightText;
   }
 }

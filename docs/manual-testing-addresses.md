@@ -8,6 +8,29 @@ Start the application from the repository root:
 
 Then open [http://127.0.0.1:5000](http://127.0.0.1:5000) and try these addresses.
 
+## Local address autocomplete
+
+The form remains an ordinary GET lookup when JavaScript is unavailable. With JavaScript enabled, verify these discovery cases before submitting the address matrix below.
+
+| Enter | Expected suggestion behavior |
+|---|---|
+| `12` | No popup choices; the live status asks for at least three address characters. |
+| `1240 whi` | One `1240 White Drive` choice; click or press Down then Enter and confirm the R2 lookup runs immediately. |
+| `barto` | Eight of 39 naturally ordered Barto Street choices and a prompt to continue typing. |
+| `3710 el camino real` | Eight of 577 address and unit choices; the popup reports the full count and asks for a street or unit number instead of choosing a unit. |
+| `324 los padres` | One canonical choice with a two-record warning; selecting it retains the controlled ambiguous-address result. |
+| `1500 warburton` | A City address choice that retains the controlled outside-supported-residential-snapshot result after selection. |
+| `99999 no such street` | A no-results message while the ordinary lookup button remains usable. |
+
+Interaction checklist:
+
+- select with a mouse and touch input;
+- use Down/Up, Home/End, Enter, Escape, and Tab without losing ordinary text editing or focus behavior;
+- confirm live announcements report loading, result counts, truncation, no results, and suggestion unavailability;
+- type one query and quickly replace it with another to confirm stale results never replace the current list;
+- inspect the unit-heavy case on a narrow mobile viewport, in forced-colors/high-contrast mode, and with reduced motion enabled; and
+- disable JavaScript or make the suggestion endpoint unavailable, then confirm entering a full address and pressing **Look up zoning** still works.
+
 ## Supported residential results
 
 | Address | Expected zone | Useful check |

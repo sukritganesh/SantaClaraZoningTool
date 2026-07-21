@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from html.parser import HTMLParser
@@ -60,6 +61,15 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         return response.get_data(as_text=True)
 
+    def suggestions(self, query: str) -> dict:
+        response = self.client.get(
+            "/api/address-suggestions",
+            query_string={"q": query},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "application/json")
+        return response.get_json()
+
     def test_default_application_uses_common_zone_pipeline_and_product_copy(self) -> None:
         self.assertIsInstance(
             self.app.extensions["zoning_analyzer"],
@@ -74,6 +84,90 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
         )
         self.assertNotIn("prototype", landing.lower())
         self.assertNotIn('name="selection_id"', landing)
+        self.assertIn(
+            '<label for="address">Santa Clara street address</label>',
+            landing,
+        )
+        self.assertIn('role="combobox"', landing)
+        self.assertIn('aria-autocomplete="list"', landing)
+        self.assertIn('aria-controls="address-suggestion-list"', landing)
+        self.assertIn('role="listbox"', landing)
+        self.assertIn('aria-live="polite"', landing)
+        document = _Document(landing)
+        self.assertEqual(len(document.ids), len(set(document.ids)))
+        for control in document.controls:
+            self.assertIn(control, document.ids)
+
+    def test_local_suggestions_select_r2_without_exposing_analysis_data(self) -> None:
+        payload = self.suggestions("1240 whi")
+
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["normalized_query"], "1240 WHI")
+        self.assertEqual(payload["address_snapshot"], "2026-07-16")
+        self.assertEqual(payload["total_matches"], 1)
+        self.assertFalse(payload["truncated"])
+        self.assertEqual(len(payload["suggestions"]), 1)
+        suggestion = payload["suggestions"][0]
+        self.assertEqual(suggestion["value"], "1240 White Drive")
+        self.assertEqual(suggestion["source_record_count"], 1)
+        serialized = json.dumps(payload).lower()
+        for forbidden_key in (
+            '"longitude"',
+            '"latitude"',
+            '"coordinates"',
+            '"objectid"',
+            '"apn"',
+            '"parcel"',
+            '"zoning"',
+            '"regulations"',
+        ):
+            self.assertNotIn(forbidden_key, serialized)
+
+        selected = self.app.extensions["zoning_analyzer"].analyze_address(
+            suggestion["value"]
+        )
+        self.assertEqual(selected["status"], "residential_zone_summary_found")
+        self.assertEqual(selected["property"]["zone"], "R2")
+
+    def test_citywide_suggestion_keeps_outside_scope_outcome_safe(self) -> None:
+        payload = self.suggestions("1500 warburton")
+
+        self.assertEqual(payload["total_matches"], 1)
+        value = payload["suggestions"][0]["value"]
+        self.assertEqual(value, "1500 Warburton Avenue")
+        selected = self.app.extensions["zoning_analyzer"].analyze_address(value)
+        self.assertEqual(
+            selected["status"],
+            "outside_supported_residential_snapshot",
+        )
+        body = self.body(value)
+        self.assertIn('data-result-kind="lookup_failure"', body)
+        self.assertNotIn('class="standard-card"', body)
+
+    def test_duplicate_suggestion_keeps_controlled_ambiguity(self) -> None:
+        payload = self.suggestions("324 los padres")
+
+        self.assertEqual(payload["total_matches"], 1)
+        self.assertEqual(len(payload["suggestions"]), 1)
+        suggestion = payload["suggestions"][0]
+        self.assertEqual(suggestion["value"], "324 Los Padres Boulevard")
+        self.assertEqual(suggestion["source_record_count"], 2)
+        selected = self.app.extensions["zoning_analyzer"].analyze_address(
+            suggestion["value"]
+        )
+        self.assertEqual(selected["status"], "address_ambiguous")
+
+    def test_unit_heavy_base_reports_total_and_never_selects_a_unit(self) -> None:
+        payload = self.suggestions("3710 el camino real")
+
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["total_matches"], 577)
+        self.assertTrue(payload["truncated"])
+        self.assertEqual(len(payload["suggestions"]), 8)
+        self.assertEqual(
+            payload["suggestions"][0]["value"],
+            "3710 El Camino Real",
+        )
 
     def test_r2_shows_three_uses_and_shared_standards_without_selection(self) -> None:
         body = self.body("1240 White Drive")

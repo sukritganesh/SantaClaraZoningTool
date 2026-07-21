@@ -147,7 +147,14 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('src="/static/app.js"', body)
         self.assertIn('class="lookup-panel"', body)
         self.assertIn("Search a Santa Clara address", body)
-        self.assertIn('class="visually-hidden" for="address"', body)
+        self.assertIn('<label for="address">Santa Clara street address</label>', body)
+        self.assertIn('role="combobox"', body)
+        self.assertIn('aria-autocomplete="list"', body)
+        self.assertIn('aria-controls="address-suggestion-list"', body)
+        self.assertIn('aria-expanded="false"', body)
+        self.assertIn('role="listbox"', body)
+        self.assertIn('id="address-suggestion-status"', body)
+        self.assertIn('aria-live="polite"', body)
         self.assertNotIn("Look up a property", body)
         self.assertNotIn("Enter one street address within the City of Santa Clara.", body)
         self.assertNotIn("data-result-kind", body)
@@ -164,9 +171,13 @@ class WebShellTest(unittest.TestCase):
         self.assertIn("color: var(--text-muted);", body)
         self.assertIn("min-width: 1.5rem", body)
         self.assertIn("min-height: 1.5rem", body)
+        self.assertIn('.address-suggestion-popup[data-state="loading"]', body)
+        self.assertIn('.address-suggestion-popup[data-state="no-results"]', body)
+        self.assertIn('.address-suggestion-popup[data-state="truncated"]', body)
         self.assertIn("@media (prefers-reduced-motion: reduce)", body)
+        self.assertIn("@media (forced-colors: active)", body)
 
-    def test_source_popover_script_is_served_as_a_local_static_asset(self) -> None:
+    def test_local_enhancement_script_is_served_as_a_static_asset(self) -> None:
         response = self.client.get("/static/app.js")
         self.addCleanup(response.close)
         body = response.get_data(as_text=True)
@@ -174,6 +185,20 @@ class WebShellTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(response.mimetype, {"text/javascript", "application/javascript"})
         self.assertIn("data-source-popover", body)
+        self.assertIn("data-address-search-form", body)
+        self.assertIn("/api/address-suggestions?q=", body)
+        self.assertIn("AbortController", body)
+        self.assertIn("requestSubmit", body)
+        self.assertIn("aria-activedescendant", body)
+        self.assertIn("textContent", body)
+        self.assertIn("window.setTimeout(() => fetchSuggestions(query), 150)", body)
+        self.assertIn('event.key === "ArrowDown"', body)
+        self.assertIn('event.key === "ArrowUp"', body)
+        self.assertIn('event.key === "Home"', body)
+        self.assertIn('event.key === "End"', body)
+        self.assertIn('event.key === "Enter"', body)
+        self.assertIn('event.key === "Tab"', body)
+        self.assertIn("Continue typing a street or unit number", body)
         self.assertIn('trigger.addEventListener("mouseenter"', body)
         self.assertIn('trigger.addEventListener("focus"', body)
         self.assertIn('trigger.addEventListener("click"', body)
@@ -182,6 +207,16 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('document.addEventListener("click"', body)
         self.assertIn('if (disclosure) disclosure.open = true', body)
         self.assertIn('target.focus({ preventScroll: true })', body)
+
+    def test_suggestions_are_unavailable_for_an_injected_legacy_pipeline(self) -> None:
+        response = self.client.get(
+            "/api/address-suggestions",
+            query_string={"q": "1240 whi"},
+        )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["status"], "unavailable")
+        self.pipeline.analyze_address.assert_not_called()
 
     def test_address_runs_pipeline_and_presenter_once(self) -> None:
         pipeline_result = {"fixture": "pipeline result"}
@@ -235,6 +270,12 @@ class WebShellTest(unittest.TestCase):
         self.assertNotIn("Regulatory sources", body)
         self.assertNotIn("<dt>Ruleset</dt>", body)
 
+    def test_post_is_not_an_application_route(self) -> None:
+        response = self.client.post("/", data={"address": "636 Barto St"})
+
+        self.assertEqual(response.status_code, 405)
+        self.pipeline.analyze_address.assert_not_called()
+
     def test_unexpected_error_is_not_relabelled(self) -> None:
         self.pipeline.analyze_address.side_effect = RuntimeError("programming defect")
 
@@ -279,11 +320,139 @@ class WebShellTest(unittest.TestCase):
         self.assertNotIn("Regulatory sources", body)
         self.assertNotIn("<dt>Ruleset</dt>", body)
 
-    def test_post_is_not_an_application_route(self) -> None:
-        response = self.client.post("/", data={"address": "636 Barto St"})
 
-        self.assertEqual(response.status_code, 405)
-        self.pipeline.analyze_address.assert_not_called()
+def _suggestion_result(query: str) -> dict:
+    return {
+        "status": "ok",
+        "query": query,
+        "normalized_query": "1240 WHI",
+        "address_snapshot": "2026-07-16",
+        "total_matches": 1,
+        "truncated": False,
+        "suggestions": [
+            {
+                "value": "1240 WHITE DR",
+                "display_address": "1240 WHITE DR",
+                "secondary_text": "Santa Clara, CA 95051",
+                "source_record_count": 1,
+                "longitude": -121.9,
+                "zoning": "must not leak",
+            }
+        ],
+        "regulations": {"must": "not leak"},
+    }
+
+
+class AddressSuggestionEndpointTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.pipeline = Mock()
+        self.suggester = Mock()
+        self.app = create_app(
+            self.pipeline,
+            address_suggester=self.suggester,
+        )
+        self.app.config.update(TESTING=True)
+        self.client = self.app.test_client()
+
+    def test_endpoint_returns_only_the_public_suggestion_shape(self) -> None:
+        query = "1240 whi"
+        self.suggester.suggest_addresses.return_value = _suggestion_result(query)
+
+        response = self.client.get(
+            "/api/address-suggestions",
+            query_string={"q": query},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "application/json")
+        payload = response.get_json()
+        self.assertEqual(
+            set(payload),
+            {
+                "status",
+                "query",
+                "normalized_query",
+                "address_snapshot",
+                "total_matches",
+                "truncated",
+                "suggestions",
+            },
+        )
+        self.assertEqual(
+            set(payload["suggestions"][0]),
+            {
+                "value",
+                "display_address",
+                "secondary_text",
+                "source_record_count",
+            },
+        )
+        self.assertEqual(payload["suggestions"][0]["value"], "1240 WHITE DR")
+        self.assertEqual(payload["address_snapshot"], "2026-07-16")
+        self.assertNotIn("longitude", payload["suggestions"][0])
+        self.assertNotIn("zoning", payload["suggestions"][0])
+        self.assertNotIn("regulations", payload)
+        self.suggester.suggest_addresses.assert_called_once_with(query)
+
+    def test_short_query_shape_is_preserved(self) -> None:
+        for query in ("", "12"):
+            with self.subTest(query=query):
+                self.suggester.reset_mock()
+                self.suggester.suggest_addresses.return_value = {
+                    "status": "query_too_short",
+                    "query": query,
+                    "normalized_query": query,
+                    "address_snapshot": "2026-07-16",
+                    "total_matches": 0,
+                    "truncated": False,
+                    "suggestions": [],
+                }
+
+                response = self.client.get(
+                    "/api/address-suggestions",
+                    query_string={"q": query} if query else None,
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(
+                    response.get_json()["status"],
+                    "query_too_short",
+                )
+                self.suggester.suggest_addresses.assert_called_once_with(query)
+
+    def test_overlong_query_is_rejected_before_provider_use(self) -> None:
+        response = self.client.get(
+            "/api/address-suggestions",
+            query_string={"q": "a" * 121},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.get_json()["reason_code"], "query_too_long")
+        self.suggester.suggest_addresses.assert_not_called()
+
+    def test_malformed_or_oversized_provider_output_fails_closed(self) -> None:
+        malformed_cases = [
+            {"status": "ok"},
+            {
+                **_suggestion_result("1240 whi"),
+                "suggestions": [
+                    _suggestion_result("1240 whi")["suggestions"][0]
+                    for _ in range(9)
+                ],
+                "total_matches": 9,
+                "truncated": False,
+            },
+        ]
+        for result in malformed_cases:
+            with self.subTest(result=result):
+                self.suggester.reset_mock()
+                self.suggester.suggest_addresses.return_value = result
+                response = self.client.get(
+                    "/api/address-suggestions",
+                    query_string={"q": "1240 whi"},
+                )
+                self.assertEqual(response.status_code, 503)
+                self.assertEqual(response.get_json()["status"], "unavailable")
 
 
 class WebStartupFailureTest(unittest.TestCase):
