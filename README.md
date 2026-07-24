@@ -2,7 +2,7 @@
 
 **Selected residential zoning standards by address.**
 
-Release `v0.2.0` covers the selected citywide and Patrick Henry residential zones, lists the single-family, two-family, and multifamily uses verified for each zone, and presents their supported common base-zone standards without a mandatory structure selector. The published `v0.1.0-r1-prototype` tag remains the historical two-zone release baseline. Neither release is a complete entitlement analysis or legal/planning determination.
+Release `v0.3.0` adds local address autocomplete, selected-parcel and supported-zoning maps, exact checksummed source evidence, and reviewed plain-language zone overviews to the 12-designation residential product. Release `v0.2.0` remains the residential-expansion baseline, and `v0.1.0-r1-prototype` remains the historical two-zone release. None of these releases is a complete entitlement analysis or legal/planning determination.
 
 ## Project documents
 
