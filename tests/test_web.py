@@ -143,7 +143,9 @@ class WebShellTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('name="address"', body)
+        self.assertIn('href="/static/vendor/leaflet/leaflet.css"', body)
         self.assertIn('href="/static/app.css"', body)
+        self.assertIn('src="/static/vendor/leaflet/leaflet.js"', body)
         self.assertIn('src="/static/app.js"', body)
         self.assertIn('class="lookup-panel"', body)
         self.assertIn("Search a Santa Clara address", body)
@@ -174,6 +176,14 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('.address-suggestion-popup[data-state="loading"]', body)
         self.assertIn('.address-suggestion-popup[data-state="no-results"]', body)
         self.assertIn('.address-suggestion-popup[data-state="truncated"]', body)
+        self.assertIn(".property-context-grid", body)
+        self.assertIn("grid-template-columns: minmax(18rem, 2fr) minmax(0, 3fr);", body)
+        self.assertIn(".property-map-frame", body)
+        self.assertIn(".selected-parcel-outline", body)
+        self.assertIn(".property-map-legend-panel", body)
+        self.assertIn(".zoning-hover-tooltip", body)
+        self.assertIn("width: min(15rem, calc(100vw - 5rem));", body)
+        self.assertIn(".map-swatch--unshaded", body)
         self.assertIn("@media (prefers-reduced-motion: reduce)", body)
         self.assertIn("@media (forced-colors: active)", body)
 
@@ -199,6 +209,50 @@ class WebShellTest(unittest.TestCase):
         self.assertIn('event.key === "Enter"', body)
         self.assertIn('event.key === "Tab"', body)
         self.assertIn("Continue typing a street or unit number", body)
+        self.assertIn("data-property-map", body)
+        self.assertIn("zoneDisplayColors", body)
+        expected_zone_palette = (
+            'HDF: "#444444"',
+            '"PH-R5": "#c51b7d"',
+            '"R1-6L": "#0067c5"',
+            '"R1-8L": "#f28e00"',
+            'R2: "#009e49"',
+            'R3: "#7a3e9d"',
+            'R4: "#d62728"',
+            'R5: "#00a6d6"',
+            'R6: "#e6c200"',
+            'UC: "#8c510a"',
+            'UV: "#008c95"',
+            'VR: "#7a9a01"',
+        )
+        expected_zone_colors = tuple(
+            palette_entry.rsplit('"', 2)[1]
+            for palette_entry in expected_zone_palette
+        )
+        self.assertEqual(len(expected_zone_colors), 12)
+        self.assertEqual(len(set(expected_zone_colors)), 12)
+        for palette_entry in expected_zone_palette:
+            with self.subTest(palette_entry=palette_entry):
+                self.assertIn(palette_entry, body)
+        self.assertIn("fillOpacity: selected ? 0.62 : 0.48", body)
+        self.assertIn("map.fitBounds", body)
+        self.assertIn("map.setMaxBounds", body)
+        self.assertNotIn("other supported designation", body)
+        self.assertNotIn("selected designation", body)
+        self.assertIn("onEachFeature: bindZoningTooltip", body)
+        self.assertIn("tooltip.textContent = `Zoning: ${zone}`", body)
+        self.assertIn("layer.bindTooltip(tooltip", body)
+        self.assertRegex(
+            body,
+            r'(?s)className: "selected-parcel-halo".*?weight: 10,',
+        )
+        self.assertRegex(
+            body,
+            r'(?s)className: "selected-parcel-outline".*?weight: 5,',
+        )
+        self.assertIn('event.key === "Enter" || event.key === " "', body)
+        self.assertIn('event.key === "Escape" && mapLegend.open', body)
+        self.assertIn("textContent", body)
         self.assertIn('trigger.addEventListener("mouseenter"', body)
         self.assertIn('trigger.addEventListener("focus"', body)
         self.assertIn('trigger.addEventListener("click"', body)
@@ -217,6 +271,28 @@ class WebShellTest(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.get_json()["status"], "unavailable")
         self.pipeline.analyze_address.assert_not_called()
+
+    def test_property_maps_are_unavailable_for_an_injected_legacy_pipeline(self) -> None:
+        response = self.client.get(
+            "/api/property-map",
+            query_string={"address": "636 Barto Street"},
+        )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["status"], "unavailable")
+        self.pipeline.analyze_address.assert_not_called()
+
+    def test_leaflet_assets_and_license_are_served_locally(self) -> None:
+        for path, evidence in (
+            ("/static/vendor/leaflet/leaflet.js", "1.9.4"),
+            ("/static/vendor/leaflet/leaflet.css", ".leaflet-container"),
+            ("/static/vendor/leaflet/LICENSE", "BSD 2-Clause"),
+        ):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.addCleanup(response.close)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(evidence, response.get_data(as_text=True))
 
     def test_address_runs_pipeline_and_presenter_once(self) -> None:
         pipeline_result = {"fixture": "pipeline result"}
@@ -455,6 +531,229 @@ class AddressSuggestionEndpointTest(unittest.TestCase):
                 self.assertEqual(response.get_json()["status"], "unavailable")
 
 
+def _map_polygon(west: float, south: float, east: float, north: float) -> dict:
+    return {
+        "type": "Polygon",
+        "coordinates": [[
+            [west, south],
+            [east, south],
+            [east, north],
+            [west, north],
+            [west, south],
+        ]],
+    }
+
+
+def _property_map_result(query: str) -> dict:
+    return {
+        "contract_version": "1.0.0",
+        "status": "ok",
+        "query": query,
+        "property": {
+            "display_address": "1 Test Street",
+            "apn": "000-00-001",
+            "zone": "R2",
+            "source_object_id": 44,
+        },
+        "versions": {
+            "address_snapshot": "2026-07-16",
+            "residential_gis_snapshot": "2026-07-18",
+            "ruleset": "must not leak",
+        },
+        "selected_bounds": {
+            "west": -121.95,
+            "south": 37.30,
+            "east": -121.94,
+            "north": 37.31,
+        },
+        "context_bounds": {
+            "west": -121.96,
+            "south": 37.29,
+            "east": -121.92,
+            "north": 37.33,
+        },
+        "selected_parcel": {
+            "type": "Feature",
+            "id": 44,
+            "properties": {
+                "apn": "000-00-001",
+                "zone": "R2",
+                "acreage": 1.0,
+            },
+            "geometry": _map_polygon(-121.95, 37.30, -121.94, 37.31),
+        },
+        "supported_zoning": {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "id": 44,
+                    "properties": {"zone": "R2", "OBJECTID": 44},
+                    "geometry": _map_polygon(
+                        -121.95,
+                        37.30,
+                        -121.94,
+                        37.31,
+                    ),
+                },
+                {
+                    "type": "Feature",
+                    "id": 45,
+                    "properties": {"zone": "R3", "OBJECTID": 45},
+                    "geometry": _map_polygon(
+                        -121.94,
+                        37.30,
+                        -121.93,
+                        37.31,
+                    ),
+                },
+            ],
+        },
+        "zoning_feature_count": 2,
+        "supported_zones": ["R1-6L", "R2", "R3"],
+        "regulations": {"must": "not leak"},
+    }
+
+
+class PropertyMapEndpointTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.pipeline = Mock()
+        self.provider = Mock()
+        self.app = create_app(
+            self.pipeline,
+            property_map_provider=self.provider,
+        )
+        self.app.config.update(TESTING=True)
+        self.client = self.app.test_client()
+
+    def test_endpoint_returns_only_the_public_map_shape(self) -> None:
+        query = "1 Test Street"
+        self.provider.property_map_context.return_value = _property_map_result(query)
+
+        response = self.client.get(
+            "/api/property-map",
+            query_string={"address": query},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.get_json()
+        self.assertEqual(
+            set(payload),
+            {
+                "contract_version",
+                "status",
+                "query",
+                "property",
+                "versions",
+                "selected_bounds",
+                "context_bounds",
+                "selected_parcel",
+                "supported_zoning",
+                "zoning_feature_count",
+                "supported_zones",
+            },
+        )
+        self.assertEqual(set(payload["versions"]), {
+            "address_snapshot",
+            "residential_gis_snapshot",
+        })
+        self.assertEqual(
+            set(payload["selected_parcel"]["properties"]),
+            {"apn", "zone"},
+        )
+        self.assertNotIn("id", payload["selected_parcel"])
+        for feature in payload["supported_zoning"]["features"]:
+            self.assertEqual(set(feature["properties"]), {"zone"})
+            self.assertNotIn("id", feature)
+        serialized = str(payload).lower()
+        for forbidden in (
+            "objectid",
+            "source_object_id",
+            "acreage",
+            "ruleset",
+            "regulations",
+        ):
+            self.assertNotIn(forbidden, serialized)
+        self.provider.property_map_context.assert_called_once_with(query)
+
+    def test_invalid_queries_are_rejected_before_provider_use(self) -> None:
+        cases = (None, "", "   ", "a" * 121)
+        for address in cases:
+            with self.subTest(address=address):
+                self.provider.reset_mock()
+                response = self.client.get(
+                    "/api/property-map",
+                    query_string=None if address is None else {"address": address},
+                )
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.get_json()["status"], "invalid_query")
+                self.provider.property_map_context.assert_not_called()
+
+    def test_controlled_lookup_outcomes_have_fixed_http_statuses(self) -> None:
+        cases = {
+            "address_not_found": 404,
+            "outside_supported_residential_snapshot": 404,
+            "address_ambiguous": 409,
+            "review_required": 409,
+            "map_context_unavailable": 503,
+        }
+        for status, expected_code in cases.items():
+            with self.subTest(status=status):
+                self.provider.property_map_context.return_value = {
+                    "contract_version": "1.0.0",
+                    "status": status,
+                    "reason_code": f"fixture_{status}",
+                    "message": "Controlled map outcome.",
+                    "query": "1 Test Street",
+                    "versions": {
+                        "address_snapshot": "2026-07-16",
+                        "residential_gis_snapshot": "2026-07-18",
+                    },
+                }
+                response = self.client.get(
+                    "/api/property-map",
+                    query_string={"address": "1 Test Street"},
+                )
+                self.assertEqual(response.status_code, expected_code)
+                payload = response.get_json()
+                self.assertEqual(payload["status"], status)
+                self.assertNotIn("selected_parcel", payload)
+                self.assertNotIn("fixture_", str(payload))
+                self.assertNotIn("Controlled map outcome", str(payload))
+
+    def test_malformed_or_oversized_context_fails_closed(self) -> None:
+        malformed = _property_map_result("1 Test Street")
+        malformed["selected_parcel"]["geometry"]["coordinates"][0].pop()
+        self.provider.property_map_context.return_value = malformed
+        response = self.client.get(
+            "/api/property-map",
+            query_string={"address": "1 Test Street"},
+        )
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["status"], "unavailable")
+
+        invalid_bounds = _property_map_result("1 Test Street")
+        invalid_bounds["context_bounds"]["east"] = 181
+        self.provider.property_map_context.return_value = invalid_bounds
+        response = self.client.get(
+            "/api/property-map",
+            query_string={"address": "1 Test Street"},
+        )
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["status"], "unavailable")
+
+        self.provider.property_map_context.return_value = _property_map_result(
+            "1 Test Street"
+        )
+        with patch("santa_clara_zoning.web.MAX_PROPERTY_MAP_ZONING_FEATURES", 1):
+            response = self.client.get(
+                "/api/property-map",
+                query_string={"address": "1 Test Street"},
+            )
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["status"], "unavailable")
+
+
 class WebStartupFailureTest(unittest.TestCase):
     def test_ruleset_startup_failure_is_presented_after_search(self) -> None:
         failure = RulesetLoadError("fixture gate", ["private diagnostic detail"])
@@ -499,7 +798,7 @@ class WebShellIntegrationTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('data-result-kind="success"', body)
-        self.assertIn("R1-6L base-zone standards", body)
+        self.assertIn("Property Overview", body)
 
     def test_barto_renders_semantic_success_sections_and_source_links(self) -> None:
         response = self.app.test_client().get(
@@ -510,11 +809,12 @@ class WebShellIntegrationTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         expected_sections = (
+            "Property Overview",
+            "How to use this result",
             "What base zoning permits",
             "Required approvals",
             "Key base-zone standards",
             "Setbacks",
-            "Important qualifications",
             "Limitations",
             "Sources and data versions",
         )
@@ -527,8 +827,9 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertIn('scope="col"', body)
         self.assertIn('scope="row"', body)
         self.assertIn("Total minimum beginning at story 2", body)
-        self.assertIn('href="#source-r1-standards-table"', body)
         self.assertIn('id="source-r1-standards-table"', body)
+        self.assertNotIn("Source receipt", body)
+        self.assertNotIn('href="#source-r1-standards-table"', body)
         self.assertIn("Not evaluated", body)
 
         setback_rows = re.findall(
@@ -575,9 +876,9 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertIn('data-pair-role="smaller_setback"', body)
         self.assertIn('data-pair-role="larger_setback"', body)
         self.assertIn('data-warning-kind="source_conflict"', body)
-        self.assertIn("Prototype-selected value", body)
+        self.assertIn("Selected ruleset value", body)
         self.assertIn("not an official City correction", body)
-        self.assertIn("Competing source assertions", body)
+        self.assertIn("Review competing source values", body)
         self.assertIn("Official City or codifier clarification", body)
         self.assertNotIn("Left setback", body)
         self.assertNotIn("Right setback", body)
@@ -618,13 +919,20 @@ class WebShellIntegrationTest(unittest.TestCase):
 
                 for item in _rule_items(view):
                     controls = document.rule_controls.get(item["rule_id"], [])
-                    self.assertEqual(len(controls), 1, item["rule_id"])
-                    expected_sources = {
-                        f"source-{citation_id}" for citation_id in item["citation_ids"]
-                    }
+                    self.assertGreaterEqual(len(controls), 1, item["rule_id"])
+                    expected_control = (
+                        "source-popup-"
+                        + item["rule_id"]
+                        .replace(".", "-")
+                        .replace(":", "-")
+                        .replace("/", "-")
+                    )
+                    self.assertIn(expected_control, controls)
+                    for citation_id in item["citation_ids"]:
+                        self.assertIn(f"source-{citation_id}", document.ids)
                     self.assertEqual(
-                        set(document.popover_fragments[controls[0]]),
-                        expected_sources,
+                        document.popover_fragments[expected_control],
+                        [],
                     )
 
     def test_success_sections_render_in_the_approved_order(self) -> None:
@@ -640,7 +948,6 @@ class WebShellIntegrationTest(unittest.TestCase):
             "approvals-heading",
             "standards-heading",
             "setbacks-heading",
-            "warnings-heading",
             "limitations-heading",
             "sources-heading",
         )

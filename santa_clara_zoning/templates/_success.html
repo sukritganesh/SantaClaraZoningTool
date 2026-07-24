@@ -1,29 +1,86 @@
-{% from "_macros.html" import source_refs, quantity, requirement_value, setback_value, conditions with context %}
+{% from "_macros.html" import source_refs, quantity, requirement_value, setback_value, inline_qualifications, conditions with context %}
 
 <article class="result result--success" data-result-kind="success" aria-labelledby="result-heading">
-  <header class="property-card">
-    <p class="scope-badge">{{ view.property.scope_label }}</p>
-    <h2 id="result-heading">{{ view.property.display_address }}</h2>
-    <dl class="property-facts" aria-label="Property identity">
-      <div>
-        <dt>Assessor parcel number</dt>
-        <dd>{{ view.property.apn }}</dd>
-      </div>
-      <div>
-        <dt>Zoning designation</dt>
-        <dd><span class="zone-badge">{{ view.property.zone }}</span></dd>
-      </div>
-      <div>
-        <dt>Jurisdiction</dt>
-        <dd>City of Santa Clara</dd>
-      </div>
-    </dl>
-  </header>
+  <div{% if property_map_enabled %} class="property-context-grid"{% endif %}>
+    <header class="property-card">
+      <p class="scope-badge">{{ view.property.scope_label }}</p>
+      <h2 id="result-heading">{{ view.property.display_address }}</h2>
+      <dl class="property-facts" aria-label="Property identity">
+        <div>
+          <dt>Assessor parcel number</dt>
+          <dd>{{ view.property.apn }}</dd>
+        </div>
+        <div>
+          <dt>Zoning designation</dt>
+          <dd><span class="zone-badge">{{ view.property.zone }}</span></dd>
+        </div>
+        <div>
+          <dt>Jurisdiction</dt>
+          <dd>City of Santa Clara</dd>
+        </div>
+      </dl>
+    </header>
+
+    {% if property_map_enabled %}
+      <section class="property-map-card" aria-labelledby="property-map-heading">
+        <div class="property-map-heading">
+          <div>
+            <p class="map-eyebrow">Local GIS context</p>
+            <h2 id="property-map-heading">Parcel and zoning context</h2>
+          </div>
+          <span class="map-zone-label">{{ view.property.zone }}</span>
+        </div>
+        <div class="property-map-frame" data-map-state="loading">
+          <div
+            id="property-map"
+            class="property-map"
+            role="region"
+            tabindex="0"
+            aria-label="Interactive parcel and supported zoning map for {{ view.property.display_address }}"
+            aria-describedby="property-map-scope property-map-summary"
+            data-property-map
+            data-endpoint="{{ url_for('property_map', address=view.property.display_address) }}"
+            data-selected-zone="{{ view.property.zone }}"
+            data-tile-url="{{ map_tile_url }}"
+          ></div>
+          <p class="property-map-fallback" data-map-fallback>Parcel context loads when JavaScript is available. The zoning result remains usable without the map.</p>
+          <p class="property-map-attribution">
+            <a href="{{ map_attribution_url }}" rel="external">{{ map_attribution_text }}</a>
+          </p>
+          <details class="property-map-legend" data-map-legend hidden>
+            <summary>Map legend</summary>
+            <div class="property-map-legend-panel">
+              <p class="property-map-legend-title">Map layers</p>
+              <ul>
+                <li><span class="map-swatch map-swatch--parcel" aria-hidden="true"></span>Selected parcel</li>
+                <li><span class="map-swatch map-swatch--unshaded" aria-hidden="true"></span>Outside supported overlay</li>
+              </ul>
+              <ul data-map-zone-legend></ul>
+            </div>
+          </details>
+        </div>
+        <p id="property-map-scope" class="property-map-scope">Unshaded areas are outside the Explorer’s currently supported zoning overlay and are not necessarily unzoned.</p>
+        <p class="property-map-source">Parcel and zoning geometry comes from the City of Santa Clara residential GIS snapshot dated {{ view.versions.residential_gis_snapshot }}. The street basemap is visual context only.</p>
+        <p id="property-map-summary" class="visually-hidden" data-map-summary>The selected parcel is {{ view.property.apn }} in the {{ view.property.zone }} supported zoning overlay.</p>
+        <p id="property-map-status" class="visually-hidden" aria-live="polite" aria-atomic="true" data-map-status></p>
+      </section>
+    {% endif %}
+  </div>
 
   <section class="content-section overview-panel" aria-labelledby="overview-heading">
     <h2 id="overview-heading">{{ view.overview.headline }}</h2>
-    <p>{{ view.overview.summary }}</p>
-    <p class="scope-notice"><strong>Scope notice:</strong> {{ view.overview.disclaimer }}</p>
+    <p class="zone-overview-description">{{ view.overview.summary }}</p>
+  </section>
+
+  <section class="content-section result-guidance" aria-labelledby="result-guidance-heading">
+    <h2 id="result-guidance-heading">How to use this result</h2>
+    <div class="result-guidance-grid">
+      <p class="scope-notice"><strong>Scope notice:</strong> {{ view.overview.disclaimer }}</p>
+      <aside class="source-help" aria-label="Source help">
+        <span class="source-help-icon" aria-hidden="true">i</span>
+        <p><strong>Source details:</strong> Select an “i” icon beside any rule to view its supporting citations and exact source.</p>
+      </aside>
+    </div>
   </section>
 
   <section class="content-section" aria-labelledby="permissions-heading">
@@ -36,37 +93,10 @@
             {{ source_refs(permission.citation_ids, permission.rule_id) }}
           </h3>
           <p class="status-label status-label--supported">{{ permission.status_label }}</p>
-          {% if permission.profile_label %}<p class="profile-note">{{ permission.profile_label }}</p>{% endif %}
-          {{ conditions(permission.conditions, true) }}
         </article>
       {% endfor %}
     </div>
   </section>
-
-  {% if view.special_pathways %}
-    <section class="content-section" aria-labelledby="pathways-heading">
-      <h2 id="pathways-heading">Special residential pathways</h2>
-      <p class="section-intro">These source-backed pathways require facts or analysis that this application does not currently evaluate.</p>
-      {% for pathway in view.special_pathways %}
-        <article class="pathway-card" data-capability-id="{{ pathway.capability_id }}" data-rule-id="{{ pathway.rule_id }}">
-          <h3 class="rule-title">
-            <span class="rule-title-text">{{ pathway.label }}</span>
-            {{ source_refs(pathway.citation_ids, pathway.rule_id) }}
-          </h3>
-          <p class="status-label status-label--notice">{{ pathway.status_label }}</p>
-          <p>{{ pathway.permission_status_label }}.</p>
-          {{ conditions(pathway.conditions, true) }}
-          {% if pathway.topics %}
-            <ul class="item-conditions">
-              {% for topic in pathway.topics %}
-                <li><strong>{{ topic.label }}:</strong> {{ topic.explanation }}</li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </article>
-      {% endfor %}
-    </section>
-  {% endif %}
 
   <section class="content-section" aria-labelledby="approvals-heading">
     <h2 id="approvals-heading">Required approvals</h2>
@@ -101,6 +131,7 @@
             </strong>
             {% if standard.requirement and standard.requirement.explanation %}<p class="metric-note">{{ standard.requirement.explanation }}</p>{% endif %}
             {{ conditions(standard.conditions, true) }}
+            {{ inline_qualifications(view.warnings, standard.capability_id) }}
           </dd>
         </div>
       {% endfor %}
@@ -163,6 +194,7 @@
                     {% for fact in setback.requirement.required_sources_or_facts %}<li>{{ fact }}</li>{% endfor %}
                   </ul>
                 {% endif %}
+                {{ inline_qualifications(view.warnings, setback.capability_id) }}
               </td>
             </tr>
           {% endfor %}
@@ -170,43 +202,6 @@
       </table>
     </div>
   </section>
-
-  {% set visible_warnings = view.warnings | rejectattr("kind", "equalto", "not_evaluated_exception") | list %}
-  {% if visible_warnings %}
-    <section class="content-section" aria-labelledby="warnings-heading">
-      <h2 id="warnings-heading">Important qualifications</h2>
-      {% for warning in visible_warnings %}
-        <article class="warning-card warning-card--{{ warning.kind }}" data-warning-kind="{{ warning.kind }}" data-warning-id="{{ warning.warning_id }}">
-          <h3>{{ warning.title }}</h3>
-          {% if warning.kind == "source_conflict" %}
-            <p>
-              <strong>{% if warning.resolution.presented_value %}Selected ruleset value{% else %}Prototype-selected value{% endif %}:</strong>
-              {% if warning.resolution.presented_value %}{{ requirement_value(warning.resolution.presented_value) }}{% else %}{{ setback_value(warning.resolution.selected_value) }}{% endif %}.
-              This is a project resolution pending official clarification, not an official City correction.
-            </p>
-            <p>{{ warning.resolution.rationale }}</p>
-            <h4>Competing source assertions</h4>
-            <ul>
-              {% for assertion in warning.assertions %}
-                <li>
-                  {% if assertion.presented_value %}{{ requirement_value(assertion.presented_value) }}{% else %}{{ setback_value(assertion.value) }}{% endif %} — {{ assertion.disposition | replace("_", " ") }}
-                  {{ source_refs(assertion.source_refs, warning.warning_id ~ "-" ~ assertion.assertion_id) }}
-                </li>
-              {% endfor %}
-            </ul>
-            <p><strong>Decision source:</strong> {{ warning.resolution.decision_source_label if warning.resolution.decision_source_label else warning.resolution.decision_source }} ({{ warning.resolution.decision_date }})</p>
-            <p><strong>Status:</strong> {{ warning.resolution.status | replace("_", " ") }}</p>
-            <h4>Re-review if</h4>
-            <ul>
-              {% for trigger in warning.resolution.re_review_triggers %}<li>{{ trigger }}</li>{% endfor %}
-            </ul>
-          {% else %}
-            <p>{{ warning.message }}</p>
-          {% endif %}
-        </article>
-      {% endfor %}
-    </section>
-  {% endif %}
 
   <section class="content-section disclosure-section" aria-labelledby="limitations-heading">
     <h2 id="limitations-heading">Limitations</h2>

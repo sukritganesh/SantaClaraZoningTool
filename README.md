@@ -16,6 +16,7 @@ Release `v0.2.0` covers the selected citywide and Patrick Henry residential zone
 - [R1 prototype plan](docs/r1-prototype-plan.md) — historical scope, architecture, source research, data model, and completion criteria for the released baseline.
 - [Supported regulations catalog](docs/regulations/supported-regulations.md) — regulation families, capability stages, current boundaries, and deferred expansion queue.
 - [Residential ruleset v3 authoring guide](docs/regulations/residential-ruleset-authoring-guide.md) — active residential representation, migration, and approval contract.
+- [Zone description authoring guide](docs/zone-description-authoring-guide.md) — source-grounded offline Codex workflow and copy contract for plain-language property overviews.
 - [Ruleset v2 authoring guide](docs/regulations/ruleset-authoring-guide.md) — preserved approved R1 representation contract and examples for human and AI-assisted authors.
 - [Residential Title 18 amendment audit](docs/residential-title18-amendment-audit.md) — active July 2025 baseline, later-legislation effects, and expansion recheck triggers.
 - [R1 Title 18 amendment audit](docs/title18-amendment-audit.md) — checksum-pinned historical audit used by the approved R1 rulesets.
@@ -27,10 +28,10 @@ The README intentionally does not duplicate detailed milestone status. Consult `
 
 ## Quick start from a fresh clone
 
-The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local application uses pinned Flask with server-rendered Jinja templates.
+The GIS downloaders use only the Python standard library. Ruleset validation uses the pinned `jsonschema` package so the published Draft 2020-12 contract is enforced directly. The local application uses pinned Flask with server-rendered Jinja templates and a repository-vendored copy of Leaflet 1.9.4 for its successful-result map. Leaflet's BSD-2-Clause license is preserved beside the static assets; no frontend package manager or CDN script is required.
 
 - Python 3.9 or newer
-- Approximately 225 MB of free space for the committed ZIPs and their extracted runtime data
+- Approximately 250 MB of free space for the committed ZIPs and their extracted runtime data
 
 From the repository root, create the environment, install the pinned dependencies, and restore the canonical runtime data:
 
@@ -49,11 +50,11 @@ Then start the residential development application:
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Start typing at least three address characters to choose a canonical City address and run the lookup immediately, or enter a full address and use the ordinary lookup button. Suggestions come only from the bundled Santa Clara snapshot; they require no API key or network request. The [manual testing address sheet](docs/manual-testing-addresses.md) covers autocomplete, one verified address for every live supported designation, and useful controlled-failure cases.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Start typing at least three address characters to choose a canonical City address and run the lookup immediately, or enter a full address and use the ordinary lookup button. Suggestions come only from the bundled Santa Clara snapshot; they require no API key or network request. A successful supported result includes a reviewed plain-language zone overview, the selected parcel and nearby supported zoning polygons from the pinned local GIS snapshot, and source popovers that open a dedicated tab at the exact checksummed PDF cell or native project verification record behind the displayed regulation. The [manual testing address sheet](docs/manual-testing-addresses.md) covers overviews, autocomplete, maps, exact evidence, one verified address for every live supported designation, and useful controlled-failure cases.
 
-The repository preserves the 35,499,787-byte released R1 bundle and the initial 4,186,509-byte residential GIS-only add-on. Fresh-clone bootstrap uses the R1 bundle plus the source-complete 25,213,418-byte residential successor, which contains the same three GIS artifacts and the checksum-pinned Patrick Henry adopted-plan snapshot required by approved-ruleset validation. The command verifies both selected archives and all 22 included files against their manifests, installs them under the ignored `data/raw/` tree, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
+The repository preserves the 35,499,787-byte released R1 bundle and the initial 4,186,509-byte residential GIS-only add-on. Fresh-clone bootstrap uses the R1 bundle, the source-complete 25,213,418-byte residential successor, and the 11,093,881-byte source-evidence add-on. The residential successor contains the same three GIS artifacts and the checksum-pinned Patrick Henry adopted-plan snapshot required by approved-ruleset validation. The evidence add-on contains catalog `2026-07-22.1`, its manifest, and only the 33 referenced full-page 144-DPI images. Bootstrap verifies all selected archives and files, installs raw sources under ignored `data/raw/` and evidence assets under ignored `data/source_evidence/`, and refuses to overwrite different local files. Rerunning it is safe: matching files are reported and left unchanged.
 
-No database, API key, runtime AI service, or live City GIS request is required to run the application. Internet access is needed only to install Python dependencies if they are not already cached.
+No database, API key, runtime AI service, live City GIS request, Google Drive request, or live evidence-document request is required to run the application. The parcel, zoning, and exact evidence chain remain local and checksum-verified. Approved official URLs appear only as optional user-activated provenance links. By default, the browser optionally requests only the currently viewed street tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png`; visible OpenStreetMap attribution is retained, no tiles are prefetched or proxied, and a tile failure leaves the local geometry visible over a neutral background. This community service is best-effort and governed by the [OpenStreetMap tile usage policy](https://operations.osmfoundation.org/policies/tiles/). Deployments can change `MAP_TILE_URL`, `MAP_ATTRIBUTION_TEXT`, and `MAP_ATTRIBUTION_URL` together in Flask configuration when using another compliant tile source.
 
 Run the automated checks with:
 
@@ -61,7 +62,7 @@ Run the automated checks with:
 python -m unittest discover -s tests -v
 ```
 
-If Node.js is installed, also check the small local JavaScript enhancement:
+If Node.js is installed, also check the local JavaScript enhancements:
 
 ```bash
 node --check santa_clara_zoning/static/app.js
@@ -394,9 +395,32 @@ After completing the quick start, launch the development server from the reposit
 python -m flask --app santa_clara_zoning.web run
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and start typing a Santa Clara address. The progressively enhanced field suggests up to eight canonical City addresses from the already loaded local snapshot; choosing one runs the unchanged zoning lookup immediately. The lookup button and ordinary GET form remain available without JavaScript or suggestions. The responsive local interface renders property identity, verified residential uses, common supported standards, approvals, setbacks, conditional qualifications, special pathways, limitations, source receipts, data versions, and controlled non-regulatory outcomes. It uses local server-rendered templates and custom CSS with no frontend build step, external asset dependency, geocoder, API key, billing account, or runtime third-party request.
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and start typing a Santa Clara address. The progressively enhanced field suggests up to eight canonical City addresses from the already loaded local snapshot; choosing one runs the unchanged zoning lookup immediately. The lookup button and ordinary GET form remain available without JavaScript or suggestions. The responsive local interface renders property identity, verified residential uses, common supported standards, approvals, setbacks, consequential qualifications beside the affected rules, limitations, exact source evidence, a numbered source appendix, data versions, and controlled non-regulatory outcomes. Special-pathway records remain available to the deterministic backend but are not shown as staff-facing results until their analysis is implemented. The interface uses local server-rendered templates and custom CSS with no frontend build step, required external asset, geocoder, API key, or billing account. Only the optional street basemap and user-activated official provenance links can make third-party requests; neither affects the zoning result or local evidence viewer.
 
 The built-in server is for local development only. It binds to the local machine by default; do not expose debug mode or the development server as a production deployment.
+
+### Author and validate zone descriptions
+
+The running application never calls an AI service. Plain-language zone descriptions are authored offline with Codex, source-checked, and committed in a versioned presentation catalog. The checked-in [authoring guide](docs/zone-description-authoring-guide.md) requires the complete supported-zone matrix so comparative language remains consistent as zones are added.
+
+Validate the catalog, approved-ruleset binding, authoring-guide checksum, exact 12-zone coverage, source references, and copy boundaries with:
+
+```bash
+python -B scripts/validate_zone_descriptions.py
+```
+
+When a later approved ruleset adds a zone, give Codex the guide, the complete approved zone/use/approval matrix, the official zone-purpose provisions, and the existing catalog. Generate only new or materially affected descriptions, source-review every changed sentence, and rerun the validator before owner acceptance. The catalog is small and committed, so it requires no bootstrap, database, API key, or runtime-data bundle change.
+
+### Rebuild and validate source evidence
+
+The ordinary application and bootstrap do not need PDF tooling. Maintainers regenerating the immutable evidence add-on need the pinned build environment's `pypdfium2`/PDFium renderer plus Poppler's `pdfinfo` and `pdftotext`:
+
+```bash
+python -B scripts/build_source_evidence.py
+python -B scripts/build_source_evidence.py --validate-only
+```
+
+The builder verifies approved ruleset `2026-07-19.5`, every local source checksum, exact contextual coverage, page counts, region bounds, PDF excerpts, Markdown line ranges, JSON Pointers, rendered-page checksums, and deterministic catalog ordering. It renders only referenced full pages at 144 DPI, keeps highlights as HTML overlays, and reproduces `demo-data/santa-clara-source-evidence-runtime-data-2026-07-22.1.zip` plus its manifest. The viewer never converts native project records into derived PDFs and never contacts Drive or a City document service at runtime.
 
 Create a later candidate in a new, nonexisting version directory with:
 
@@ -429,11 +453,15 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── bundle-manifest.json          Released R1 bundle inventory and checksums
 │   ├── residential-bundle-manifest.json Preserved GIS-only add-on inventory
 │   ├── residential-bundle-manifest-2026-07-19.2.json Source-complete successor inventory
+│   ├── source-evidence-bundle-manifest-2026-07-22.1.json Exact evidence add-on inventory
 │   ├── santa-clara-r1-runtime-…zip   Preserved released runtime data
 │   ├── santa-clara-residential-runtime-…19.1.zip Preserved GIS-only add-on
-│   └── santa-clara-residential-runtime-…19.2.zip Default source-complete add-on
+│   ├── santa-clara-residential-runtime-…19.2.zip Default source-complete add-on
+│   └── santa-clara-source-evidence-runtime-…22.1.zip Exact evidence add-on
 ├── data/
-│   └── raw/                          Ignored, installed immutable snapshots
+│   ├── presentation/                 Checked-in reviewed zone-description catalog
+│   ├── raw/                          Ignored, installed immutable snapshots
+│   └── source_evidence/              Ignored, installed exact evidence assets
 ├── contracts/
 │   ├── residential-result-contract-2.0.0.schema.json  Accepted expansion checkpoint
 │   └── residential-result-contract-2.1.0.schema.json  Runtime-ready successor
@@ -480,6 +508,8 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── residential_presentation.py    Common-zone presentation contract
 │   ├── residential_standards.py       Exact profile and pathway retrieval
 │   ├── residential_summary.py         Fail-closed common-profile projection
+│   ├── source_evidence.py              Validated exact-evidence provider
+│   ├── zone_descriptions.py            Validated zone-overview provider
 │   ├── ruleset.py                     Approved v2 and residential v3 loaders
 │   ├── standards.py                   Pure exact-zone regulation retrieval
 │   ├── templates/                     Server-rendered web templates
@@ -492,6 +522,7 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── bootstrap_demo_data.py         Safe fresh-clone data installer
 │   ├── build_demo_data_bundle.py      Deterministic release-bundle builder
 │   ├── build_residential_demo_data_bundle.py Deterministic residential add-on builder
+│   ├── build_source_evidence.py       Exact-evidence catalog and bundle builder
 │   ├── download_address_points.py     Citywide address-point downloader
 │   ├── download_residential_gis.py    Selected residential-zone GIS downloader
 │   ├── download_r1_gis.py             R1 parcel and zoning downloader
@@ -500,9 +531,11 @@ python3 scripts/promote_r1_rules_v2.py \
 │   ├── migrate_r1_rules_v2.py         Non-overwriting v1-to-v2 migration
 │   ├── promote_r1_rules_v2.py         Non-overwriting v2 approval promotion
 │   ├── promote_residential_rules_v3.py Non-overwriting residential approval promotion
+│   ├── render_source_evidence_pages.py Pinned full-page PDF renderer helper
 │   ├── validate_residential_result_contract.py Expansion fixture validator
 │   ├── validate_residential_result_contract_v2_1.py Approved-data result validator
 │   ├── validate_approved_residential_rules.py Callable approved-lineage/runtime validator
+│   ├── validate_zone_descriptions.py  Zone-overview catalog validator
 │   ├── validate_citywide_residential_rules.py R1-R6 lineage and domain validator
 │   ├── validate_density_residential_rules.py Density lineage and domain validator
 │   ├── validate_patrick_henry_residential_rules.py Complete 12-zone lineage validator

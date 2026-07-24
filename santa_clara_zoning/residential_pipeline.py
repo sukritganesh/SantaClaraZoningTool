@@ -131,6 +131,23 @@ class ResidentialStandardsPipeline:
             )
         return copy.deepcopy(result)
 
+    def property_map_context(self, entered_address: str) -> dict[str, Any]:
+        """Delegate map context to the loaded local residential lookup."""
+
+        provider = getattr(self.lookup_engine, "property_map_context", None)
+        if not callable(provider):
+            raise PipelineIntegrityError(
+                "property_map_unavailable",
+                "Residential lookup does not provide property map context.",
+            )
+        result = provider(entered_address)
+        if not isinstance(result, dict):
+            raise PipelineIntegrityError(
+                "invalid_property_map",
+                "Residential lookup returned invalid property map context.",
+            )
+        return copy.deepcopy(result)
+
 
 def _neutral_result(
     entered_address: str,

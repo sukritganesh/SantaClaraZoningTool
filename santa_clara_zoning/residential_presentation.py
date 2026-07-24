@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Protocol
 
 from .pipeline import PipelineIntegrityError
 from .presentation import PresentationIntegrityError
 from .residential_summary import RESIDENTIAL_SUMMARY_CONTRACT_VERSION
 from .ruleset import RulesetLoadError
 from .standards import StandardsRetrievalError
+from .zone_descriptions import ZoneDescriptionIntegrityError
 
 
 RESIDENTIAL_PRESENTATION_CONTRACT_VERSION = "2.0.0"
@@ -40,7 +41,18 @@ _FAILURE_KINDS = {
 }
 
 
-def present_residential_summary(result: Mapping[str, Any]) -> dict[str, Any]:
+class ZoneDescriptionLookup(Protocol):
+    """Presentation-only lookup for one reviewed exact-zone description."""
+
+    def description_for(self, zone: str) -> str:
+        """Return one plain-language paragraph for an exact designation."""
+
+
+def present_residential_summary(
+    result: Mapping[str, Any],
+    *,
+    zone_description_provider: ZoneDescriptionLookup | None = None,
+) -> dict[str, Any]:
     """Map one common-zone result to presentation contract 2.0.0."""
 
     source = _object(result, "result")
@@ -57,7 +69,10 @@ def present_residential_summary(result: Mapping[str, Any]) -> dict[str, Any]:
     _object(source.get("versions"), "result.versions")
 
     if status == "residential_zone_summary_found":
-        return _present_success(source)
+        return _present_success(
+            source,
+            zone_description_provider=zone_description_provider,
+        )
     if status in _FAILURE_KINDS:
         return _present_failure(source, _FAILURE_KINDS[status])
     _fail(
@@ -95,7 +110,11 @@ def present_residential_integrity_error(error: Exception) -> dict[str, Any]:
     )
 
 
-def _present_success(source: Mapping[str, Any]) -> dict[str, Any]:
+def _present_success(
+    source: Mapping[str, Any],
+    *,
+    zone_description_provider: ZoneDescriptionLookup | None,
+) -> dict[str, Any]:
     if source["reason_code"] != "common_zone_standards_retrieved":
         _fail("invalid_success_reason", "Unexpected zone-summary reason code.")
     property_record = _object(source.get("property"), "result.property")
@@ -169,10 +188,15 @@ def _present_success(source: Mapping[str, Any]) -> dict[str, Any]:
             "The listed residential types share the supported base-zone standards "
             "shown below."
         )
-    summary = (
+    fallback_summary = (
         f"This property is zoned {zone}. The controlling base table lists "
         f"{use_list.lower()}. {standards_sentence} "
         f"{_join(approval_labels)} are required."
+    )
+    summary = _zone_description(
+        zone,
+        fallback=fallback_summary,
+        provider=zone_description_provider,
     )
 
     return {
@@ -194,7 +218,7 @@ def _present_success(source: Mapping[str, Any]) -> dict[str, Any]:
             "scope_label": RESIDENTIAL_SCOPE_LABEL,
         },
         "overview": {
-            "headline": f"{zone} base-zone standards",
+            "headline": "Property Overview",
             "summary": summary,
             "disclaimer": _text(source, "disclaimer", "result"),
         },
@@ -206,6 +230,39 @@ def _present_success(source: Mapping[str, Any]) -> dict[str, Any]:
         "sources": _sources(sources, citation_ids),
         "versions": _versions(source),
     }
+
+
+def _zone_description(
+    zone: str,
+    *,
+    fallback: str,
+    provider: ZoneDescriptionLookup | None,
+) -> str:
+    """Prefer reviewed presentation copy without risking the zoning result."""
+
+    if provider is None:
+        return fallback
+    try:
+        description = provider.description_for(zone)
+    except (
+        KeyError,
+        OSError,
+        TypeError,
+        ValueError,
+        ZoneDescriptionIntegrityError,
+    ):
+        return fallback
+    if (
+        not isinstance(description, str)
+        or not description.strip()
+        or description != description.strip()
+        or "\n" in description
+        or "\r" in description
+        or "<" in description
+        or ">" in description
+    ):
+        return fallback
+    return description
 
 
 def _present_use(value: Mapping[str, Any]) -> dict[str, Any]:

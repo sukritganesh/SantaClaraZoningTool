@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Exact source — {{ target.regulation_label }}{% endblock %}
+
+{% block content %}
+  <article class="evidence-viewer" data-evidence-viewer data-zoom="100">
+    <nav class="evidence-back" aria-label="Evidence navigation">
+      <a href="{{ url_for('index') }}">Back to zoning lookup</a>
+    </nav>
+
+    <header class="evidence-header">
+      <p class="scope-badge">{{ "Official source" if target.document.classification == "official_source" else "Project verification record" }}</p>
+      <h2>{{ target.regulation_label }}</h2>
+      <p class="evidence-result-context"><strong>{{ target.zone }} displayed result:</strong> {{ target.displayed_result }}</p>
+      <p>{{ target.topic }}</p>
+    </header>
+
+    {% if target.document.media_type == "application/pdf" %}
+      <section class="evidence-document" aria-labelledby="evidence-document-heading">
+        <div class="evidence-toolbar">
+          <h3 id="evidence-document-heading">Highlighted source page</h3>
+          <div class="evidence-controls" role="group" aria-label="Source page controls">
+            <button type="button" data-evidence-previous>Previous page</button>
+            <span data-evidence-page-status aria-live="polite">Page 1 of {{ target.locations | length }}</span>
+            <button type="button" data-evidence-next>Next page</button>
+            <button type="button" data-evidence-fit>Fit width</button>
+            <button type="button" data-evidence-zoom-out aria-label="Zoom out">−</button>
+            <button type="button" data-evidence-zoom-in aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="evidence-pages" tabindex="0" aria-label="Highlighted checksummed source pages">
+          {% for location in target.locations %}
+            <figure class="evidence-page" data-evidence-page data-page-index="{{ loop.index0 }}">
+              <div class="evidence-page-canvas">
+                <img
+                  src="{{ url_for('source_evidence_page', target_id=target.target_id, location_index=loop.index0) }}"
+                  alt="{{ target.document.title }}, PDF page {{ location.pdf_page }}, printed page {{ location.printed_page }}"
+                  width="{{ location.page_image.width }}"
+                  height="{{ location.page_image.height }}"
+                  loading="{% if loop.first %}eager{% else %}lazy{% endif %}"
+                >
+                <svg class="evidence-highlights" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">
+                  {% for region in location.regions %}
+                    <rect x="{{ region.x }}" y="{{ region.y }}" width="{{ region.width }}" height="{{ region.height }}"></rect>
+                  {% endfor %}
+                </svg>
+              </div>
+              <figcaption>PDF page {{ location.pdf_page }} / printed page {{ location.printed_page }}</figcaption>
+              <div class="evidence-excerpt" aria-label="Verified source excerpt">
+                <strong>Matching text excerpt</strong>
+                <blockquote>{{ location.excerpt }}</blockquote>
+              </div>
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% else %}
+      <section class="evidence-document evidence-native-record" aria-labelledby="evidence-document-heading">
+        <h3 id="evidence-document-heading">Verified project record location</h3>
+        {% for location in target.locations %}
+          <p class="evidence-native-locator">
+            {% if location.kind == "markdown" %}Lines {{ location.start_line }}–{{ location.end_line }}{% else %}JSON Pointer <code>{{ location.json_pointer }}</code>{% endif %}
+          </p>
+          <pre tabindex="0"><code>{{ location.native_text }}</code></pre>
+          <div class="evidence-excerpt" aria-label="Verified source excerpt">
+            <strong>Matching text excerpt</strong>
+            <blockquote>{{ location.excerpt }}</blockquote>
+          </div>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    <section class="evidence-metadata" aria-labelledby="evidence-source-heading">
+      <h3 id="evidence-source-heading">Source identity</h3>
+      <dl class="evidence-metadata-grid">
+        <div><dt>Document</dt><dd>{{ target.document.title }}</dd></div>
+        <div><dt>Version</dt><dd>{{ target.document.version }}</dd></div>
+        <div><dt>Effective date</dt><dd>{{ target.document.effective_date or "Not stated" }}</dd></div>
+        <div><dt>Locator</dt><dd>{{ target.locator }}</dd></div>
+        <div><dt>Verification</dt><dd>{{ target.locations[0].verification_status | replace("_", " ") | title }} on {{ target.locations[0].verified_date }}</dd></div>
+        <div><dt>SHA-256</dt><dd><code>{{ target.document.sha256 }}</code></dd></div>
+      </dl>
+      <div class="evidence-actions">
+        {% if target.document.media_type == "application/pdf" %}
+          <a class="primary-action" href="{{ url_for('source_document', document_id=target.document_id) }}#page={{ target.locations[0].pdf_page }}" target="_blank" rel="noopener">Open original PDF at this page</a>
+        {% else %}
+          <a class="primary-action" href="{{ url_for('source_document', document_id=target.document_id) }}" target="_blank" rel="noopener">Open checksummed record</a>
+        {% endif %}
+        {% if target.document.official_url %}
+          <a class="secondary-action" href="{{ target.document.official_url }}" target="_blank" rel="noopener external">Visit official source</a>
+        {% endif %}
+      </div>
+    </section>
+
+    <aside class="evidence-notice" aria-label="Evidence limitation">
+      <strong>About this highlight</strong>
+      <p>The highlight is a navigation aid. The checksummed original document controls. This evidence strengthens traceability but does not provide a complete entitlement analysis or legal or planning determination.</p>
+    </aside>
+  </article>
+{% endblock %}

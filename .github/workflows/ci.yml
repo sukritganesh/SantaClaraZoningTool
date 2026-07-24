@@ -48,6 +48,12 @@ jobs:
             demo-data/residential-bundle-manifest-2026-07-19.2.json \
             demo-data/santa-clara-residential-runtime-data-2026-07-19.2.zip
 
+      - name: Validate exact source evidence
+        run: python -B scripts/build_source_evidence.py --validate-only
+
+      - name: Validate zone descriptions
+        run: python -B scripts/validate_zone_descriptions.py
+
       - name: Validate approved residential rules
         run: >-
           python -B scripts/validate_approved_residential_rules.py

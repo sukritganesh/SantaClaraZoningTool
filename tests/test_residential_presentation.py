@@ -12,13 +12,18 @@ from santa_clara_zoning.residential_presentation import (
     present_residential_integrity_error,
     present_residential_summary,
 )
+from santa_clara_zoning.zone_descriptions import ZoneDescriptionProvider
 
 from tests.test_residential_summary import _pipeline
 
 
+ZONE_DESCRIPTIONS = ZoneDescriptionProvider.from_defaults()
+
+
 def _view(zone: str) -> dict:
     return present_residential_summary(
-        _pipeline(zone).analyze_address("1 Test Street")
+        _pipeline(zone).analyze_address("1 Test Street"),
+        zone_description_provider=ZONE_DESCRIPTIONS,
     )
 
 
@@ -52,7 +57,11 @@ class ResidentialPresentationSuccessTest(unittest.TestCase):
         self.assertEqual(len(result["approvals"]), 2)
         self.assertEqual(len(result["key_standards"]), 4)
         self.assertEqual(len(result["setbacks"]), 4)
-        self.assertIn("share the supported base-zone standards", result["overview"]["summary"])
+        self.assertEqual(result["overview"]["headline"], "Property Overview")
+        self.assertIn(
+            "low-density residential zone",
+            result["overview"]["summary"],
+        )
         self.assertNotIn("selection", result["overview"]["summary"].lower())
 
         density = next(
@@ -153,6 +162,66 @@ class ResidentialPresentationSuccessTest(unittest.TestCase):
             {"kind": "distance", "number": 15, "unit": "ft"},
         )
 
+    def test_all_supported_zones_use_the_reviewed_catalog_copy(self) -> None:
+        expected_phrases = {
+            "R1-6L": "standard single-family residential zone",
+            "R1-8L": "larger-lot single-family residential zone",
+            "R2": "low-density residential zone",
+            "R3": "medium-density residential zone",
+            "R4": "high-density residential zone",
+            "R5": "very-high-density residential zone",
+            "R6": "transit-neighborhood residential zone",
+            "PH-R5": "Patrick Henry Very-High-Density Residential zone",
+            "UV": "Patrick Henry Urban Village zone",
+            "VR": "Patrick Henry Village Residential zone",
+            "UC": "Patrick Henry Urban Center zone",
+            "HDF": "Patrick Henry High-Density Flex zone",
+        }
+        for zone, phrase in expected_phrases.items():
+            with self.subTest(zone=zone):
+                result = _view(zone)
+                description = result["overview"]["summary"]
+                self.assertEqual(
+                    description,
+                    ZONE_DESCRIPTIONS.description_for(zone),
+                )
+                self.assertIn(phrase, description)
+                self.assertIn("Zoning Clearance", description)
+                self.assertIn("Architectural Review", description)
+                self.assertNotIn("dwelling units per acre", description)
+                self.assertNotIn("dwelling units/acre", description)
+
+    def test_missing_or_invalid_description_uses_the_factual_fallback(self) -> None:
+        source = _pipeline("R2").analyze_address("1 Test Street")
+        missing = present_residential_summary(source)
+        self.assertIn(
+            "share the supported base-zone standards",
+            missing["overview"]["summary"],
+        )
+
+        class InvalidDescriptionProvider:
+            def description_for(self, zone: str) -> str:
+                return "<strong>untrusted copy</strong>"
+
+        invalid = present_residential_summary(
+            source,
+            zone_description_provider=InvalidDescriptionProvider(),
+        )
+        self.assertEqual(invalid["overview"]["summary"], missing["overview"]["summary"])
+
+        class MissingDescriptionProvider:
+            def description_for(self, zone: str) -> str:
+                raise KeyError(zone)
+
+        unavailable = present_residential_summary(
+            source,
+            zone_description_provider=MissingDescriptionProvider(),
+        )
+        self.assertEqual(
+            unavailable["overview"]["summary"],
+            missing["overview"]["summary"],
+        )
+
     def test_r1_special_pathway_is_a_separate_not_evaluated_card(self) -> None:
         result = _view("R1-6L")
 
@@ -184,12 +253,21 @@ class ResidentialPresentationSuccessTest(unittest.TestCase):
     def test_output_is_repeatable_and_defensive(self) -> None:
         source = _pipeline("R4").analyze_address("1 Test Street")
         original = copy.deepcopy(source)
-        first = present_residential_summary(source)
+        first = present_residential_summary(
+            source,
+            zone_description_provider=ZONE_DESCRIPTIONS,
+        )
         self.assertEqual(source, original)
         first["key_standards"][0]["conditions"].append("changed")
 
-        second = present_residential_summary(source)
-        third = present_residential_summary(source)
+        second = present_residential_summary(
+            source,
+            zone_description_provider=ZONE_DESCRIPTIONS,
+        )
+        third = present_residential_summary(
+            source,
+            zone_description_provider=ZONE_DESCRIPTIONS,
+        )
         self.assertNotIn("changed", second["key_standards"][0]["conditions"])
         self.assertEqual(_canonical(second), _canonical(third))
 

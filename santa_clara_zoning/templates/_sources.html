@@ -1,7 +1,7 @@
 <section class="sources-section" aria-labelledby="sources-heading">
   <h2 id="sources-heading">Sources and data versions</h2>
   <details class="disclosure-card source-disclosure">
-    <summary>Inspect source receipts and versions</summary>
+    <summary>Inspect sources and versions</summary>
     {% set gis_sources = view.sources | selectattr("kind", "equalto", "gis_layer") | list %}
     {% set regulatory_sources = view.sources | selectattr("kind", "equalto", "regulatory_citation") | list %}
 
