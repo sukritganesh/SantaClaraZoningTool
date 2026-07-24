@@ -1,6 +1,6 @@
 # Santa Clara Zoning Explorer
 
-**Project report — July 19, 2026**
+**Project report — July 23, 2026**
 
 ## In brief
 
@@ -10,7 +10,7 @@ This project began with a practical question:
 
 The first release proved that workflow for the City's two R1 zones. The same foundation has now been expanded into **Santa Clara Zoning Explorer**, a broader residential product covering selected citywide R zones and Patrick Henry plan designations.
 
-A user enters an address. The application matches it to local address and parcel records, confirms the exact zoning designation, and presents the residential uses and common base-zone standards supported for that zone. Results include approvals, height, stories, structure coverage, gross residential density, setbacks, qualifications, conflicts, source receipts, and data versions.
+A user begins entering an address and chooses a canonical City match from the local autocomplete. The application matches it to local parcel records, confirms the exact zoning designation, and presents a plain-language zone overview, the selected parcel and nearby supported zoning, residential uses, and common base-zone standards. Results include approvals, height, stories, structure coverage, gross residential density, setbacks, qualifications, conflicts, exact source evidence, and data versions.
 
 The product is intentionally focused. It provides selected residential zoning information, not a complete entitlement analysis, buildability study, or legal or planning determination.
 
@@ -19,13 +19,16 @@ The product is intentionally focused. It provides selected residential zoning in
 The application turns an ordinary address search into a readable residential zoning summary. For a supported property, it can show:
 
 - the matched address, parcel number, and exact zoning designation;
+- a map of the selected parcel and nearby supported residential zoning;
+- a reviewed plain-language overview of the zone's purpose, relative intensity, general housing types, and approval path;
 - how the zoning table treats single-family, two-family, and multifamily dwellings;
 - whether Zoning Clearance and Architectural Review apply within the supported scope;
 - maximum primary-structure height and stories;
 - maximum structure coverage, including source tables that list no maximum;
 - the base gross residential density range;
 - front, rear, interior-side, and street-side setbacks;
-- special conditions, unresolved or project-resolved source conflicts, and topics that are not evaluated; and
+- special conditions, unresolved or project-resolved source conflicts, and topics that are not evaluated;
+- the exact checksummed PDF cell, paragraph, or project verification record supporting each displayed rule; and
 - the regulatory sources and versioned data used to produce the result.
 
 The interface presents the common standards immediately. It does not ask the user to choose a building type when the supported standards are identical across the residential types allowed in that zone. The underlying system still keeps single-family, two-family, and multifamily identities separate so a later version can ask for a selection if their standards genuinely diverge.
@@ -192,11 +195,11 @@ These are documented project resolutions, not claims that the City has corrected
 
 ### It keeps sources attached to the answer
 
-Rules retain citations, source versions, conditions, exceptions, conflicts, and approval status. The interface keeps the ordinary result readable while allowing someone to inspect the supporting source receipts and the versions that produced it.
+Rules retain citations, source versions, conditions, exceptions, conflicts, and approval status. The interface keeps the ordinary result readable while allowing someone to open a dedicated evidence tab at the exact checksummed PDF cell or native project verification record supporting a displayed rule.
 
 ### It is deterministic and local
 
-The application does not need an API key, a live City GIS connection, a database, or an AI service at runtime. The same versioned inputs and software contracts produce the same structured result and rendered page. This makes an answer reproducible and lets tests cover network-independent operation.
+The application does not need an API key, a live City GIS connection, a database, or an AI service at runtime. The same versioned inputs and software contracts produce the same structured result and rendered page. Optional OpenStreetMap tiles provide street context only; local parcel and zoning geometry remains visible if they fail. This makes an answer reproducible and lets tests cover network-independent operation.
 
 ## Where AI fits
 
@@ -206,27 +209,30 @@ AI output is not treated as regulatory authority. Candidate conclusions must sti
 
 ## Validation and release readiness
 
-The current release candidate has been checked at several levels:
+The current release has been checked at several levels:
 
 - 67,243 citywide address points support local address matching;
 - the residential GIS package contains 18,677 validated parcel records and the same number of current-zoning records;
 - ten live target designations are exercised through real source-verified address fixtures, while `R5` and `R6` are covered without invented real-world locations;
 - the approved ruleset covers all 12 target designations, 196 approved rules, and two special pathways;
-- the complete repository suite passes all 354 automated tests with no failures, errors, or skips;
+- the exact-evidence catalog closes 443 contextual source targets across all 12 zones;
+- the reviewed zone-description catalog covers all 12 supported designations;
+- the complete repository suite passes all 414 automated tests with no failures or errors;
 - tests deliberately damage checksums, approvals, migrations, citations, source relationships, zoning evidence, and rule values to confirm that unsafe data is rejected;
 - independent processes and different request orders produce identical structured and rendered results;
 - the application starts and completes its acceptance cases with outbound network access blocked;
-- the source-complete runtime package reproduces byte for byte from committed inputs; and
-- the Python 3.9 clean-checkout workflow passed on GitHub, including dependency checks, two bootstrap passes, regulatory validators, result-contract validators, the residential release harness, the complete suite, JavaScript syntax, and whitespace integrity.
+- the residential and exact-evidence runtime packages reproduce byte for byte from committed inputs; and
+- the Python 3.9 clean-checkout workflow passed on the feature PR and post-merge `main`, including dependency checks, two bootstrap passes, bundle reproduction, evidence and zone-description validation, regulatory validators, result-contract validators, the residential release harness, the complete suite, JavaScript syntax, and whitespace integrity.
 
-Manual review also covered the default interface, source disclosures, controlled failures, and responsive desktop and mobile presentation.
+Manual review also covered autocomplete, parcel maps, compact legends and hover labels, exact source evidence, zone overviews, controlled failures, and responsive desktop and mobile presentation.
 
 ## Important versions
 
 | Component | Current identity | What it identifies |
 |---|---|---|
 | Released baseline | `v0.1.0-r1-prototype` | The preserved two-zone R1 release merged through PR #1 |
-| Current release | `v0.2.0` | The validated residential expansion described by this report |
+| Residential baseline | `v0.2.0` | The validated 12-designation residential expansion merged through PR #2 |
+| Current release | `v0.3.0` | The staff-experience release described by this report |
 | Address data | Snapshot dated July 16, 2026 | The citywide address records used for exact matching |
 | Residential parcel and zoning data | Snapshot dated July 18, 2026 | The filtered parcel and current-zoning evidence for the 12 exact target designations |
 | Regulatory sources | July 2025 Title 18 baseline, audited through July 18, 2026 | The consolidated code and later-legislation review used for the expansion |
@@ -234,8 +240,10 @@ Manual review also covered the default interface, source disclosures, controlled
 | Approved residential ruleset | `2026-07-19.5` under schema `3.2.0` | The exact approved 12-zone regulatory package |
 | Residential result contract | `2.1.0` | The versioned address-to-standards result passed through the backend |
 | Source-complete residential add-on | `2026-07-19.2` | The reproducible GIS and Patrick Henry source package used with the preserved R1 runtime bundle |
+| Exact source-evidence add-on | `2026-07-22.1` | The reproducible catalog and 33 referenced full-page evidence images |
+| Zone-description catalog | `2026-07-23.1` | Reviewed source-grounded overviews for all 12 supported designations |
 
-The release title is **Santa Clara Zoning Explorer v0.2.0 — Residential Expansion**. Its tag identifies the validated `main` commit containing the final release record; the preserved `v0.1.0-r1-prototype` tag continues to identify the historical R1 baseline.
+The release title is **Santa Clara Zoning Explorer v0.3.0 — Staff Experience**. Its tag identifies the validated `main` commit containing the final release record; the preserved `v0.1.0-r1-prototype` and `v0.2.0` tags continue to identify the historical R1 and residential baselines.
 
 ## What the product does not determine
 
@@ -266,17 +274,17 @@ That pattern is reusable. Common concepts such as height, setbacks, use classifi
 
 ## Sensible next steps
 
-The residential expansion phase is complete. Future work can remain incremental:
+The residential expansion and staff-experience phases are complete. Future work can remain incremental:
 
 - ask for a structure selection only when supported standards materially differ;
 - add proposal facts and evaluate one additional regulation family at a time;
-- improve public-facing source links and explanations;
+- broaden zoning coverage only through new verified source and GIS packages;
 - automate detection of code, amendment, and GIS changes while retaining human approval; and
 - generalize the evidence-preparation workflow for additional jurisdictions without carrying Santa Clara assumptions into their rules.
 
 ## Conclusion
 
-Santa Clara Zoning Explorer now provides a broader, evidence-backed view of selected residential zoning standards by address. It grew from a two-zone proof into a 12-designation residential product while preserving the original release, adding two-family and multifamily support, incorporating Patrick Henry, and strengthening the system's source, conflict, testing, and clean-checkout guarantees.
+Santa Clara Zoning Explorer now provides a broader, evidence-backed view of selected residential zoning standards by address. It grew from a two-zone proof into a 12-designation residential product with local address discovery, parcel context, exact source evidence, and reviewed zone explanations while preserving prior releases and strengthening the system's source, conflict, testing, and clean-checkout guarantees.
 
 Its most important promise remains modest and useful: when the approved evidence supports an answer, present it clearly and cite it; when the evidence does not support an answer, say so rather than guess.
 

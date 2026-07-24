@@ -2,17 +2,19 @@
 
 **Last updated:** July 23, 2026
 
-**Current position:** Residential expansion Blocks 0-6 remain complete and released as `v0.2.0`; post-release Blocks 7-10 are complete, locally validated, and owner accepted; the normal `v0.3.0` PR, hosted CI, merge, and release gates are in progress
+**Current position:** Blocks 0-10 are complete and owner accepted; UX feature PR #4 is merged into `main`, its post-merge clean-checkout gate passes, and the final product release identity is `v0.3.0`
 
-**Next action:** Commit and publish the accepted Blocks 7-10 branch, then complete the normal PR, hosted CI, guarded merge, and `v0.3.0` release-record gates
+**Next action:** No work remains in the `v0.3.0` phase; begin later product work by promoting a deliberately scoped backlog item into a new active phase
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
 
 ## Baseline and active scope
 
 - Released baseline: `v0.1.0-r1-prototype`, merged through PR #1.
-- Current product release: `v0.2.0`, with the residential implementation merged through PR #2 and the final release record tagged from `main`.
+- Previous product release: `v0.2.0`, with the residential implementation merged through PR #2 and its release record merged through PR #3.
+- Current product release: `v0.3.0`, with the staff-experience implementation merged through PR #4 and the final release record tagged from `main`.
 - Completed expansion branch: `codex/residential-zone-expansion`.
+- Completed staff-experience branch: `codex/address-autocomplete-v0.3.0`.
 - Target citywide zones: `R1-6L`, `R1-8L`, `R2`, `R3`, `R4`, `R5`, and `R6`.
 - Target Patrick Henry designations: `PH-R5`, `UV`, `VR`, `UC`, and GIS designation `HDF`.
 - Target structure identities: single-family, two-family, and multifamily primary structures.
@@ -48,6 +50,8 @@ This is the sole active project-status ledger. Scope, architecture, and block ex
 - Preserved residential GIS-only add-on manifest: `demo-data/residential-bundle-manifest.json`
 - Source-complete residential runtime add-on: `demo-data/santa-clara-residential-runtime-data-2026-07-19.2.zip`
 - Source-complete residential add-on manifest: `demo-data/residential-bundle-manifest-2026-07-19.2.json`
+- Exact source-evidence runtime add-on: `demo-data/santa-clara-source-evidence-runtime-data-2026-07-22.1.zip`
+- Exact source-evidence add-on manifest: `demo-data/source-evidence-bundle-manifest-2026-07-22.1.json`
 - Versioned zone-description catalog: `data/presentation/santa_clara/residential/2026-07-23.1/catalog.json`
 - Zone-description authoring guide: `docs/zone-description-authoring-guide.md`
 - Whole-project report: `docs/santa-clara-zoning-explorer-report.md`
@@ -697,7 +701,7 @@ Validation evidence:
 - in-app browser testing proves pointer and keyboard auto-submit, duplicate warning and controlled ambiguity, Down/Up/Home/End/Escape/Tab behavior, live announcements, stale-request cancellation, zero-result state, and no console warnings or errors; and
 - a 375-pixel viewport check shows one-column form controls, an in-bounds popup, no horizontal overflow, eight unit-heavy choices, and the truncated-result instruction in the established visual system.
 
-This evidence establishes implementation readiness only. The current released product remains `v0.2.0`; no branch, commit, pull request, merge, tag, or `v0.3.0` release was created in this block.
+This evidence established implementation readiness only. At Block 7 close, the current released product was still `v0.2.0`; no branch publication, pull request, merge, tag, or `v0.3.0` release was part of that implementation block.
 
 ## Block 8 supported parcel context map implementation
 
@@ -720,7 +724,7 @@ Local automated validation evidence:
 - the vendored Leaflet and application JavaScript parse in the system JavaScript runtime, Python compilation succeeds with a temporary bytecode cache, and `git diff --check` passes; and
 - real map responses return 174 nearby supported polygons for `2852 Sycamore Way`, 225 for `1240 White Drive`, 40 for `3105 Patrick Henry Drive`, and 45 for `4650 Old Ironsides Drive`; `1500 Warburton Avenue`, `324 Los Padres Boulevard`, and a missing address retain controlled geometry-free outcomes.
 
-The manual test sheet now covers mouse, touch, keyboard, assistive announcements, responsive layout, forced colors, reduced motion, small and large parcels, supported-zone boundaries, blocked tiles, blocked map context, and JavaScript-disabled fallback. The owner accepted the completed Block 8 interface on July 23, 2026; the normal hosted Node syntax, PR, CI, merge, and release gates remain pending.
+The manual test sheet now covers mouse, touch, keyboard, assistive announcements, responsive layout, forced colors, reduced motion, small and large parcels, supported-zone boundaries, blocked tiles, blocked map context, and JavaScript-disabled fallback. The owner accepted the completed Block 8 interface on July 23, 2026; the normal hosted Node syntax, PR, CI, merge, and release gates later passed through the finalization record below.
 
 The owner-requested compact-legend refinement passes 44 focused web/rendering tests and JavaScript parsing. A live `4650 Old Ironsides Drive` browser check confirms that the legend is collapsed by default, opens without overflowing the map, contains the parcel and all five visible zoning entries with concise labels, opens with Enter, closes with Escape, and produces no console warnings or errors.
 
@@ -755,7 +759,7 @@ Validation evidence:
 - application JavaScript parses in the bundled Node runtime, affected Python modules compile with a temporary bytecode cache, immutable ruleset/contract/raw-source checks show no diff, and `git diff --check` passes; and
 - direct visual inspection confirms that the rendered Title 18 page 25 and Patrick Henry page 63 assets preserve complete, readable page context at 144 DPI and contain the representative controlling tables. The in-app browser backend did not attach a controllable local tab in this session, so live interaction, responsive, print, forced-color, and screen-reader owner acceptance remains a stated `v0.3.0` release gate rather than being overstated as passed.
 
-The owner accepted the completed Block 9 evidence experience on July 23, 2026. Block 9 targets the eventual `v0.3.0` release with Blocks 7 and 8. The current released product remains `v0.2.0`; no release or landing action is part of this implementation block.
+The owner accepted the completed Block 9 evidence experience on July 23, 2026. Block 9 joined Blocks 7 and 8 in the eventual `v0.3.0` release; no release or landing action was part of the implementation block itself.
 
 The owner-approved presentation refinement keeps special pathways and their evidence in backend contracts but hides their unavailable analysis from the staff result. It removes the detached **Important qualifications** section and places conditional, proposal-dependent, and source-conflict notices directly beside the affected standard, with competing conflict evidence retained in collapsed details. Residential-use cards show only the use identity, evidence control, and permission status; repetitive profile labels and permission boilerplate remain preserved in presentation data. A single accessible source-help note near the top of each successful result tells staff that the `i` controls open supporting citations and exact evidence. Source popovers use **View exact source** as their sole action while the complete numbered appendix remains available below and in print. On the evidence page, highlighted source content appears before source-identity metadata so staff reach the controlling excerpt first. The combined residential-web, legacy-web, and source-evidence suites pass all 59 focused tests after these refinements. This is a presentation-only change: no ruleset, regulatory value, result contract, source record, lookup result, or zoning-analysis behavior changed.
 
@@ -787,7 +791,17 @@ Validation evidence:
 
 The catalog SHA-256 is `f47d7d591f2b2ab000d075bcd553508c6eafc2aef6b4d4808fca32684c96a107`; its authoring-guide SHA-256 is `c09aaf54cc9101de097d1b165275cdf6d2609b4207cd2a777d1d48d07c8b95fd`; and the bound approved-ruleset SHA-256 remains `ed72cfd24cc43755ddcfbcf566a2c6212592155bb491807cb747748addbb05c4`.
 
-No ruleset, regulatory value, source snapshot, result contract, runtime data bundle, lookup conclusion, or zoning-analysis behavior changed in Block 10. The owner accepted the completed Block 10 overview experience and the combined Blocks 7-10 `v0.3.0` scope on July 23, 2026. The current released product remains `v0.2.0`; the normal `v0.3.0` PR, hosted CI, guarded merge, and release-record gates remain pending.
+No ruleset, regulatory value, source snapshot, result contract, runtime data bundle, lookup conclusion, or zoning-analysis behavior changed in Block 10. The owner accepted the completed Block 10 overview experience and the combined Blocks 7-10 `v0.3.0` scope on July 23, 2026. The normal `v0.3.0` PR, hosted CI, guarded merge, and release-record gates later passed through the finalization record below.
+
+### v0.3.0 PR and release finalization
+
+PR #4 passed both exact-head Python 3.9 clean-checkout jobs with no unresolved review thread or conflict. After the project owner confirmed the guarded landing plan and immediate-merge warning for head `494e16666bbb393116da1a15314ebc2870987c51`, GitHub merged it through merge commit `1103df42355bd2e8a56b493b8e6db2f323f88efb` on July 23, 2026. Post-merge `main` run `30071466051` then passed every configured bootstrap, bundle, evidence, zone-description, approved-ruleset, result-contract, release-harness, complete-suite, JavaScript, and whitespace gate against that merge commit.
+
+The final release-only record assigns semantic version `v0.3.0` and title **Santa Clara Zoning Explorer v0.3.0 — Staff Experience** to the validated product. The tag points to the `main` commit containing this record after its own pull-request checks and guarded merge. The GitHub release is a normal release rather than a draft or prerelease.
+
+The release uploads no redundant binary assets. The checksum-pinned runtime ZIPs remain versioned repository artifacts and are included in GitHub's tagged source archives; fresh clones install all 56 runtime files through the documented bootstrap command.
+
+This release-finalization tranche updates the release status in the progress ledger, README, and whole-project report only. It does not change production code, regulatory values, rulesets, schemas, contracts, source snapshots, runtime packages, dependencies, tests, application behavior, or the preserved `v0.1.0-r1-prototype` and `v0.2.0` releases.
 
 ## Blocks 0-1 validation evidence
 
@@ -888,3 +902,5 @@ None currently recorded. The clean-checkout source-packaging blocker found by th
 | 2026-07-23 | Increase the selected parcel’s white halo and dark-green map outline. | A stronger boundary makes the exact lookup target easier to distinguish from nearby categorical zoning fills without changing the underlying geometry or implying that neighboring parcels were selected. |
 | 2026-07-23 | Store source-grounded zone overviews in a versioned presentation catalog authored offline, with no runtime AI, and retain the deterministic factual summary as a fail-safe fallback. | Staff receive concise comparative context for all 12 zones while the approved ruleset remains the sole regulatory authority; checksum and citation validation make the prose reproducible, and unavailable presentation content cannot suppress or change a zoning result. |
 | 2026-07-23 | Accept the combined Blocks 7-10 implementation as the complete `v0.3.0` feature scope and begin normal release gates. | The owner completed iterative functional review of autocomplete, maps, exact evidence, presentation refinements, and zone overviews; the final local matrix passes, so remaining work is branch publication, hosted CI, guarded landing, release recording, and tagging rather than additional product scope. |
+| 2026-07-23 | Land staff-experience PR #4 through a merge commit at its exact approved head. | Both PR checks passed, the branch was clean and mergeable, the owner confirmed the guarded landing warning for head `494e16666bbb393116da1a15314ebc2870987c51`, and post-merge `main` run `30071466051` passed at merge commit `1103df42355bd2e8a56b493b8e6db2f323f88efb`. |
+| 2026-07-23 | Publish `v0.3.0` as the Santa Clara Zoning Explorer staff-experience release. | Autocomplete, parcel context, exact source evidence, and reviewed zone overviews passed owner review, local and clean-checkout validation, guarded PR landing, and post-merge `main` validation without changing approved zoning rules or conclusions. |
