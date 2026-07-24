@@ -45,6 +45,7 @@ build/
 data/raw/
 data/processed/
 data/canonical/
+data/source_evidence/
 *.gpkg
 *.sqlite
 *.sqlite3

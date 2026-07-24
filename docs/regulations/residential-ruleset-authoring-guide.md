@@ -2,9 +2,9 @@
 
 **Contract:** Santa Clara residential ruleset schema `3.2.0`; accepted predecessors preserved under `3.0.0` and `3.1.0`
 
-**Status:** Representation and complete authoring contracts implemented; standalone runtime retrieval integrated through Block 4
+**Status:** Representation and complete authoring contracts implemented; runtime retrieval and source-evidence presentation integrated
 
-**Last updated:** July 19, 2026
+**Last updated:** July 22, 2026
 
 ## Purpose and boundary
 
@@ -269,6 +269,17 @@ The shared maps preserve the v2 provenance model:
 Every source reference must resolve to a shared citation. Every citation must resolve to a source document. Local source files record SHA-256 checksums. External-only sources record stable URLs and verification dates.
 
 A source reference is provenance, not a substitute for a typed requirement or a validation disposition.
+
+### Runtime source-evidence approval
+
+The ruleset remains the regulatory authority boundary; exact viewer locations are maintained in the versioned presentation/provenance sidecar rather than added to schema `3.2.0`. Before a future citation can be approved for staff-facing runtime presentation, every rendered `(zone, rule or capability, citation)` context must have a verified source-evidence binding:
+
+- PDF evidence records the source and citation IDs, one-based PDF and printed-page numbers, normalized rectangles for the exact controlling cell, row label, paragraph, or heading, a verified excerpt, and verification date/status;
+- Markdown project records use immutable line ranges plus an excerpt checksum;
+- JSON project records use a resolving JSON Pointer plus an excerpt checksum; and
+- the catalog validator proves source and page-image checksums, page counts, region bounds, excerpt presence, unique contextual bindings, and complete coverage of all source controls that the presentation renders.
+
+Only approved official sources and explicitly labeled project audit, verification, or predecessor records may enter the runtime evidence catalog. Candidate research, Drive inventories, and extraction aids remain internal even when they helped produce a candidate ruleset. A source-evidence target improves navigation and traceability; it cannot approve a rule, change a value, resolve a conflict, or replace the checksummed original document.
 
 ## Conflicts
 

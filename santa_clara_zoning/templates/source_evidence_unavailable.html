@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Exact source unavailable{% endblock %}
+
+{% block content %}
+  <section class="outcome-card outcome-card--system_error" aria-labelledby="evidence-unavailable-heading">
+    <h2 id="evidence-unavailable-heading">Exact source unavailable</h2>
+    <p>{{ message }}</p>
+    <a class="secondary-action" href="{{ url_for('index') }}">Return to zoning lookup</a>
+  </section>
+{% endblock %}

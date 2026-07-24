@@ -1,0 +1,131 @@
+{
+  "contract_version": "1.0.0",
+  "catalog_version": "2026-07-23.1",
+  "jurisdiction": "City of Santa Clara",
+  "authoring_method": "offline_codex_source_grounded",
+  "ruleset": {
+    "ruleset_id": "santa-clara-residential-zoning",
+    "version": "2026-07-19.5",
+    "local_path": "rulesets/santa_clara/residential/2026-07-19.5/ruleset.json",
+    "sha256": "ed72cfd24cc43755ddcfbcf566a2c6212592155bb491807cb747748addbb05c4"
+  },
+  "authoring_guide": {
+    "local_path": "docs/zone-description-authoring-guide.md",
+    "sha256": "c09aaf54cc9101de097d1b165275cdf6d2609b4207cd2a777d1d48d07c8b95fd"
+  },
+  "descriptions": {
+    "R1-6L": {
+      "description": "R1-6L is Santa Clara's standard single-family residential zone, intended to preserve established neighborhoods and provide a comfortable, lower-intensity setting for family life. Compared with R1-8L, it reflects the City's more typical single-family parcel pattern rather than a larger-lot setting. It generally accommodates detached single-family homes and closely related residential improvements. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "R1-8L": {
+      "description": "R1-8L is Santa Clara's larger-lot single-family residential zone, intended to preserve established neighborhoods with more spacious parcels than the standard R1-6L zone. It generally accommodates detached single-family homes and related residential improvements in a lower-intensity setting where larger yards and greater separation between buildings are characteristic. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "R2": {
+      "description": "R2 is Santa Clara's low-density residential zone, designed to maintain a neighborhood-scale residential character while allowing more housing variety than the R1 zones. It generally accommodates single-family homes, two-family homes, and smaller multifamily residential development without taking on the scale of the City's higher-density zones. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "citywide-use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "R3": {
+      "description": "R3 is Santa Clara's medium-density residential zone, intended as a transition between lower-density neighborhoods and the City's more intensive multifamily areas. It generally accommodates two-family homes and multifamily housing such as rowhouses and townhouses, with development expected to remain compatible in form and scale with nearby neighborhoods. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "citywide-use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "R4": {
+      "description": "R4 is Santa Clara's high-density residential zone, intended for multifamily housing at a greater intensity than R3 while remaining below the very-high-density R5 and transit-oriented R6 zones. It generally accommodates options such as rowhouses, townhouses, and low-rise apartments, often near neighborhood commercial centers. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "citywide-use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "R5": {
+      "description": "R5 is Santa Clara's very-high-density residential zone, intended for substantial multifamily development at a greater intensity than R4. It generally accommodates larger apartment and condominium projects, ranging from lower-rise to high-rise forms, and is oriented toward locations near major community facilities, business centers, transportation corridors, or major thoroughfares. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "citywide-use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "R6": {
+      "description": "R6 is Santa Clara's transit-neighborhood residential zone and supports the broadest intensity range among the City's general residential zones. It generally accommodates mid-rise and high-rise multifamily housing in transit-oriented settings, with projects expected to connect well to streets, transit stops, employment centers, and shared amenities. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "residential-density-zone-purpose",
+        "citywide-use-table",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "PH-R5": {
+      "description": "PH-R5 is the Patrick Henry Very-High-Density Residential zone, the plan area's counterpart to the Citywide R5 zone. It generally accommodates substantial multifamily housing, including apartment and condominium development, with an urban form suited to the Patrick Henry area and access to nearby facilities, business centers, and transportation corridors. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "patrick-henry-title18-zone-purpose",
+        "patrick-henry-title18-use-table",
+        "patrick-henry-plan-classifications",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "UV": {
+      "description": "UV is the Patrick Henry Urban Village zone, intended for very-high-density, transit-oriented multifamily neighborhoods with an urban-scale character. It generally accommodates mid-rise and taller apartment or condominium development with pedestrian-oriented building fronts, shared outdoor spaces, and structured or below-grade parking near convenient transit. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "patrick-henry-title18-zone-purpose",
+        "patrick-henry-title18-use-table",
+        "patrick-henry-plan-classifications",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "VR": {
+      "description": "VR is the Patrick Henry Village Residential zone, intended for very-high-density multifamily housing at a somewhat more neighborhood-oriented scale than the Urban Village and Urban Center zones. It generally accommodates mid-rise and taller apartment or condominium development within the specific plan area, while emphasizing a primarily residential setting. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "patrick-henry-title18-zone-purpose",
+        "patrick-henry-title18-use-table",
+        "patrick-henry-plan-classifications",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "UC": {
+      "description": "UC is the Patrick Henry Urban Center zone, intended for the plan area's most urban, transit-oriented multifamily setting. It generally accommodates substantial apartment or condominium development with pedestrian-oriented frontages, shared outdoor spaces, and structured or below-grade parking, while building height remains influenced by airport flight-path requirements. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "patrick-henry-title18-zone-purpose",
+        "patrick-henry-title18-use-table",
+        "patrick-henry-plan-classifications",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    },
+    "HDF": {
+      "description": "HDF is the Patrick Henry High-Density Flex zone, intended to provide a flexible transition between multifamily residential and employment uses along the eastern edge of the plan area. Within the Explorer's residential scope, it generally accommodates mid-rise and taller multifamily housing, while the broader zone can also support office development or a combination of the two. New construction and substantial changes generally require Zoning Clearance and Architectural Review.",
+      "source_refs": [
+        "patrick-henry-title18-zone-purpose",
+        "patrick-henry-title18-use-table",
+        "patrick-henry-plan-classifications",
+        "zoning-clearance",
+        "architectural-review"
+      ]
+    }
+  }
+}

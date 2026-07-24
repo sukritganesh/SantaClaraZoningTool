@@ -339,7 +339,7 @@ class VerticalSliceAcceptanceTest(unittest.TestCase):
                         ],
                         [11, 14],
                     )
-                    self.assertIn("Prototype-selected value", body)
+                    self.assertIn("Selected ruleset value", body)
                     self.assertIn("pending official clarification", body)
                 else:
                     self.assertEqual(conflicts, [])

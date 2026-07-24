@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+import math
 from collections import Counter
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Mapping
 
 from .addressing import AddressIndex, normalize_address
-from .geometry import Point, SpatialIndex
+from .geometry import BoundingBox, Point, SpatialIndex, geometry_bounds
 from .ruleset import ApprovedResidentialRuleset
 
 
@@ -28,6 +30,11 @@ RESIDENTIAL_LAYER_FILES = {
     "parcels": "parcels_residential.geojson",
     "current_zoning": "current_zoning_residential.geojson",
 }
+PROPERTY_MAP_CONTRACT_VERSION = "1.0.0"
+PROPERTY_MAP_MINIMUM_BUFFER_METERS = 200.0
+PROPERTY_MAP_DIAGONAL_BUFFER_MULTIPLIER = 2.0
+MAX_PROPERTY_MAP_ZONING_FEATURES = 1500
+METERS_PER_LATITUDE_DEGREE = 111_320.0
 
 
 class LocalR1Lookup:
@@ -350,6 +357,118 @@ class LocalResidentialLookup:
             zoning_matches=self.zoning_index.match(point),
             supported_zones=self._supported_zone_set,
         )
+
+    def suggest_addresses(self, query: str) -> dict[str, Any]:
+        """Return local citywide suggestions with their snapshot identity."""
+
+        result = self.address_index.suggest(query)
+        return {
+            **result,
+            "address_snapshot": self._versions["address_snapshot"],
+        }
+
+    def property_map_context(self, entered_address: str) -> dict[str, Any]:
+        """Return bounded public map geometry for one exact supported result."""
+
+        if not isinstance(entered_address, str):
+            raise TypeError("Property map context requires a string address")
+        lookup_result = self.lookup(entered_address)
+        base: dict[str, Any] = {
+            "contract_version": PROPERTY_MAP_CONTRACT_VERSION,
+            "query": entered_address,
+            "versions": self.versions,
+        }
+        if lookup_result["status"] != "residential_zone_found":
+            return {
+                **base,
+                "status": lookup_result["status"],
+                "reason_code": lookup_result["reason_code"],
+                "message": lookup_result["message"],
+            }
+
+        address_matches = self.address_index.match(entered_address)
+        if len(address_matches) != 1:
+            raise ValueError("Successful lookup no longer has one address match")
+        address = address_matches[0]
+        point = _address_point(address)
+        parcel_matches = self.parcel_index.match(point)
+        zoning_matches = self.zoning_index.match(point)
+        if len(parcel_matches) != 1 or len(zoning_matches) != 1:
+            raise ValueError("Successful lookup no longer has one spatial match")
+
+        parcel = parcel_matches[0]
+        zoning = zoning_matches[0]
+        parcel_summary = _parcel_summary(parcel)
+        zoning_summary = _zoning_summary(zoning)
+        zone = parcel_summary["designation"]
+        if (
+            not isinstance(zone, str)
+            or zone not in self._supported_zone_set
+            or zoning_summary["designation"] != zone
+        ):
+            raise ValueError("Successful lookup has inconsistent map designations")
+        apn = parcel_summary["apn"]
+        address_summary = _address_summary(address)
+        display_address = address_summary["display_address"]
+        if not _is_nonempty_string(apn) or not _is_nonempty_string(display_address):
+            raise ValueError("Successful lookup has incomplete map identity")
+
+        parcel_geometry = parcel.get("geometry")
+        if not isinstance(parcel_geometry, dict):
+            raise ValueError("Selected parcel geometry is invalid")
+        selected_bounds = geometry_bounds(parcel_geometry)
+        context_bounds = _property_map_context_bounds(selected_bounds)
+        context_zoning = self.zoning_index.intersecting(context_bounds)
+        if len(context_zoning) > MAX_PROPERTY_MAP_ZONING_FEATURES:
+            return {
+                **base,
+                "status": "map_context_unavailable",
+                "reason_code": "map_context_feature_limit_exceeded",
+                "message": (
+                    "The complete supported zoning context is too large to "
+                    "display safely."
+                ),
+            }
+
+        zoning_features = []
+        for feature in context_zoning:
+            properties = feature.get("properties")
+            geometry = feature.get("geometry")
+            if not isinstance(properties, dict) or not isinstance(geometry, dict):
+                raise ValueError("Zoning map feature is incomplete")
+            designation = properties.get("ZONGDSGN")
+            if designation not in self._supported_zone_set:
+                raise ValueError("Zoning map feature is outside the supported scope")
+            zoning_features.append(
+                {
+                    "type": "Feature",
+                    "properties": {"zone": designation},
+                    "geometry": copy.deepcopy(geometry),
+                }
+            )
+
+        return {
+            **base,
+            "status": "ok",
+            "property": {
+                "display_address": display_address,
+                "apn": apn,
+                "zone": zone,
+            },
+            "selected_bounds": _bounds_payload(selected_bounds),
+            "context_bounds": _bounds_payload(context_bounds),
+            "selected_parcel": {
+                "type": "Feature",
+                "properties": {"apn": apn, "zone": zone},
+                "geometry": copy.deepcopy(parcel_geometry),
+            },
+            "supported_zoning": {
+                "type": "FeatureCollection",
+                "features": zoning_features,
+            },
+            "zoning_feature_count": len(zoning_features),
+            "supported_zones": list(self._supported_zones),
+        }
 
 
 def _spatial_result(
@@ -791,6 +910,45 @@ def _sha256_file(path: Path) -> str:
         for block in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _property_map_context_bounds(selected: BoundingBox) -> BoundingBox:
+    """Expand parcel bounds by a deterministic city-local meter buffer."""
+
+    center_latitude = (selected.ymin + selected.ymax) / 2.0
+    meters_per_longitude_degree = METERS_PER_LATITUDE_DEGREE * math.cos(
+        math.radians(center_latitude)
+    )
+    if meters_per_longitude_degree <= 0:
+        raise ValueError("Selected parcel latitude cannot be converted to meters")
+    width_meters = (
+        selected.xmax - selected.xmin
+    ) * meters_per_longitude_degree
+    height_meters = (
+        selected.ymax - selected.ymin
+    ) * METERS_PER_LATITUDE_DEGREE
+    diagonal_meters = math.hypot(width_meters, height_meters)
+    buffer_meters = max(
+        PROPERTY_MAP_MINIMUM_BUFFER_METERS,
+        diagonal_meters * PROPERTY_MAP_DIAGONAL_BUFFER_MULTIPLIER,
+    )
+    longitude_buffer = buffer_meters / meters_per_longitude_degree
+    latitude_buffer = buffer_meters / METERS_PER_LATITUDE_DEGREE
+    return BoundingBox(
+        xmin=selected.xmin - longitude_buffer,
+        ymin=selected.ymin - latitude_buffer,
+        xmax=selected.xmax + longitude_buffer,
+        ymax=selected.ymax + latitude_buffer,
+    )
+
+
+def _bounds_payload(bounds: BoundingBox) -> dict[str, float]:
+    return {
+        "west": bounds.xmin,
+        "south": bounds.ymin,
+        "east": bounds.xmax,
+        "north": bounds.ymax,
+    }
 
 
 def _address_point(feature: dict[str, Any]) -> Point:

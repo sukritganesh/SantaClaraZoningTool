@@ -1,0 +1,184 @@
+{
+  "archive": {
+    "file": "santa-clara-source-evidence-runtime-data-2026-07-22.1.zip",
+    "format": "zip",
+    "sha256": "d9cece041c0dc949de7f3e51e3cd7a555533091b84d05d9b0c10bbc0792c8d38",
+    "size_bytes": 11093881
+  },
+  "bundle_contract_version": "1.0.0",
+  "bundle_id": "santa-clara-source-evidence-runtime-data-2026-07-22.1",
+  "catalog_version": "2026-07-22.1",
+  "included_files": [
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/catalog.json",
+      "sha256": "8149ef87b59b86816aac6010d16a51612fd5287ce12ef7286f9be58104206e42",
+      "size_bytes": 583553
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/evidence-manifest.json",
+      "sha256": "81276a2149a24cebf78693140f8b95fe413750d88193783dc674c5911ef3de1d",
+      "size_bytes": 10015
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-148.png",
+      "sha256": "ffa8b9c54a6d77a854e62d3e9aed09415cb61bf8efb2aa8ac696789c1860f4c9",
+      "size_bytes": 597511
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-149.png",
+      "sha256": "2601b316129719ac0a486c34b5e0267e02f2685ef442f9b6a0af8a3da3931861",
+      "size_bytes": 598577
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-150.png",
+      "sha256": "64f719e572816a6db70f1b0515dc94a4230e05e93e79008b9b0a67300148b01a",
+      "size_bytes": 611447
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-179.png",
+      "sha256": "a71bf6ee31809d7510a667eef2d2ce6d09f9c0ac93cdd1627efb456dfef6c585",
+      "size_bytes": 160798
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-180.png",
+      "sha256": "7b0317770c41c698a2fba6b4c090db3417bfde806e5b6670a6629afaac1434ed",
+      "size_bytes": 324052
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-60.png",
+      "sha256": "f92c1bbab8320bcf321b49545ee370ace6bb068518ba87f7b25143c28b9bebd2",
+      "size_bytes": 216958
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-62.png",
+      "sha256": "1f9a5eac36da11f10ae1d4dd81441294ee89372bff208f5afb46ce6a733089cf",
+      "size_bytes": 194291
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-63.png",
+      "sha256": "de5424d71c8a350e11a5dc62209ff2fbfaef8fe9cb6a375bef9eb17b026e6887",
+      "size_bytes": 224635
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/patrick-henry-plan-2022-03-page-64.png",
+      "sha256": "096a5f2e38a6b0e84494586d1a6b990eebc439960a444de45d262ea245c1de92",
+      "size_bytes": 139603
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-12.png",
+      "sha256": "c9f78f63c5c9726144161482ea7298f8ab83c8f16feca170d1beef9e43ee6aab",
+      "size_bytes": 378387
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-184.png",
+      "sha256": "be6fbf3f6e9eb0f7b225a16f6e0375cdd4d843d6ea8d687272e2e3570afa983f",
+      "size_bytes": 333426
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-185.png",
+      "sha256": "aaf5825ae99ede1fccdcb9b8c1faa3a8a9ab4031c965a665166f0066d9288266",
+      "size_bytes": 290798
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-186.png",
+      "sha256": "ebe9cc459d092d55396d0952e6773ff316e6a3238c4c7af6bcf08d8130eeba6f",
+      "size_bytes": 421547
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-187.png",
+      "sha256": "6192978f11f69301b1f97804aacebc9634b46857b1c1caadef5e32135473dfc8",
+      "size_bytes": 466020
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-20.png",
+      "sha256": "33eb49349ae2ef5987275d0676d75eadf1693f8c02e34ef089d73e80148e72fa",
+      "size_bytes": 555999
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-21.png",
+      "sha256": "53e52541309d91defd5a7ad7ac96c4478b78f798fe1b28de4f57be37eb6566b8",
+      "size_bytes": 421510
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-23.png",
+      "sha256": "b6fbaafcac98f44aa1b2c60751502e4a121b70c1a07adcfbce9f3c2a22c7f58d",
+      "size_bytes": 280610
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-24.png",
+      "sha256": "169fa474e0af70fcb64c4ac161100dbeef5b8e03e902d54beb5c9262368f7b01",
+      "size_bytes": 547709
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-25.png",
+      "sha256": "172391d2c99643f8c99fb2e39a30e093a0b5a106489a5896a83594047c5feb2e",
+      "size_bytes": 514390
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-27.png",
+      "sha256": "3a7643344865ebf3dfeb5e790a3c6e9726eff4ba81c712db06d422c1d9450c3a",
+      "size_bytes": 302873
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-30.png",
+      "sha256": "cb36281823f5c491cd2fb8c8cb1bf0e9b1c4a4cbae151f565bad3ccd2e389c51",
+      "size_bytes": 266675
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-31.png",
+      "sha256": "0be5e8ac7ddd3d395ef02b54362d72cf037fa53357a831d768346f2dacfb02ed",
+      "size_bytes": 394146
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-32.png",
+      "sha256": "f3477c38c9cf4474b81210125174bc52f16be7ae04bf33c83375363599027043",
+      "size_bytes": 409635
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-356.png",
+      "sha256": "7afdbf1edd25244ba0d4b22785d90c08f4f33d023de4b7ec53cb798dbe66d925",
+      "size_bytes": 315838
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-360.png",
+      "sha256": "00696c2775a4b52b72b252752f765b38a10e9f4e2b67fb797e06cbd343b7f792",
+      "size_bytes": 396852
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-398.png",
+      "sha256": "047d7e4dfb38be19277f9644d6466dc92e595795cf1ed7abb26dcef225d1694c",
+      "size_bytes": 295352
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-412.png",
+      "sha256": "f7d255fa30ed90ba721b1a52b86ab10d03406975dbc4a40ea23139f3db052226",
+      "size_bytes": 287535
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-478.png",
+      "sha256": "6fe488d77e7698145f69368a27a814d314a754925b576ea37dc447c0fc87eb18",
+      "size_bytes": 423353
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-492.png",
+      "sha256": "1b3ff33de3e6baf955a247579d2fc69aca2910f2c513f320f5f646ed2c6198a9",
+      "size_bytes": 490072
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-5.png",
+      "sha256": "9b68893390a0a2ebd55cc74901e50ac632ca811fbb5ec92f72693f71f71f00c8",
+      "size_bytes": 436056
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-7.png",
+      "sha256": "94384be1f8557157089eee87a4aa3a75ef215203eb64eaaf4b768692ff354db4",
+      "size_bytes": 335217
+    },
+    {
+      "path": "data/source_evidence/santa_clara/residential/2026-07-22.1/pages/sc-title18-2025-07-page-8.png",
+      "sha256": "8cb471c3ab064ddf9745c28b2d59022db6dbfc1be9daf197941ee7bad6719198",
+      "size_bytes": 405989
+    }
+  ],
+  "install_root": "."
+}

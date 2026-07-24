@@ -9,6 +9,7 @@ import unittest
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
+from unittest.mock import patch
 
 from santa_clara_zoning import (
     ApprovedResidentialRuleset,
@@ -18,8 +19,12 @@ from santa_clara_zoning.lookup import (
     DEFAULT_ADDRESS_SNAPSHOT,
     DEFAULT_RESIDENTIAL_SNAPSHOT,
     EXCLUDED_RESIDENTIAL_DESIGNATIONS,
+    PROPERTY_MAP_CONTRACT_VERSION,
+    PROPERTY_MAP_MINIMUM_BUFFER_METERS,
+    _property_map_context_bounds,
     _residential_spatial_result,
 )
+from santa_clara_zoning.geometry import BoundingBox
 
 
 FIXTURE_INVENTORY = (
@@ -298,6 +303,22 @@ class LocalResidentialLookupIntegrationTest(unittest.TestCase):
         empty = self.lookup.lookup("")
         self.assertEqual(empty["reason_code"], "empty_or_invalid_address")
 
+    def test_citywide_suggestions_use_the_loaded_address_snapshot(self) -> None:
+        result = self.lookup.suggest_addresses("1240 whi")
+
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual(result["address_snapshot"], "2026-07-16")
+        self.assertEqual(result["total_matches"], 1)
+        self.assertEqual(
+            result["suggestions"][0]["value"],
+            "1240 White Drive",
+        )
+        outside = self.lookup.suggest_addresses("1500 warburton")
+        self.assertEqual(
+            outside["suggestions"][0]["value"],
+            "1500 Warburton Avenue",
+        )
+
     def test_repeated_lookup_is_deterministic_and_metadata_is_defensive(self) -> None:
         first = self.lookup.lookup("1240 White Drive")
         second = self.lookup.lookup("1240 White Drive")
@@ -305,6 +326,100 @@ class LocalResidentialLookupIntegrationTest(unittest.TestCase):
         changed = self.lookup.designation_counts
         changed["R2"] = 0
         self.assertEqual(self.lookup.designation_counts["R2"], 752)
+
+    def test_property_map_context_is_bounded_public_and_deterministic(self) -> None:
+        first = self.lookup.property_map_context("2852 Sycamore Way")
+        second = self.lookup.property_map_context("2852 Sycamore Way")
+
+        self.assertEqual(first, second)
+        self.assertEqual(first["contract_version"], PROPERTY_MAP_CONTRACT_VERSION)
+        self.assertEqual(first["status"], "ok")
+        self.assertEqual(first["property"]["zone"], "R1-6L")
+        self.assertEqual(first["property"]["apn"], "293-21-018")
+        self.assertEqual(
+            first["zoning_feature_count"],
+            len(first["supported_zoning"]["features"]),
+        )
+        self.assertGreater(first["zoning_feature_count"], 1)
+        self.assertEqual(
+            set(first["selected_parcel"]["properties"]),
+            {"apn", "zone"},
+        )
+        for feature in first["supported_zoning"]["features"]:
+            self.assertEqual(set(feature["properties"]), {"zone"})
+            self.assertNotIn("id", feature)
+
+    def test_property_map_context_is_defensively_copied(self) -> None:
+        first = self.lookup.property_map_context("1240 White Drive")
+        first["selected_parcel"]["geometry"]["coordinates"][0][0][0] = 0
+        first["supported_zoning"]["features"][0]["properties"]["zone"] = "changed"
+
+        second = self.lookup.property_map_context("1240 White Drive")
+
+        self.assertNotEqual(
+            second["selected_parcel"]["geometry"]["coordinates"][0][0][0],
+            0,
+        )
+        self.assertNotEqual(
+            second["supported_zoning"]["features"][0]["properties"]["zone"],
+            "changed",
+        )
+
+    def test_property_map_context_preserves_controlled_lookup_outcomes(self) -> None:
+        cases = {
+            "1500 Warburton Avenue": "outside_supported_residential_snapshot",
+            "324 Los Padres Boulevard": "address_ambiguous",
+            "99999 No Such Street": "address_not_found",
+        }
+        for address, expected in cases.items():
+            with self.subTest(address=address):
+                result = self.lookup.property_map_context(address)
+                self.assertEqual(result["status"], expected)
+                self.assertNotIn("selected_parcel", result)
+                self.assertNotIn("supported_zoning", result)
+
+    def test_property_map_context_feature_ceiling_fails_closed(self) -> None:
+        with patch(
+            "santa_clara_zoning.lookup.MAX_PROPERTY_MAP_ZONING_FEATURES",
+            1,
+        ):
+            result = self.lookup.property_map_context("1240 White Drive")
+
+        self.assertEqual(result["status"], "map_context_unavailable")
+        self.assertEqual(
+            result["reason_code"],
+            "map_context_feature_limit_exceeded",
+        )
+        self.assertNotIn("supported_zoning", result)
+
+
+class PropertyMapBoundsTest(unittest.TestCase):
+    def test_small_parcel_receives_the_minimum_meter_buffer(self) -> None:
+        selected = BoundingBox(-121.98, 37.33, -121.9799, 37.3301)
+
+        context = _property_map_context_bounds(selected)
+
+        latitude_buffer_meters = (
+            selected.ymin - context.ymin
+        ) * 111_320.0
+        self.assertAlmostEqual(
+            latitude_buffer_meters,
+            PROPERTY_MAP_MINIMUM_BUFFER_METERS,
+            places=6,
+        )
+
+    def test_large_parcel_expands_beyond_the_minimum_buffer(self) -> None:
+        selected = BoundingBox(-122.0, 37.3, -121.99, 37.31)
+
+        context = _property_map_context_bounds(selected)
+
+        latitude_buffer_meters = (
+            selected.ymin - context.ymin
+        ) * 111_320.0
+        self.assertGreater(
+            latitude_buffer_meters,
+            PROPERTY_MAP_MINIMUM_BUFFER_METERS,
+        )
 
 
 class ResidentialSpatialOutcomeTest(unittest.TestCase):

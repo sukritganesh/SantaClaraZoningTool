@@ -100,6 +100,16 @@ class ResidentialZoneSummaryPipeline:
         )
         return summary
 
+    def suggest_addresses(self, query: str) -> dict[str, Any]:
+        """Expose local suggestions through the default application boundary."""
+
+        return self.selection_pipeline.suggest_addresses(query)
+
+    def property_map_context(self, entered_address: str) -> dict[str, Any]:
+        """Expose local map context through the default application boundary."""
+
+        return self.selection_pipeline.property_map_context(entered_address)
+
 
 def _validate_base_result(result: Any) -> None:
     source = _object(result, "result")

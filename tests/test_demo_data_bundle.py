@@ -19,6 +19,10 @@ from scripts.build_residential_demo_data_bundle import (
     ARCHIVE_PATH as RESIDENTIAL_ARCHIVE_PATH,
     MANIFEST_PATH as RESIDENTIAL_MANIFEST_PATH,
 )
+from scripts.build_source_evidence import (
+    BUNDLE_MANIFEST_PATH as SOURCE_EVIDENCE_MANIFEST_PATH,
+    BUNDLE_PATH as SOURCE_EVIDENCE_ARCHIVE_PATH,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -100,6 +104,18 @@ class DemoDataBootstrapTest(unittest.TestCase):
                 self.assertEqual((repository / relative).read_bytes(), expected)
 
             self.assertEqual(install_bundle(manifest_path, repository), (0, 2))
+
+    def test_installs_allowlisted_source_evidence_path(self) -> None:
+        files = {
+            "data/source_evidence/santa_clara/residential/1/catalog.json": b"{}\n"
+        }
+        with tempfile.TemporaryDirectory() as raw_temp:
+            root = Path(raw_temp)
+            repository = root / "repository"
+            repository.mkdir()
+            manifest_path = _write_test_bundle(root, files)
+
+            self.assertEqual(install_bundle(manifest_path, repository), (1, 0))
 
     def test_rejects_changed_archive_checksum(self) -> None:
         with tempfile.TemporaryDirectory() as raw_temp:
@@ -269,7 +285,14 @@ class CommittedDemoDataBundleTest(unittest.TestCase):
             self.assertTrue((repository / PATRICK_HENRY_MANIFEST_PATH).is_file())
 
     def test_default_bundles_install_complete_runtime_source_set(self) -> None:
-        self.assertEqual(DEFAULT_MANIFESTS, (MANIFEST_PATH, RESIDENTIAL_MANIFEST_PATH))
+        self.assertEqual(
+            DEFAULT_MANIFESTS,
+            (
+                MANIFEST_PATH,
+                RESIDENTIAL_MANIFEST_PATH,
+                SOURCE_EVIDENCE_MANIFEST_PATH,
+            ),
+        )
         with tempfile.TemporaryDirectory() as raw_temp:
             repository = Path(raw_temp) / "repository"
             repository.mkdir()
@@ -278,9 +301,54 @@ class CommittedDemoDataBundleTest(unittest.TestCase):
                 for manifest_path in DEFAULT_MANIFESTS
             ]
 
-            self.assertEqual(results, [(17, 0), (5, 0)])
+            source_manifest = json.loads(
+                SOURCE_EVIDENCE_MANIFEST_PATH.read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                results,
+                [
+                    (17, 0),
+                    (5, 0),
+                    (len(source_manifest["included_files"]), 0),
+                ],
+            )
             self.assertTrue((repository / PATRICK_HENRY_PLAN_PATH).is_file())
             self.assertTrue((repository / PATRICK_HENRY_MANIFEST_PATH).is_file())
+
+    def test_source_evidence_add_on_matches_manifest_and_installs(self) -> None:
+        manifest = json.loads(
+            SOURCE_EVIDENCE_MANIFEST_PATH.read_text(encoding="utf-8")
+        )
+        archive_record = manifest["archive"]
+        self.assertEqual(
+            archive_record["file"],
+            SOURCE_EVIDENCE_ARCHIVE_PATH.name,
+        )
+        self.assertEqual(
+            archive_record["size_bytes"],
+            SOURCE_EVIDENCE_ARCHIVE_PATH.stat().st_size,
+        )
+        self.assertLess(SOURCE_EVIDENCE_ARCHIVE_PATH.stat().st_size, 50_000_000)
+        self.assertEqual(
+            archive_record["sha256"],
+            hashlib.sha256(SOURCE_EVIDENCE_ARCHIVE_PATH.read_bytes()).hexdigest(),
+        )
+        declared = {record["path"] for record in manifest["included_files"]}
+        self.assertIn(
+            "data/source_evidence/santa_clara/residential/2026-07-22.1/catalog.json",
+            declared,
+        )
+        self.assertTrue(
+            all(path.startswith("data/source_evidence/") for path in declared)
+        )
+        with tempfile.TemporaryDirectory() as raw_temp:
+            repository = Path(raw_temp) / "repository"
+            repository.mkdir()
+            installed, matched = install_bundle(
+                SOURCE_EVIDENCE_MANIFEST_PATH,
+                repository,
+            )
+            self.assertEqual((installed, matched), (len(declared), 0))
 
     def test_predecessor_residential_add_on_remains_checksum_reproducible(self) -> None:
         manifest = json.loads(

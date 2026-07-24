@@ -20,8 +20,12 @@ DEFAULT_MANIFEST = REPO_ROOT / "demo-data/bundle-manifest.json"
 DEFAULT_MANIFESTS = (
     DEFAULT_MANIFEST,
     REPO_ROOT / "demo-data/residential-bundle-manifest-2026-07-19.2.json",
+    REPO_ROOT / "demo-data/source-evidence-bundle-manifest-2026-07-22.1.json",
 )
-ALLOWED_PREFIX = PurePosixPath("data/raw")
+ALLOWED_PREFIXES = (
+    PurePosixPath("data/raw"),
+    PurePosixPath("data/source_evidence"),
+)
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -56,7 +60,10 @@ def _safe_relative_path(value: Any) -> PurePosixPath:
         or ".." in path.parts
         or "\\" in value
         or path.as_posix() != value
-        or path.parts[: len(ALLOWED_PREFIX.parts)] != ALLOWED_PREFIX.parts
+        or not any(
+            path.parts[: len(prefix.parts)] == prefix.parts
+            for prefix in ALLOWED_PREFIXES
+        )
     ):
         raise DemoDataBootstrapError(f"Unsafe bundle file path: {value!r}")
     return path
@@ -205,14 +212,15 @@ def parse_args() -> argparse.Namespace:
         action="append",
         help=(
             "Bundle manifest path; repeat to install several. By default, install "
-            "the released R1 bundle and the residential runtime add-on."
+            "the released R1 bundle, residential runtime add-on, and source-"
+            "evidence add-on."
         ),
     )
     parser.add_argument(
         "--repo-root",
         type=Path,
         default=REPO_ROOT,
-        help="Repository root receiving data/raw (default: current project)",
+        help="Repository root receiving approved runtime data (default: current project)",
     )
     return parser.parse_args()
 

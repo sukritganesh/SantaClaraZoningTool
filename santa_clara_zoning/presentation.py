@@ -181,7 +181,7 @@ def _present_success(source: Mapping[str, Any]) -> dict[str, Any]:
             "scope_label": SCOPE_LABEL,
         },
         "overview": {
-            "headline": f"{parcel_zone} base-zone standards",
+            "headline": "Property Overview",
             "summary": summary,
             "disclaimer": _text(source, "disclaimer", "result"),
         },

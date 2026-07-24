@@ -517,12 +517,12 @@ Block 5 therefore uses a **common zone summary** rather than requiring the user 
 2. Retrieve every approved ordinary profile internally and verify semantic equality before presenting one shared set of supported standards.
 3. List each source-verified residential use and structure identity separately, with its own use-permission evidence.
 4. Preserve profile-specific `not evaluated` topics as conditional disclosures naming the residential type to which they apply.
-5. Present each R1 Chapter 18.24 pathway separately as `not evaluated`; never merge it into the ordinary R1 standards.
+5. Retain each R1 Chapter 18.24 pathway as structured `not evaluated` backend data, but do not render unavailable pathway cards in the staff interface or merge them into the ordinary R1 standards.
 6. Fail closed without regulatory cards if ordinary profiles in one zone differ. A later interface may then activate the already implemented exact selection path under backlog item `UX-001`.
 
 The comparison excludes only profile-specific rule IDs. Requirement payloads, applicability, conditions, exception references, validation status, and conflict identity must match. The interface must not silently choose one profile, relabel a representative profile as universal, or suppress a conditional topic.
 
-The active product copy is **Santa Clara Zoning Explorer** with scope line **Selected residential zoning standards by address**. The established page hierarchy, green visual system, search interaction, property card, approval and standard cards, setback table, disclosures, source receipts, accessibility behavior, and responsive layout should be extended rather than redesigned.
+The active product copy is **Santa Clara Zoning Explorer** with scope line **Selected residential zoning standards by address**. The established page hierarchy, green visual system, search interaction, property card, approval and standard cards, setback table, disclosures, numbered source appendix, accessibility behavior, and responsive layout should be extended rather than redesigned. A single source-help note near the top of every successful result explains that the `i` controls open supporting citations and exact evidence. Residential-use cards show only the use identity, its evidence control, and permission status; repetitive profile labels and permission boilerplate remain in presentation data but are not repeated in each card. Consequential conditional, proposal-dependent, and source-conflict qualifications appear beside the affected standard rather than in a detached section.
 
 ## 13. Implementation blocks
 
@@ -533,8 +533,10 @@ The active product copy is **Santa Clara Zoning Explorer** with scope line **Sel
 | 2. Generalize the data and result contracts | Design the new ruleset schema, applicability model, dispositions, migration crosswalk, validators, and result contracts. | Contracts are documented, mutation-tested, owner-approved, and can replay the approved R1 data without loss. |
 | 3. Author and approve residential rules | Encode independent zone- and structure-owned candidate rules with provenance and conflicts. | Every matrix cell has an explicit approved, `not_listed`, special-pathway, plan-dependent, not-evaluated, or review-required treatment; runtime eligibility passes. |
 | 4. Expand lookup and retrieval | Load the residential GIS and ruleset, determine exact zones, and retrieve standards only for valid use/structure combinations. | Real and synthetic fixtures cover supported, unsupported, ambiguous, mismatch, missing-data, and integrity outcomes deterministically. |
-| 5. Generalize presentation and interface | Remove active R1/prototype assumptions, present the verified common zone standards and residential-use matrix, and render all supported dispositions and qualifications without a mandatory structure selector. | Desktop and mobile states are accessible, source-linked, deterministic, preserve profile-specific disclosures and special pathways, and fail closed if profiles diverge or lookup evidence is insufficient. |
+| 5. Generalize presentation and interface | Remove active R1/prototype assumptions, present the verified common zone standards and residential-use matrix, and render all supported dispositions and qualifications without a mandatory structure selector. | Desktop and mobile states are accessible, source-linked, deterministic, preserve profile-specific disclosures, keep unavailable special pathways in backend data without presenting them as results, place consequential qualifications beside affected rules, and fail closed if profiles diverge or lookup evidence is insufficient. |
 | 6. Validate and release | Run the complete acceptance matrix, protect the R1 baseline, document limitations, and assign the next release identity. | Source, migration, regression, offline, determinism, interface, and complete-suite gates pass with no unexplained skips. |
+| 7. Add local address autocomplete | Use the validated citywide address snapshot to progressively enhance address discovery without changing exact final lookup. | Bounded deterministic suggestions, strict public response fields, duplicate and unit safety, accessible pointer and keyboard selection, manual fallback, real-snapshot outcomes, and the complete release matrix pass before owner acceptance and `v0.3.0` release work. |
+| 8. Add supported parcel context maps | Use the validated residential GIS snapshot to show the selected parcel and nearby supported zoning beside successful results without changing the zoning conclusion. | Bounded local GeoJSON, safe public fields and controlled failures, a distinct 12-zone categorical palette, accessible responsive mapping, tile-independent geometry, real-fixture coverage, and the complete release matrix pass before owner acceptance and `v0.3.0` release work. |
 
 Implementation should stop at each source, contract, data-approval, and release gate for project-owner review.
 
@@ -564,3 +566,81 @@ The phase is complete when the product can:
 - fail closed on unsupported designations, invalid selections, incomplete data, and integrity errors;
 - reproduce the same structured and rendered results from the same versioned inputs; and
 - describe itself as a selected residential zoning information product, not as a complete entitlement analysis or legal or planning determination.
+
+## 16. Post-release local address autocomplete
+
+**Status:** Owner-approved post-`v0.2.0` UX design; Block 7 implementation is validated and owner accepted, with normal `v0.3.0` release gates in progress.
+
+The address field should progressively suggest canonical records from the already validated July 16 citywide address snapshot. This is a discovery aid over the existing exact lookup boundary, not a new geocoder, zoning source, or regulatory conclusion. Suggestions cover all active Santa Clara address records, including addresses outside the selected residential snapshot; final submission continues through the unchanged address, parcel, zoning, ruleset, summary, and presentation gates.
+
+The local suggestion contract is:
+
+- begin after three normalized alphanumeric characters and reject queries longer than 120 characters;
+- rank exact normalized matches, full-address prefixes, then ordered token-prefix matches without fuzzy correction;
+- collapse identical canonical address values, retain their source-record count, return no more than eight choices, and report truncation so unit-heavy addresses prompt more typing rather than an arbitrary selection;
+- expose only canonical address display/value, Santa Clara locality and ZIP, duplicate count, total unique match count, truncation, and address-snapshot identity through a same-origin endpoint;
+- never expose coordinates, object IDs, parcel facts, zoning facts, or regulations in a suggestion response; and
+- keep ordinary GET form submission operational when JavaScript or suggestions are unavailable.
+
+The interface follows the editable ARIA combobox pattern, debounces and cancels stale requests, supports pointer and keyboard selection, and immediately submits an explicitly chosen suggestion. It remains local vanilla JavaScript with no API key, online provider, frontend package manager, or runtime third-party request. Rulesets, source snapshots, regulatory schemas, result contracts, supported capabilities, and zoning-analysis behavior remain unchanged.
+
+## 17. Post-release supported parcel context maps
+
+**Status:** Owner-approved post-`v0.2.0` UX design; Block 8 implementation and local automated validation are complete and owner accepted, with normal `v0.3.0` release gates in progress.
+
+A successful supported lookup places its property identity beside a focused map of the selected parcel and nearby polygons from the already validated July 18 residential GIS snapshot. The map is a presentation receipt for staff confidence, not another zoning source: exact address matching, parcel/current-zoning agreement, supported designation selection, ruleset retrieval, and presentation continue through the unchanged deterministic pipeline before any geometry is exposed.
+
+The local map-context contract:
+
+- returns geometry only for one exact supported address, parcel, and agreeing current-zoning match;
+- expands the selected parcel bounds by a deterministic meter-based neighborhood buffer with a 200-meter minimum, returns complete intersecting supported zoning features in stable source order, and fails closed rather than truncating an oversized context;
+- exposes only contract and snapshot versions, canonical address, APN, selected zone, named bounds, selected-parcel GeoJSON, supported-zoning GeoJSON, feature count, and the exact supported-zone scope through `GET /api/property-map?address=...`;
+- strips source object IDs and unrelated parcel, regulatory, citation, ruleset, and source-record fields; and
+- keeps not-found and outside-snapshot responses at 404, ambiguity and spatial review at 409, invalid addresses at 400, and unavailable or invalid context at 503 without changing the server-rendered zoning result.
+
+The successful-result header becomes a 40/60 property/context grid so the map receives more horizontal space, then stacks at the existing narrow-screen breakpoint. Locally vendored Leaflet 1.9.4 fits the selected parcel with padding and a maximum initial zoom of 19, restricts panning to the returned context, permits only one additional zoom-out level, and draws the optional street tiles below local zoning and parcel paths. The selected parcel uses a prominent high-contrast white halo and five-pixel dark-green outline so it remains obvious over every zoning color. Pointer hover over a supported zoning polygon reveals only its designation through a DOM-built tooltip. A narrow collapsed native **Map legend** disclosure overlays the map and contains the parcel, unshaded-area key, and concise visible zone codes; text, live status, keyboard controls, touch behavior, reduced motion, forced colors, JavaScript fallback, endpoint failure, and basemap failure remain explicit.
+
+The checked-in presentation palette prioritizes hue separation and saturation over visual correspondence with the City map. Every supported designation has a unique color, including the zero-count R5 and R6 ruleset zones. Fill opacity remains high enough to distinguish neighboring polygons while retaining street context. These are presentation values only and do not change the pinned GIS or regulatory data:
+
+| Supported designation | Local display color | Categorical color family |
+|---|---|---|
+| `R1-6L` | `#0067c5` | Cobalt blue |
+| `R1-8L` | `#f28e00` | Orange |
+| `R2` | `#009e49` | Emerald green |
+| `R3` | `#7a3e9d` | Purple |
+| `R4` | `#d62728` | Red |
+| `R5` | `#00a6d6` | Cyan |
+| `R6` | `#e6c200` | Yellow |
+| `PH-R5` | `#c51b7d` | Magenta |
+| `UC` | `#8c510a` | Brown |
+| `UV` | `#008c95` | Teal |
+| `VR` | `#7a9a01` | Olive-lime |
+| `HDF` | `#444444` | Charcoal |
+
+The browser may request the current viewport from the configurable default OpenStreetMap tile URL. The application retains visible attribution, ordinary browser caching and referrer behavior, and never proxies, prefetches, bulk-downloads, or packages those tiles. Leaflet code and all authoritative parcel/zoning geometry remain local; tile failure leaves the colored zoning and parcel outline visible over a neutral background. No live City GIS call, external geocoder, API key, billing account, result-contract change, ruleset change, capability change, or raw snapshot change is part of Block 8.
+
+## 18. Post-release exact regulatory source evidence
+
+**Status:** Owner-approved post-`v0.2.0` UX design; Block 9 implementation and local automated validation are complete and owner accepted, with normal `v0.3.0` release gates in progress.
+
+Every source control rendered from approved ruleset `2026-07-19.5` resolves through a separate, versioned source-evidence catalog. The sidecar binds the exact `(zone, rendered rule or capability, citation)` context to the approved source location; reused tables therefore open different cells for different zones instead of one generic page. PDF locations carry one-based PDF and printed-page numbers, normalized rectangles for the controlling cell, row label, paragraph, or heading, a short verified excerpt, and human-verification metadata. Markdown project records use immutable line ranges and excerpt checksums, and JSON predecessor evidence uses JSON Pointers. Native records are clearly labeled **Project verification record** and are not presented as official law.
+
+The catalog covers only the approved runtime evidence chain: checksum-pinned official documents and the project audits, verification supplements, and predecessor record explicitly referenced by approved rules. Candidate Google Drive research and inventories are not staff-facing authority. Source, catalog, page-image, and renderer identities are preserved in an evidence manifest. Only referenced PDF pages are rendered at 144 DPI; the source PDF is never altered, and highlight overlays are drawn separately in HTML. The source-evidence add-on installs alongside the unchanged base and residential bundles, with no live Drive, City document, or other evidence request at runtime.
+
+The Flask application accepts an optional source-evidence provider. The provider fails closed unless the catalog version, complete rendered-control coverage, source checksums, page counts, region bounds, excerpts, native anchors, and evidence-manifest checksums all validate. Dedicated evidence and document routes accept only catalog IDs, never arbitrary filesystem paths. The document route provides inline, range-capable, checksum-verified artifacts with restrictive content headers and immutable caching. Evidence unavailability returns a controlled 503 while the numbered source appendix and zoning result remain intact.
+
+The established source popover retains its numbered citation and provides **View exact source** in a dedicated `noopener` tab; the redundant fragment link to the bottom source appendix is omitted. That view presents the displayed regulation and zone context, then prioritizes the highlighted full-page context, parallel accessible excerpt, and zoom or multi-page navigation before the supporting document identity, locator, checksum, verification status, checksummed-original action, and optional official URL. It states that highlighting is only a navigation aid and the checksummed original controls. Server-rendered pages remain usable without JavaScript; enhancement adds keyboard navigation and automatic highlight scrolling. Mobile panning, printing, forced colors, reduced motion, screen readers, and evidence failure are explicit acceptance paths. PDF.js and runtime frontend/network dependencies remain out of scope.
+
+Block 9 changes no regulatory value, capability, ruleset schema, result contract, lookup outcome, raw snapshot, or zoning-analysis behavior. Future approved runtime citations must receive a verified contextual catalog binding before presentation approval.
+
+## 19. Post-release source-grounded zone overviews
+
+**Status:** Owner-approved post-`v0.2.0` UX design; Block 10 implementation and local automated validation are complete and owner accepted, with normal `v0.3.0` release gates in progress.
+
+Every successful supported lookup should begin its regulatory content with a concise **Property Overview** that explains the selected zone in ordinary language. The overview identifies the exact designation, summarizes its general residential character and characteristic housing forms, distinguishes materially related zones when helpful, and names the approvals required by the approved ruleset. Exact density, height, coverage, story, and setback values remain in the detailed sections below rather than being repeated in the overview.
+
+The copy comes from a separate zone-description catalog bound to approved ruleset `2026-07-19.5`, its checksum, the checked-in authoring guide, and exact existing source references. The catalog covers all 12 supported designations, including zero-GIS-count R5 and R6. Codex drafts new or materially affected descriptions offline from the complete supported-zone matrix and official purpose provisions; source review and project-owner acceptance remain release gates. The running application never calls an AI service, and candidate research never becomes presentation authority.
+
+The catalog loads and validates once at application startup. Exact coverage, stable ordering, artifact checksums, source-reference closure, one-paragraph length, approval language, and the absence of numeric standards or raw HTML are enforced before the richer copy is used. A missing, stale, or invalid catalog falls back to the existing deterministic factual summary without changing or suppressing the zoning result.
+
+The overview panel contains only its heading and reviewed description. A separate **How to use this result** section contains the existing scope notice and the explanation that `i` controls open supporting citations and exact evidence. This keeps orientation, operating guidance, detailed standards, and provenance visually distinct without changing any regulatory value, ruleset schema, result contract, lookup outcome, source-evidence target, raw snapshot, dependency, runtime-data bundle, or zoning-analysis behavior.

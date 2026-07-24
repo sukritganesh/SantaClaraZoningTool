@@ -23,13 +23,24 @@
       <span class="source-popover-list">
         {% for citation_id in citation_ids %}
           {% set source = citation_sources[citation_id] %}
-          <a href="#source-{{ citation_id }}">
+          {% set target_id = evidence_links.get(marker_id, {}).get(citation_id) %}
+          <span class="source-popover-item">
             <span class="source-popover-number">{{ source_numbers[citation_id] }}</span>
-            <span>
+            <span class="source-popover-citation">
               <strong>{{ source.document.title }}</strong>
               <span>{{ source.locator }}</span>
+              <span class="source-popover-actions">
+                {% if target_id %}
+                  <a
+                    class="source-exact-link"
+                    href="{{ url_for('source_evidence', target_id=target_id) }}"
+                    target="_blank"
+                    rel="noopener"
+                  >View exact source</a>
+                {% endif %}
+              </span>
             </span>
-          </a>
+          </span>
         {% endfor %}
       </span>
     </span>
@@ -81,6 +92,47 @@
       </span>{% if not loop.last %}; {% endif %}
     {% endfor %}
   {% endif %}
+{%- endmacro %}
+
+{% macro inline_qualifications(warnings, capability_id) -%}
+  {% for warning in warnings %}
+    {% if warning.kind != "not_evaluated_exception" and capability_id in warning.affected_capability_ids %}
+      <aside
+        class="inline-qualification inline-qualification--{{ warning.kind }}"
+        data-warning-kind="{{ warning.kind }}"
+        data-warning-id="{{ warning.warning_id }}"
+      >
+        <p class="inline-qualification-summary"><strong>{{ warning.title }}.</strong>
+          {% if warning.kind == "source_conflict" %}
+            The displayed value uses a documented project resolution pending official clarification; it is not an official City correction.
+          {% else %}
+            {{ warning.message }}
+          {% endif %}
+        </p>
+        {% if warning.kind == "source_conflict" %}
+          <details class="inline-conflict-details">
+            <summary>Review competing source values</summary>
+            <p>
+              <strong>Selected ruleset value:</strong>
+              {% if warning.resolution.presented_value %}{{ requirement_value(warning.resolution.presented_value) }}{% else %}{{ setback_value(warning.resolution.selected_value) }}{% endif %}.
+              {{ warning.resolution.rationale }}
+            </p>
+            <ul>
+              {% for assertion in warning.assertions %}
+                <li>
+                  {% if assertion.presented_value %}{{ requirement_value(assertion.presented_value) }}{% else %}{{ setback_value(assertion.value) }}{% endif %} — {{ assertion.disposition | replace("_", " ") }}
+                  {{ source_refs(assertion.source_refs, warning.warning_id ~ "-" ~ assertion.assertion_id) }}
+                </li>
+              {% endfor %}
+            </ul>
+            <p><strong>Decision source:</strong> {{ warning.resolution.decision_source_label if warning.resolution.decision_source_label else warning.resolution.decision_source }} ({{ warning.resolution.decision_date }})</p>
+            <p><strong>Status:</strong> {{ warning.resolution.status | replace("_", " ") }}</p>
+            <p><strong>Re-review if:</strong> {{ warning.resolution.re_review_triggers | join("; ") }}.</p>
+          </details>
+        {% endif %}
+      </aside>
+    {% endif %}
+  {% endfor %}
 {%- endmacro %}
 
 {% macro conditions(items, compact=false) -%}

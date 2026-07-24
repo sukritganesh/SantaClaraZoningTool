@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any, Iterable, Iterator, Sequence
 
@@ -20,6 +21,16 @@ class BoundingBox:
     def contains(self, point: Point) -> bool:
         x, y = point
         return self.xmin <= x <= self.xmax and self.ymin <= y <= self.ymax
+
+    def intersects(self, other: "BoundingBox") -> bool:
+        """Return whether two inclusive bounding boxes overlap."""
+
+        return not (
+            self.xmax < other.xmin
+            or other.xmax < self.xmin
+            or self.ymax < other.ymin
+            or other.ymax < self.ymin
+        )
 
 
 @dataclass(frozen=True)
@@ -53,6 +64,16 @@ class SpatialIndex:
             for indexed in self._features
             if indexed.bounds.contains(point)
             and point_intersects_geometry(point, indexed.feature["geometry"])
+        ]
+        return tuple(sorted(matches, key=_object_id))
+
+    def intersecting(self, bounds: BoundingBox) -> tuple[dict[str, Any], ...]:
+        """Return source features whose bounds intersect the requested extent."""
+
+        matches = [
+            indexed.feature
+            for indexed in self._features
+            if indexed.bounds.intersects(bounds)
         ]
         return tuple(sorted(matches, key=_object_id))
 
@@ -158,7 +179,11 @@ def _point(value: Any) -> Point:
 
 
 def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+    )
 
 
 def _object_id(feature: dict[str, Any]) -> int:

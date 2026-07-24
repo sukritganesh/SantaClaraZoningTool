@@ -55,6 +55,32 @@ class _StaticLookup:
             },
         }
 
+    def suggest_addresses(self, query: str) -> dict:
+        return {
+            "status": "ok",
+            "query": query,
+            "normalized_query": query.upper(),
+            "address_snapshot": "2026-07-16",
+            "total_matches": 1,
+            "truncated": False,
+            "suggestions": [
+                {
+                    "value": "1 Test Street",
+                    "display_address": "1 Test Street",
+                    "secondary_text": "Santa Clara, CA 95050",
+                    "source_record_count": 1,
+                }
+            ],
+        }
+
+    def property_map_context(self, entered_address: str) -> dict:
+        return {
+            "contract_version": "1.0.0",
+            "status": "ok",
+            "query": entered_address,
+            "property": {"zone": self.zone},
+        }
+
 
 def _pipeline(zone: str | None) -> ResidentialZoneSummaryPipeline:
     selection_pipeline = ResidentialStandardsPipeline(
@@ -74,6 +100,25 @@ def _canonical(value: dict) -> bytes:
 
 
 class ResidentialZoneSummaryTest(unittest.TestCase):
+    def test_suggestions_delegate_through_the_loaded_pipeline_defensively(self) -> None:
+        pipeline = _pipeline("R2")
+
+        first = pipeline.suggest_addresses("1 test")
+        first["suggestions"][0]["value"] = "changed"
+        second = pipeline.suggest_addresses("1 test")
+
+        self.assertEqual(second["suggestions"][0]["value"], "1 Test Street")
+        self.assertEqual(second["address_snapshot"], "2026-07-16")
+
+    def test_property_map_delegates_through_the_loaded_pipeline_defensively(self) -> None:
+        pipeline = _pipeline("R2")
+
+        first = pipeline.property_map_context("1 Test Street")
+        first["property"]["zone"] = "changed"
+        second = pipeline.property_map_context("1 Test Street")
+
+        self.assertEqual(second["property"]["zone"], "R2")
+
     def test_r2_presents_three_uses_and_one_common_rule_set(self) -> None:
         result = _pipeline("R2").analyze_address("1 Test Street")
 
