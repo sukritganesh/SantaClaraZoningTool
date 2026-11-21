@@ -1,12 +1,18 @@
 # Residential Zoning Expansion Progress
 
-**Last updated:** July 23, 2026
+**Last updated:** November 21, 2026
 
 **Current position:** Residential expansion Blocks 0-6 remain complete and released as `v0.2.0`; post-release Blocks 7-10 are complete, locally validated, and owner accepted; the normal `v0.3.0` PR, hosted CI, merge, and release gates are in progress
 
 **Next action:** Commit and publish the accepted Blocks 7-10 branch, then complete the normal PR, hosted CI, guarded merge, and `v0.3.0` release-record gates
 
 This is the sole active project-status ledger. Scope, architecture, and block exit conditions live in `docs/residential-expansion-plan.md`. The completed R1 ledger is preserved at `docs/progress-archive/2026-07-18-r1-prototype-progress.md`.
+
+On November 20, 2026, the project owner requested removal of the **How to use this result** row. The local result now goes directly from **Property Overview** to residential uses. All 47 web tests passed with `python -m unittest discover -s tests -p "test*web.py"`. A live lookup for `1240 White Drive` confirmed the section order and a working source link.
+
+On November 21, the street-side setback’s **Qualifications** cell was updated to show each rule condition in its own bullet, followed by a separate bullet for the parcel’s unverified corner-lot status. A browser check at `636 Barto Street` confirmed both bullets use the surrounding list style. All 48 web tests passed with the same command, including checks for the Patrick Henry measurement condition and the separate source-conflict details at `108 Brookside Avenue`.
+
+The lookup and source-evidence pages use the owner-selected sage-and-apricot parcel icon in browser tabs. The local home page, R2 result, and exact-source page each linked to the verified 64 × 64 PNG at `/static/favicon.png`.
 
 ## Baseline and active scope
 

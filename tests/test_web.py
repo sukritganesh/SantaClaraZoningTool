@@ -810,7 +810,6 @@ class WebShellIntegrationTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         expected_sections = (
             "Property Overview",
-            "How to use this result",
             "What base zoning permits",
             "Required approvals",
             "Key base-zone standards",
