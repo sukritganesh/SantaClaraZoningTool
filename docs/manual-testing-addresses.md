@@ -118,7 +118,7 @@ Evidence-viewer checklist:
 |---|---|---|
 | `636 Barto Street` | `R1-6L` | Single-family standards; the unevaluated Chapter 18.24 pathway and standalone qualifications section are not displayed, while the corner-lot qualification appears beside the street-side setback |
 | `108 Brookside Avenue` | `R1-8L` | R1 standards with the retained corner-side conflict beside the affected setback and competing source values available in its collapsed details |
-| `1240 White Drive` | `R2` | Single-family, two-family, and multifamily uses with shared standards |
+| `1240 White Drive` | `R2` | Single-family, two-family, and multifamily uses with shared standards. In the street-side setback’s **Qualifications** cell, the first bullet explains the corner-lot condition and the second gives the parcel’s unverified status. |
 | `1577 Pomeroy Avenue` | `R3` | Two-family and multifamily uses; tiered structure coverage |
 | `1400 Coleman Avenue` | `R4` | Two-family and multifamily uses |
 | `3105 Patrick Henry Drive` | `PH-R5` | Plan-dependent rear setback and retained density conflict |

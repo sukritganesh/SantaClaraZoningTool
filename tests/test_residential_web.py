@@ -414,6 +414,37 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
             interior_side.group(0),
         )
 
+    def test_corner_lot_status_follows_conditions_as_a_separate_bullet(self) -> None:
+        orientation = "Corner orientation and street-adjacent measurement require additional parcel facts."
+        parcel_status = "Corner-lot status is unverified for this parcel."
+        cases = {
+            "636 Barto Street": [orientation],
+            "1240 White Drive": ["Applies to the street side of a corner lot."],
+            "3105 Patrick Henry Drive": [
+                "Applies to the residential corner-side setback measured from the back of walk."
+            ],
+            "108 Brookside Avenue": [
+                "Project-selected value pending official City clarification of the conflicting table cell.",
+                orientation,
+            ],
+        }
+        for address, conditions in cases.items():
+            with self.subTest(address=address):
+                body = self.body(address)
+                row = re.search(
+                    r'<tr data-capability-id="setback\.street_side".*?</tr>',
+                    body,
+                    re.DOTALL,
+                )
+                self.assertIsNotNone(row)
+                cell = re.findall(r"<td>(.*?)</td>", row.group(0), re.DOTALL)[-1]
+                listing = re.search(r'<ul class="item-conditions">(.*?)</ul>', cell, re.DOTALL)
+                self.assertIsNotNone(listing)
+                bullets = re.findall(r"<li\b[^>]*>([^<]*)</li>", listing.group(1))
+                self.assertEqual([bullet.strip() for bullet in bullets], [*conditions, parcel_status])
+                self.assertEqual(body.count(parcel_status), 1)
+                self.assertNotIn("inline-qualification--conditional_applicability", cell)
+
     def test_failure_outcomes_never_render_regulatory_cards(self) -> None:
         cases = {
             "1500 Warburton Avenue": "outside_supported_residential_snapshot",

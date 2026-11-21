@@ -176,14 +176,27 @@
                 {% endif %}
               </td>
               <td>
-                {{ conditions(setback.conditions) }}
+                {% set corner_id = setback.rule_id ~ ":corner-lot" %}
+                {% set corner_warning = view.warnings | selectattr("warning_id", "equalto", corner_id) | first %}
+                {% if corner_warning %}
+                  <ul class="item-conditions">
+                    {% for condition in setback.conditions or [corner_warning.title ~ "."] %}
+                      <li>{{ condition }}</li>
+                    {% endfor %}
+                    <li data-warning-kind="{{ corner_warning.kind }}" data-warning-id="{{ corner_warning.warning_id }}">
+                      Corner-lot status is unverified for this parcel.
+                    </li>
+                  </ul>
+                {% else %}
+                  {{ conditions(setback.conditions) }}
+                {% endif %}
                 {% if setback.requirement and setback.requirement.required_sources_or_facts %}
                   <p><strong>Review requires:</strong></p>
                   <ul class="item-conditions">
                     {% for fact in setback.requirement.required_sources_or_facts %}<li>{{ fact }}</li>{% endfor %}
                   </ul>
                 {% endif %}
-                {{ inline_qualifications(view.warnings, setback.capability_id) }}
+                {{ inline_qualifications(view.warnings | rejectattr("warning_id", "equalto", corner_id), setback.capability_id) }}
               </td>
             </tr>
           {% endfor %}
