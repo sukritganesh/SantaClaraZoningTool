@@ -31,9 +31,9 @@ Interaction checklist:
 - inspect the unit-heavy case on a narrow mobile viewport, in forced-colors/high-contrast mode, and with reduced motion enabled; and
 - disable JavaScript or make the suggestion endpoint unavailable, then confirm entering a full address and pressing **Look up zoning** still works.
 
-## Property overviews and result guidance
+## Property overviews
 
-Every successful supported lookup should show a **Property Overview** with one concise source-grounded paragraph. Exact numeric standards remain in the detailed cards and table below it. The scope notice and `i` source-control explanation belong in a separate **How to use this result** section.
+Every successful supported lookup should show a **Property Overview** with one concise source-grounded paragraph. Exact numeric standards remain in the detailed cards and table below it.
 
 | Address | Expected overview distinction |
 |---|---|
@@ -53,9 +53,9 @@ Overview checklist:
 - confirm every paragraph begins with the exact displayed zoning designation;
 - confirm the paragraph gives a general zone orientation rather than repeating density, height, coverage, story, or setback numbers;
 - confirm Zoning Clearance and Architectural Review are named without promising project approval;
-- confirm **Scope notice** and **Source details** do not appear inside the overview panel and instead appear under **How to use this result**;
+- confirm **Residential uses listed in this zone** immediately follows **Property Overview**.
 - review wide desktop and 375-pixel mobile layouts, including heading order and screen-reader navigation; and
-- confirm lookup-failure and review-required outcomes do not receive a zone overview or staff-guidance section.
+- confirm lookup-failure and review-required outcomes do not receive a zone overview.
 
 R5 and R6 have reviewed descriptions in the catalog but no live-address fixture in the July 18 GIS snapshot. Their overview copy is covered by synthetic automated presentation tests.
 
@@ -91,8 +91,6 @@ Map interaction checklist:
 ## Exact regulatory source evidence
 
 Open the `i` source popover on a supported result. Every numbered citation should offer **View exact source**, which opens a dedicated tab without replacing the zoning result. The popover should not include a redundant **Source receipt** link; the complete numbered source appendix remains available at the bottom of the result and in print.
-
-Confirm every successful result includes one concise **Source details** note inside **How to use this result**, explaining that the `i` controls open supporting citations and exact sources. Landing, lookup-failure, and review-required states should not show that note.
 
 | Result and control | Expected exact evidence |
 |---|---|

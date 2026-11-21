@@ -72,17 +72,6 @@
     <p class="zone-overview-description">{{ view.overview.summary }}</p>
   </section>
 
-  <section class="content-section result-guidance" aria-labelledby="result-guidance-heading">
-    <h2 id="result-guidance-heading">How to use this result</h2>
-    <div class="result-guidance-grid">
-      <p class="scope-notice"><strong>Scope notice:</strong> {{ view.overview.disclaimer }}</p>
-      <aside class="source-help" aria-label="Source help">
-        <span class="source-help-icon" aria-hidden="true">i</span>
-        <p><strong>Source details:</strong> Select an “i” icon beside any rule to view its supporting citations and exact source.</p>
-      </aside>
-    </div>
-  </section>
-
   <section class="content-section" aria-labelledby="permissions-heading">
     <h2 id="permissions-heading">{% if view.presentation_contract_version == "1.0.0" %}What base zoning permits{% else %}Residential uses listed in this zone{% endif %}</h2>
     <div class="permission-grid">

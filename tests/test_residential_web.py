@@ -281,7 +281,6 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
         self.assertIn('data-result-kind="success"', body)
         self.assertIn("Property Overview", body)
         self.assertIn("R2 is Santa Clara&#39;s low-density residential zone", body)
-        self.assertIn("How to use this result", body)
         self.assertIn("Single-family dwelling", body)
         self.assertIn("Two-family dwelling", body)
         self.assertIn("Multifamily dwelling", body)
@@ -312,36 +311,21 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
             self.assertNotIn('class="profile-note"', card)
             self.assertNotIn('class="item-notes"', card)
 
-    def test_overview_and_staff_guidance_are_separate_accessible_sections(self) -> None:
+    def test_overview_is_accessible_without_a_guidance_row(self) -> None:
         body = self.body("1240 White Drive")
         overview = re.search(
             r'<section class="content-section overview-panel".*?</section>',
             body,
             flags=re.DOTALL,
         )
-        guidance = re.search(
-            r'<section class="content-section result-guidance".*?</section>',
-            body,
-            flags=re.DOTALL,
-        )
 
         self.assertIsNotNone(overview)
-        self.assertIsNotNone(guidance)
         self.assertIn('aria-labelledby="overview-heading"', overview.group(0))
         self.assertIn('id="overview-heading">Property Overview</h2>', overview.group(0))
         self.assertIn('class="zone-overview-description"', overview.group(0))
-        self.assertNotIn("Scope notice", overview.group(0))
-        self.assertNotIn("Source details", overview.group(0))
-        self.assertIn(
-            'aria-labelledby="result-guidance-heading"',
-            guidance.group(0),
-        )
-        self.assertIn(
-            'id="result-guidance-heading">How to use this result</h2>',
-            guidance.group(0),
-        )
-        self.assertIn("Scope notice", guidance.group(0))
-        self.assertIn("Source details", guidance.group(0))
+        self.assertNotIn("How to use this result", body)
+        self.assertNotIn("Scope notice", body)
+        self.assertNotIn("Source details", body)
 
     def test_missing_description_provider_keeps_the_zoning_result(self) -> None:
         fallback_app = create_app(
@@ -395,12 +379,6 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
         self.assertEqual(len(re.findall(r'class="permission-card"', body)), 1)
         self.assertNotIn("Choose a residential structure", body)
         self.assertNotIn("prototype", body.lower())
-        self.assertIn('class="source-help" aria-label="Source help"', body)
-        self.assertIn('class="source-help-icon" aria-hidden="true">i</span>', body)
-        self.assertIn(
-            "Select an “i” icon beside any rule to view its supporting citations and exact source.",
-            body,
-        )
 
     def test_consequential_qualifications_render_beside_affected_rules(self) -> None:
         barto = self.body("636 Barto Street")
@@ -455,7 +433,6 @@ class ResidentialWebIntegrationTest(unittest.TestCase):
                 self.assertNotIn("Regulatory sources", body)
                 self.assertNotIn('data-property-map', body)
                 self.assertNotIn("Parcel and zoning context", body)
-                self.assertNotIn('class="source-help"', body)
 
     def test_source_links_and_accessibility_relationships_are_closed(self) -> None:
         body = self.body("1240 White Drive")
